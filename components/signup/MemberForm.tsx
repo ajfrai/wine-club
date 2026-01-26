@@ -7,6 +7,7 @@ import { memberSignupSchema, type MemberSignupFormData } from '@/lib/validations
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
+import { MemberOnboarding } from './MemberOnboarding';
 
 interface MemberFormProps {
   onSubmit: (data: MemberSignupFormData) => Promise<void>;
@@ -16,6 +17,8 @@ interface MemberFormProps {
 type MemberFormInputs = MemberSignupFormData;
 
 export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = false }) => {
+  const [showOnboarding, setShowOnboarding] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [useFindNearby, setUseFindNearby] = useState(false);
 
   const {
@@ -40,8 +43,27 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
     clearErrors('hostCode');
   };
 
+  const handleOnboardingComplete = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setShowOnboarding(false);
+      setIsTransitioning(false);
+    }, 200);
+  };
+
+  if (showOnboarding) {
+    return (
+      <div className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+        <MemberOnboarding onComplete={handleOnboardingComplete} />
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={`space-y-6 transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+    >
       {/* Personal Information */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
