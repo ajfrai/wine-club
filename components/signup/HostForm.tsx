@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { hostSignupSchema, type HostSignupFormData } from '@/lib/validations/host-signup.schema';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Textarea } from '@/components/ui/Textarea';
+import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 import { HostOnboarding } from './HostOnboarding';
 import { AddressValidationModal } from '@/components/ui/AddressValidationModal';
 import { validateAddressAction } from '@/app/actions/validate-address';
@@ -31,11 +32,12 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   } | null>(null);
   const [isValidating, setIsValidating] = useState(false);
 
-  // Check if test mode is enabled
-  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'true';
+  // Check if test mode is enabled (hardcoded for test branch)
+  const isTestMode = true;
 
   const {
     register,
+    control,
     handleSubmit,
     watch,
     setValue,
@@ -191,15 +193,21 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">Club Information</h3>
 
-        <Textarea
-          label="Club Address"
-          placeholder="Enter the address where wine tastings will be held"
-          rows={3}
-          error={errors.clubAddress?.message}
-          required
-          {...register('clubAddress', {
-            onBlur: (e) => handleAddressValidation(e.target.value, 'clubAddress'),
-          })}
+        <Controller
+          name="clubAddress"
+          control={control}
+          render={({ field }) => (
+            <AddressAutocomplete
+              label="Club Address"
+              placeholder="Start typing your address..."
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={() => handleAddressValidation(field.value, 'clubAddress')}
+              error={errors.clubAddress?.message}
+              required
+              rows={3}
+            />
+          )}
         />
         {isValidating && (
           <p className="text-sm text-gray-500">Validating address...</p>
@@ -211,15 +219,21 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
         />
 
         {!sameAsClubAddress && (
-          <Textarea
-            label="Delivery Address"
-            placeholder="Enter the address where wine deliveries should be sent"
-            rows={3}
-            error={errors.deliveryAddress?.message}
-            required
-            {...register('deliveryAddress', {
-              onBlur: (e) => handleAddressValidation(e.target.value, 'deliveryAddress'),
-            })}
+          <Controller
+            name="deliveryAddress"
+            control={control}
+            render={({ field }) => (
+              <AddressAutocomplete
+                label="Delivery Address"
+                placeholder="Start typing your address..."
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={() => handleAddressValidation(field.value, 'deliveryAddress')}
+                error={errors.deliveryAddress?.message}
+                required
+                rows={3}
+              />
+            )}
           />
         )}
 

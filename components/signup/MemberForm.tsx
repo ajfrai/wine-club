@@ -20,8 +20,8 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Check if test mode is enabled
-  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'true';
+  // Check if test mode is enabled (hardcoded for test branch)
+  const isTestMode = true;
   const [useFindNearby, setUseFindNearby] = useState(isTestMode);
 
   const {

@@ -122,7 +122,7 @@ export default function SignupPage() {
     }
   };
 
-  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'true';
+  const isTestMode = true; // Hardcoded for test branch
 
   return (
     <div className="min-h-screen">

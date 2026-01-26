@@ -55,15 +55,14 @@ async function getAccessToken(): Promise<string> {
   }
 
   try {
-    const credentials = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
-
     const response = await fetch(USPS_OAUTH_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: new URLSearchParams({
+      body: JSON.stringify({
+        client_id: consumerKey,
+        client_secret: consumerSecret,
         grant_type: 'client_credentials',
       }),
     });
@@ -135,30 +134,29 @@ export async function validateAddress(
   try {
     const accessToken = await getAccessToken();
 
-    // Build request body
-    const requestBody = {
+    // Build query parameters
+    const params = new URLSearchParams({
       streetAddress: address.streetAddress,
       city: address.city,
       state: address.state,
       ZIPCode: address.ZIPCode,
-    };
+    });
 
     // Add optional fields if present
     if (address.secondaryAddress) {
-      Object.assign(requestBody, { secondaryAddress: address.secondaryAddress });
+      params.append('secondaryAddress', address.secondaryAddress);
     }
     if (address.ZIPPlus4) {
-      Object.assign(requestBody, { ZIPPlus4: address.ZIPPlus4 });
+      params.append('ZIPPlus4', address.ZIPPlus4);
     }
 
-    // Make request to USPS API
-    const response = await fetch(`${USPS_API_BASE_URL}/addresses/v3/address`, {
-      method: 'POST',
+    // Make GET request to USPS API
+    const response = await fetch(`${USPS_API_BASE_URL}/addresses/v3/address?${params.toString()}`, {
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
-      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
