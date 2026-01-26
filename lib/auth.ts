@@ -40,8 +40,23 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
 
     console.log('[signupHost] Step 1 success: User created with ID:', authData.user.id);
 
-    // Step 2: Update user profile with full name
-    console.log('[signupHost] Step 2: Updating user profile');
+    // Step 2: Wait for trigger to create user profile, then update with full name
+    console.log('[signupHost] Step 2: Waiting for user profile to be created by trigger');
+
+    // Add a small delay to ensure trigger has completed
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if user profile exists
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('id, full_name')
+      .eq('id', authData.user.id)
+      .single();
+
+    console.log('[signupHost] User profile check:', { existingUser, checkError });
+
+    // Update user profile with full name
+    console.log('[signupHost] Updating user profile with full name');
     const { error: profileError } = await supabase
       .from('users')
       .update({ full_name: data.fullName })
@@ -49,9 +64,10 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
 
     if (profileError) {
       console.error('[signupHost] Step 2 failed: Profile update error:', profileError);
+      console.error('[signupHost] Profile error details:', JSON.stringify(profileError, null, 2));
       return {
         success: false,
-        error: 'Failed to update user profile',
+        error: `Failed to update user profile: ${profileError.message || JSON.stringify(profileError)}`,
       };
     }
 
@@ -64,9 +80,10 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
 
     if (hostCodeError || !hostCodeData) {
       console.error('[signupHost] Step 3 failed: Host code error:', hostCodeError);
+      console.error('[signupHost] Host code error details:', JSON.stringify(hostCodeError, null, 2));
       return {
         success: false,
-        error: 'Failed to generate host code',
+        error: `Failed to generate host code: ${hostCodeError?.message || 'Unknown error'}`,
       };
     }
 
@@ -95,9 +112,10 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
 
     if (hostError) {
       console.error('[signupHost] Step 4 failed: Host profile error:', hostError);
+      console.error('[signupHost] Host profile error details:', JSON.stringify(hostError, null, 2));
       return {
         success: false,
-        error: 'Failed to create host profile',
+        error: `Failed to create host profile: ${hostError.message || JSON.stringify(hostError)}`,
       };
     }
 
@@ -113,9 +131,10 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
 
     if (userError) {
       console.error('[signupHost] Step 5 failed: User data fetch error:', userError);
+      console.error('[signupHost] User data error details:', JSON.stringify(userError, null, 2));
       return {
         success: false,
-        error: 'Failed to fetch user data',
+        error: `Failed to fetch user data: ${userError.message || JSON.stringify(userError)}`,
       };
     }
 
@@ -156,9 +175,10 @@ export async function signupMember(data: MemberSignupData): Promise<SignupRespon
 
       if (hostError || !hostData) {
         console.error('[signupMember] Step 1 failed: Invalid host code:', hostError);
+        console.error('[signupMember] Host code error details:', JSON.stringify(hostError, null, 2));
         return {
           success: false,
-          error: 'Invalid host code. Please check and try again.',
+          error: `Invalid host code. Please check and try again. ${hostError?.message || ''}`,
         };
       }
       console.log('[signupMember] Step 1 success: Host code validated');
@@ -197,8 +217,23 @@ export async function signupMember(data: MemberSignupData): Promise<SignupRespon
 
     console.log('[signupMember] Step 2 success: User created with ID:', authData.user.id);
 
-    // Step 3: Update user profile with full name
-    console.log('[signupMember] Step 3: Updating user profile');
+    // Step 3: Wait for trigger to create user profile, then update with full name
+    console.log('[signupMember] Step 3: Waiting for user profile to be created by trigger');
+
+    // Add a small delay to ensure trigger has completed
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check if user profile exists
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('id, full_name')
+      .eq('id', authData.user.id)
+      .single();
+
+    console.log('[signupMember] User profile check:', { existingUser, checkError });
+
+    // Update user profile with full name
+    console.log('[signupMember] Updating user profile with full name');
     const { error: profileError } = await supabase
       .from('users')
       .update({ full_name: data.fullName })
@@ -206,9 +241,10 @@ export async function signupMember(data: MemberSignupData): Promise<SignupRespon
 
     if (profileError) {
       console.error('[signupMember] Step 3 failed: Profile update error:', profileError);
+      console.error('[signupMember] Profile error details:', JSON.stringify(profileError, null, 2));
       return {
         success: false,
-        error: 'Failed to update user profile',
+        error: `Failed to update user profile: ${profileError.message || JSON.stringify(profileError)}`,
       };
     }
 
@@ -224,9 +260,10 @@ export async function signupMember(data: MemberSignupData): Promise<SignupRespon
 
     if (userError) {
       console.error('[signupMember] Step 4 failed: User data fetch error:', userError);
+      console.error('[signupMember] User data error details:', JSON.stringify(userError, null, 2));
       return {
         success: false,
-        error: 'Failed to fetch user data',
+        error: `Failed to fetch user data: ${userError.message || JSON.stringify(userError)}`,
       };
     }
 

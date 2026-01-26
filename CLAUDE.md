@@ -8,6 +8,7 @@
    - **Plans**: Save implementation plans to `docs/plans/` with descriptive names (e.g., `wine-purchase-agent.md`)
    - **Test scripts**: Save test scripts to `scripts/tests/`
    - These directories ARE committed to GitHub for documentation and testing purposes
+   - Do NOT create setup guides or documentation with API keys/secrets - those stay in `.env` files only
    - Do NOT create random markdown files or test scripts in the project root
 
 3. **Before committing, check for stray files:**
