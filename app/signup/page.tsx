@@ -129,7 +129,7 @@ export default function SignupPage() {
       {/* Test Mode Banner */}
       {isTestMode && (
         <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 z-50 font-semibold">
-          🧪 TEST MODE - Forms are pre-filled for testing
+          🧪 TEST MODE v2.0 - Forms auto-filled | Detailed errors enabled | Commit: 959c49f
         </div>
       )}
 
