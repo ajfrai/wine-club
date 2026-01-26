@@ -122,8 +122,17 @@ export default function SignupPage() {
     }
   };
 
+  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'true';
+
   return (
     <div className="min-h-screen">
+      {/* Test Mode Banner */}
+      {isTestMode && (
+        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 z-50 font-semibold">
+          🧪 TEST MODE - Forms are pre-filled for testing
+        </div>
+      )}
+
         {/* Error Toast */}
       {error && (
         <div className="fixed top-4 right-4 z-50 max-w-md bg-sunburst-50 border border-sunburst-500 rounded-lg shadow-lg p-4">
