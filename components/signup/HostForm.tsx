@@ -14,6 +14,8 @@ interface HostFormProps {
   isLoading?: boolean;
 }
 
+type HostFormInputs = HostSignupFormData;
+
 export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false }) => {
   const {
     register,
@@ -21,10 +23,16 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
     watch,
     setValue,
     formState: { errors },
-  } = useForm<HostSignupFormData>({
+  } = useForm<HostFormInputs>({
     resolver: zodResolver(hostSignupSchema),
     defaultValues: {
       sameAsClubAddress: false,
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      clubAddress: '',
+      deliveryAddress: '',
     },
   });
 

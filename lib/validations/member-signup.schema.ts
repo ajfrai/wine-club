@@ -23,7 +23,7 @@ export const memberSignupSchema = z.object({
     .optional()
     .or(z.literal('')),
 
-  findNearbyHosts: z.boolean().default(false),
+  findNearbyHosts: z.boolean(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],

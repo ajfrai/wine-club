@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 
 interface SplitPanelProps {
   title: string;
@@ -14,7 +14,7 @@ interface SplitPanelProps {
   children?: React.ReactNode;
 }
 
-const panelVariants = {
+const panelVariants: Variants = {
   collapsed: {
     width: '50%',
     transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
@@ -30,7 +30,7 @@ const panelVariants = {
   },
 };
 
-const formVariants = {
+const formVariants: Variants = {
   hidden: {
     opacity: 0,
     y: 20,

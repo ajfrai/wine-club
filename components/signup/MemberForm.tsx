@@ -13,6 +13,8 @@ interface MemberFormProps {
   isLoading?: boolean;
 }
 
+type MemberFormInputs = MemberSignupFormData;
+
 export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = false }) => {
   const [useFindNearby, setUseFindNearby] = useState(false);
 
@@ -21,10 +23,15 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
     handleSubmit,
     formState: { errors },
     clearErrors,
-  } = useForm<MemberSignupFormData>({
+  } = useForm<MemberFormInputs>({
     resolver: zodResolver(memberSignupSchema),
     defaultValues: {
       findNearbyHosts: false,
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      hostCode: '',
     },
   });
 

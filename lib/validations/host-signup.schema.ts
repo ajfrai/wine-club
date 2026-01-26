@@ -25,7 +25,7 @@ export const hostSignupSchema = z.object({
     .min(10, 'Please provide a complete delivery address')
     .max(500, 'Delivery address must be less than 500 characters'),
 
-  sameAsClubAddress: z.boolean().default(false),
+  sameAsClubAddress: z.boolean(),
 
   aboutClub: z.string()
     .max(500, 'About club must be less than 500 characters')
