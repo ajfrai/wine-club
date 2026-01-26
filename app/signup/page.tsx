@@ -17,48 +17,90 @@ export default function SignupPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const handleHostSignup = async (data: HostSignupData) => {
+    console.log('[SignupPage] handleHostSignup called');
+    console.log('[SignupPage] Form data:', {
+      email: data.email,
+      fullName: data.fullName,
+      clubAddress: data.clubAddress,
+      sameAsClubAddress: data.sameAsClubAddress,
+      hasDeliveryAddress: !!data.deliveryAddress,
+      hasAboutClub: !!data.aboutClub,
+      hasWinePreferences: !!data.winePreferences,
+    });
+
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log('[SignupPage] Calling signupHost function');
       const response = await signupHost(data);
 
+      console.log('[SignupPage] signupHost response:', {
+        success: response.success,
+        hasUser: !!response.user,
+        hasHost: !!response.host,
+        error: response.error,
+      });
+
       if (!response.success) {
+        console.error('[SignupPage] Signup failed:', response.error);
         setError(response.error || 'Failed to create host account');
         return;
       }
 
       if (response.user) {
+        console.log('[SignupPage] Signup successful, moving to payment step');
         setCurrentUser(response.user);
         setStep('payment');
       }
     } catch (err) {
+      console.error('[SignupPage] Exception during signup:', err);
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
+      console.log('[SignupPage] handleHostSignup complete');
     }
   };
 
   const handleMemberSignup = async (data: MemberSignupData) => {
+    console.log('[SignupPage] handleMemberSignup called');
+    console.log('[SignupPage] Form data:', {
+      email: data.email,
+      fullName: data.fullName,
+      hostCode: data.hostCode || 'None',
+      findNearbyHosts: data.findNearbyHosts,
+    });
+
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log('[SignupPage] Calling signupMember function');
       const response = await signupMember(data);
 
+      console.log('[SignupPage] signupMember response:', {
+        success: response.success,
+        hasUser: !!response.user,
+        error: response.error,
+      });
+
       if (!response.success) {
+        console.error('[SignupPage] Signup failed:', response.error);
         setError(response.error || 'Failed to create member account');
         return;
       }
 
       if (response.user) {
+        console.log('[SignupPage] Signup successful, moving to payment step');
         setCurrentUser(response.user);
         setStep('payment');
       }
     } catch (err) {
+      console.error('[SignupPage] Exception during signup:', err);
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
+      console.log('[SignupPage] handleMemberSignup complete');
     }
   };
 
