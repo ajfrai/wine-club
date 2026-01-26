@@ -1,11 +1,8 @@
 import Link from 'next/link';
-import { Header } from '@/components/layout/Header';
 
 export default function Home() {
   return (
-    <>
-      <Header />
-      <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-sunburst-50 to-wine-light">
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-sunburst-50 to-wine-light">
       <div className="text-center max-w-3xl">
         <h1 className="text-6xl font-bold mb-6 text-wine-dark">Wine Club</h1>
         <p className="text-2xl text-gray-700 mb-4 italic">
@@ -24,6 +21,5 @@ export default function Home() {
         </Link>
       </div>
     </main>
-    </>
   );
 }
