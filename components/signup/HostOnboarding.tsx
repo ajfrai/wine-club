@@ -26,14 +26,14 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-gradient-to-br from-[#2d1f21] to-[#1a1214] transition-opacity duration-400 ${
+      className={`fixed inset-0 z-50 bg-gradient-to-br from-wine-dark to-wine transition-opacity duration-400 ${
         isExiting ? 'opacity-0' : 'opacity-100'
       }`}
     >
       {/* Progress bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-white/10">
         <div
-          className="h-full bg-white/40 transition-all duration-500 ease-out"
+          className="h-full bg-sunburst-400 transition-all duration-500 ease-out"
           style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
         />
       </div>
@@ -172,7 +172,7 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
               onClick={goToNext}
               className={`flex items-center gap-3 px-8 py-4 rounded-full font-medium transition-all duration-300 ${
                 isLastSlide
-                  ? 'bg-white text-gray-900 hover:bg-white/90'
+                  ? 'bg-sunburst-500 text-white hover:bg-sunburst-600'
                   : 'bg-white/10 text-white hover:bg-white/20'
               }`}
             >
