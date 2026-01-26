@@ -37,24 +37,24 @@
 - **Package Manager**: npm v10.8.2
 - **Node Modules**: 363 packages installed
 
-## ⚠️ Requires Manual Action
+## ✅ Vercel Deployment
+- **Status**: ✅ DEPLOYED AND LIVE
+- **Production URL**: https://c-wine-club.vercel.app
+- **Deployment URL**: https://c-wine-club-idths1nui-ajfrais-projects.vercel.app
+- **Project**: ajfrais-projects/c-wine-club
 
-### Vercel Deployment
-- **Status**: ⚠️ READY TO DEPLOY (Manual import required)
-- **Method 1 - One-Click Deploy**:
+#### Environment Variables Configured:
+- ✅ `NEXT_PUBLIC_SUPABASE_URL` (Production, Preview, Development)
+- ✅ `NEXT_PUBLIC_SUPABASE_ANON_KEY` (Production, Preview, Development)
+- ✅ `SUPABASE_SERVICE_ROLE_KEY` (Production, Preview, Development)
+- ✅ `ANTHROPIC_API_KEY` (Production, Preview, Development)
 
-  Visit: https://vercel.com/new/clone?repository-url=https://github.com/ajfrai/wine-club
-
-- **Method 2 - Manual Import**:
-  1. Go to https://vercel.com/new
-  2. Select `ajfrai/wine-club` repository
-  3. Add environment variables:
-     - `NEXT_PUBLIC_SUPABASE_URL`: `https://rsoyoepdjhhswmapmdya.supabase.co`
-     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: (from your env)
-     - `SUPABASE_SERVICE_ROLE_KEY`: (from your env)
-  4. Click "Deploy"
-
-See `VERCEL_SETUP.md` for detailed instructions.
+#### Deployment Details:
+- Build completed successfully in 44s
+- Static pages generated: 4/4
+- Next.js version: 15.5.9
+- Region: Portland, USA (West) - pdx1
+- Auto-deploy enabled on push to main branch
 
 ## 🧪 Testing
 
@@ -85,21 +85,15 @@ npm run dev
 | Git Repo | ✅ | https://github.com/ajfrai/wine-club |
 | Supabase | ✅ | Database deployed with users table |
 | Node.js | ✅ | v20.20.0 installed |
-| Dependencies | ✅ | 363 packages installed |
-| Vercel | ⚠️ | Ready for manual import |
+| Dependencies | ✅ | 367 packages installed |
+| Vercel | ✅ | Live at https://c-wine-club.vercel.app |
 | MVP Issues | ✅ | 13 issues created |
 
 ## 🎯 Next Steps
 
-1. **Import to Vercel** (1 minute)
-   - Visit the deploy link above
-   - Add environment variables
-   - Click deploy
+1. **✅ Vercel Deployed** - Live at https://c-wine-club.vercel.app
 
-2. **Verify Deployment** (2 minutes)
-   - Visit your Vercel URL
-   - Check that the homepage loads
-   - Verify Supabase connection
+2. **✅ Supabase Configured** - Database ready with users table
 
 3. **Start Development** (Ready now)
    ```bash
@@ -108,6 +102,10 @@ npm run dev
    ```
 
 4. **Begin MVP Implementation**
-   - Start with Issue #1: Database Schema (✅ Already done!)
-   - Move to Issue #2: User Registration and Role Selection
+   - ✅ Issue #1: Database Schema & Authentication Setup (COMPLETE)
+   - Next: Issue #2: User Registration and Role Selection
    - See: https://github.com/ajfrai/wine-club/issues
+
+5. **Automatic Deployments**
+   - Push to `main` branch → Automatic production deploy
+   - Other branches → Automatic preview deployments
