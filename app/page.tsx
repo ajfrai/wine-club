@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import { Header } from '@/components/layout/Header';
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-sunburst-50 to-wine-light">
+    <>
+      <Header />
+      <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-sunburst-50 to-wine-light pt-32">
       <div className="text-center max-w-3xl">
         <h1 className="text-6xl font-bold mb-6 text-wine-dark">Wine Club</h1>
         <p className="text-2xl text-gray-700 mb-4 italic">
@@ -10,7 +13,7 @@ export default function Home() {
         </p>
         <p className="text-sm text-gray-500 mb-8">— Pliny the Elder</p>
         <p className="mt-4 text-lg text-gray-600 mb-12">
-          Building real-world community through taste-making and event orchestration
+          Drink wine with (at least) seven strangers.
         </p>
 
         <Link
@@ -21,5 +24,6 @@ export default function Home() {
         </Link>
       </div>
     </main>
+    </>
   );
 }

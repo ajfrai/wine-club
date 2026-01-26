@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Header } from '@/components/layout/Header';
 import { SignupContainer } from '@/components/signup/SignupContainer';
 import { PaymentSetupStep } from '@/components/signup/PaymentSetupStep';
 import { signupHost, signupMember } from '@/lib/auth';
@@ -81,8 +82,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen">
-      {/* Error Toast */}
+    <>
+      <Header />
+      <div className="min-h-screen">
+        {/* Error Toast */}
       {error && (
         <div className="fixed top-4 right-4 z-50 max-w-md bg-sunburst-50 border border-sunburst-500 rounded-lg shadow-lg p-4">
           <div className="flex items-start">
@@ -122,6 +125,7 @@ export default function SignupPage() {
           />
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

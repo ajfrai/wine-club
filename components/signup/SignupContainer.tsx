@@ -54,8 +54,8 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
       <SplitPanel
         title="Become a Member"
         subtitle="Join a wine club near you"
-        gradientFrom="rgb(232, 213, 213)"
-        gradientTo="rgb(254, 202, 202)"
+        gradientFrom="rgb(220, 180, 180)"
+        gradientTo="rgb(245, 140, 140)"
         isExpanded={panelState === 'member'}
         isHidden={panelState === 'host'}
         onClick={handleMemberClick}

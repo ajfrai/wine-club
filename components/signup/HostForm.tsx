@@ -48,11 +48,11 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Expectations Block */}
-      <div className="bg-sunburst-50 border-l-4 border-sunburst-600 p-4 rounded">
-        <h3 className="text-sm font-semibold text-sunburst-900 mb-2">
+      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+        <h3 className="text-sm font-semibold text-blue-900 mb-2">
           Host Responsibilities
         </h3>
-        <ul className="text-sm text-sunburst-800 space-y-1 list-disc list-inside">
+        <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
           <li>Curate and order wine selections for your club</li>
           <li>Organize monthly wine tastings and events</li>
           <li>Manage member subscriptions and communications</li>
