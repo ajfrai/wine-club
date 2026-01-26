@@ -20,9 +20,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Check if test mode is enabled
-  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'true';
-  const [useFindNearby, setUseFindNearby] = useState(isTestMode);
+  const [useFindNearby, setUseFindNearby] = useState(false);
 
   const {
     register,
@@ -31,14 +29,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
     clearErrors,
   } = useForm<MemberFormInputs>({
     resolver: zodResolver(memberSignupSchema),
-    defaultValues: isTestMode ? {
-      findNearbyHosts: true,
-      fullName: 'Test Member User',
-      email: `test.member.${Date.now()}@example.com`,
-      password: 'TestPass123!',
-      confirmPassword: 'TestPass123!',
-      hostCode: '',
-    } : {
+    defaultValues: {
       findNearbyHosts: false,
       fullName: '',
       email: '',
