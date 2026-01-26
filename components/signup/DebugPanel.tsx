@@ -27,7 +27,7 @@ export const DebugPanel: React.FC = () => {
         setLogs(prev => [...prev, {
           timestamp: new Date().toISOString(),
           message,
-          level: 'info'
+          level: 'info' as const
         }].slice(-50)); // Keep last 50 logs
       }
       originalLog.apply(console, args);
@@ -41,7 +41,7 @@ export const DebugPanel: React.FC = () => {
       setLogs(prev => [...prev, {
         timestamp: new Date().toISOString(),
         message,
-        level: 'error'
+        level: 'error' as const
       }].slice(-50));
       originalError.apply(console, args);
     };
@@ -54,7 +54,7 @@ export const DebugPanel: React.FC = () => {
       setLogs(prev => [...prev, {
         timestamp: new Date().toISOString(),
         message,
-        level: 'warn'
+        level: 'warn' as const
       }].slice(-50));
       originalWarn.apply(console, args);
     };
