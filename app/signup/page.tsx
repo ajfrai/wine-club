@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SignupContainer } from '@/components/signup/SignupContainer';
 import { PaymentSetupStep } from '@/components/signup/PaymentSetupStep';
+import { DebugPanel } from '@/components/signup/DebugPanel';
 import { signupHost, signupMember } from '@/lib/auth';
 import type { HostSignupData, MemberSignupData, User } from '@/types/auth.types';
 
