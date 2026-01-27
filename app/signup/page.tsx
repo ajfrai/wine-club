@@ -3,20 +3,15 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { SignupContainer } from '@/components/signup/SignupContainer';
-import { PaymentSetupStep } from '@/components/signup/PaymentSetupStep';
 import { GoogleMapsProvider } from '@/components/providers/GoogleMapsProvider';
 import { signupHost, signupMember } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
-import type { HostSignupData, MemberSignupData, User } from '@/types/auth.types';
-
-type SignupStep = 'account' | 'payment';
+import type { HostSignupData, MemberSignupData } from '@/types/auth.types';
 
 export default function SignupPage() {
   const router = useRouter();
-  const [step, setStep] = useState<SignupStep>('account');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const handleHostSignup = async (data: HostSignupData) => {
     console.log('[SignupPage] handleHostSignup called');
@@ -52,9 +47,9 @@ export default function SignupPage() {
       }
 
       if (response.user) {
-        console.log('[SignupPage] Signup successful, moving to payment step');
-        setCurrentUser(response.user);
-        setStep('payment');
+        console.log('[SignupPage] Signup successful, redirecting to dashboard');
+        // Redirect directly to dashboard based on role
+        router.push(`/dashboard/${response.user.role}`);
       }
     } catch (err) {
       console.error('[SignupPage] Exception during signup:', err);
@@ -95,9 +90,9 @@ export default function SignupPage() {
       }
 
       if (response.user) {
-        console.log('[SignupPage] Signup successful, moving to payment step');
-        setCurrentUser(response.user);
-        setStep('payment');
+        console.log('[SignupPage] Signup successful, redirecting to dashboard');
+        // Redirect directly to dashboard based on role
+        router.push(`/dashboard/${response.user.role}`);
       }
     } catch (err) {
       console.error('[SignupPage] Exception during signup:', err);
@@ -105,24 +100,6 @@ export default function SignupPage() {
     } finally {
       setIsLoading(false);
       console.log('[SignupPage] handleMemberSignup complete');
-    }
-  };
-
-  const handlePaymentComplete = () => {
-    // Redirect to appropriate dashboard based on role
-    if (currentUser?.role === 'host') {
-      router.push('/dashboard/host');
-    } else {
-      router.push('/dashboard/member');
-    }
-  };
-
-  const handleSkipPayment = () => {
-    // Redirect to appropriate dashboard based on role
-    if (currentUser?.role === 'host') {
-      router.push('/dashboard/host');
-    } else {
-      router.push('/dashboard/member');
     }
   };
 
@@ -148,28 +125,14 @@ export default function SignupPage() {
         </div>
       )}
 
-      {/* Step 1: Account Creation */}
-      {step === 'account' && (
-        <GoogleMapsProvider>
-          <SignupContainer
-            onHostSignup={handleHostSignup}
-            onMemberSignup={handleMemberSignup}
-            isLoading={isLoading}
-          />
-        </GoogleMapsProvider>
-      )}
-
-      {/* Step 2: Payment Setup */}
-      {step === 'payment' && currentUser && (
-        <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light py-12">
-          <PaymentSetupStep
-            userId={currentUser.id}
-            userRole={currentUser.role}
-            onComplete={handlePaymentComplete}
-            onSkip={handleSkipPayment}
-          />
-        </div>
-      )}
+      {/* Account Creation */}
+      <GoogleMapsProvider>
+        <SignupContainer
+          onHostSignup={handleHostSignup}
+          onMemberSignup={handleMemberSignup}
+          isLoading={isLoading}
+        />
+      </GoogleMapsProvider>
     </div>
   );
 }
