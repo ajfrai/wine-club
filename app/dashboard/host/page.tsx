@@ -1,99 +1,80 @@
-'use client';
+import { createClient } from '@/lib/supabase/server';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
-import { Header } from '@/components/layout/Header';
-import type { User } from '@/types/auth.types';
+export default async function HostDashboardPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-export default function HostDashboard() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session) {
-      router.push('/login');
-      return;
-    }
-
-    const { data: userData } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', session.user.id)
-      .single();
-
-    if (userData?.role !== 'host') {
-      router.push('/dashboard/member');
-      return;
-    }
-
-    setUser(userData);
-    setIsLoading(false);
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sunburst-50 to-wine-light">
-        <div className="text-wine-dark">Loading...</div>
-      </div>
-    );
+  if (!user) {
+    return null;
   }
 
+  // Fetch user profile
+  const { data: userProfile } = await supabase
+    .from('users')
+    .select('full_name, email, created_at')
+    .eq('id', user.id)
+    .single();
+
+  // Fetch host data
+  const { data: hostData } = await supabase
+    .from('hosts')
+    .select('host_code, club_address, about_club')
+    .eq('user_id', user.id)
+    .single();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light">
-      <Header showLogin={false} onLogout={handleLogout} />
-
-      <main className="max-w-4xl mx-auto px-4 py-24">
+    <div className="space-y-8">
+      <div>
         <h1 className="text-4xl font-bold text-wine-dark mb-2">Host Dashboard</h1>
-        <p className="text-gray-600 mb-8">Welcome back, {user?.full_name}!</p>
+        <p className="text-gray-600">Welcome back, {userProfile?.full_name}!</p>
+      </div>
 
-        {/* User Info Card */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-gray-900">Your Profile</h2>
-            <span className="px-3 py-1 bg-wine-dark text-white rounded-full text-sm font-medium">
-              Host
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            <div>
-              <span className="text-sm text-gray-500">Name</span>
-              <p className="text-gray-900 font-medium">{user?.full_name}</p>
-            </div>
-            <div>
-              <span className="text-sm text-gray-500">Email</span>
-              <p className="text-gray-900 font-medium">{user?.email}</p>
-            </div>
-            <div>
-              <span className="text-sm text-gray-500">Member Since</span>
-              <p className="text-gray-900 font-medium">
-                {new Date(user?.created_at || '').toLocaleDateString()}
-              </p>
-            </div>
-          </div>
+      {/* User Info Card */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold text-gray-900">Your Profile</h2>
+          <span className="px-3 py-1 bg-wine-dark text-white rounded-full text-sm font-medium">
+            Host
+          </span>
         </div>
 
-        {/* Placeholder Content */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Coming Soon</h2>
-          <p className="text-gray-600">
-            Your host dashboard with event management, member lists, and wine selections will be available here soon.
-          </p>
+        <div className="space-y-3">
+          <div>
+            <span className="text-sm text-gray-500">Name</span>
+            <p className="text-gray-900 font-medium">{userProfile?.full_name}</p>
+          </div>
+          <div>
+            <span className="text-sm text-gray-500">Email</span>
+            <p className="text-gray-900 font-medium">{userProfile?.email}</p>
+          </div>
+          {hostData?.host_code && (
+            <div>
+              <span className="text-sm text-gray-500">Host Code</span>
+              <p className="text-gray-900 font-medium font-mono">{hostData.host_code}</p>
+            </div>
+          )}
+          {hostData?.club_address && (
+            <div>
+              <span className="text-sm text-gray-500">Club Address</span>
+              <p className="text-gray-900 font-medium">{hostData.club_address}</p>
+            </div>
+          )}
+          <div>
+            <span className="text-sm text-gray-500">Member Since</span>
+            <p className="text-gray-900 font-medium">
+              {new Date(userProfile?.created_at || '').toLocaleDateString()}
+            </p>
+          </div>
         </div>
-      </main>
+      </div>
+
+      {/* Placeholder Content */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Coming Soon</h2>
+        <p className="text-gray-600">
+          Your host dashboard with event management, member lists, and wine selections will be available here soon.
+        </p>
+      </div>
     </div>
   );
 }
