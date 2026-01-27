@@ -132,8 +132,24 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
 
     console.log('[signupHost] Step 5 success: Host profile created');
 
-    // Step 6: Fetch complete user data
-    console.log('[signupHost] Step 6: Fetching complete user data');
+    // Step 6: Auto-enroll host as a member (so they're part of their own club)
+    console.log('[signupHost] Step 6: Creating member profile for host');
+    const { error: memberError } = await supabase
+      .from('members')
+      .insert({
+        user_id: authData.user.id,
+        address: deliveryAddress,
+      });
+
+    if (memberError) {
+      console.error('[signupHost] Step 6 warning: Member profile creation failed:', memberError);
+      // Don't fail the signup, just log the warning - host profile is the primary requirement
+    } else {
+      console.log('[signupHost] Step 6 success: Member profile created for host');
+    }
+
+    // Step 7: Fetch complete user data
+    console.log('[signupHost] Step 7: Fetching complete user data');
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
@@ -141,14 +157,14 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
       .single();
 
     if (userError) {
-      console.error('[signupHost] Step 6 failed: User data fetch error:', userError);
+      console.error('[signupHost] Step 7 failed: User data fetch error:', userError);
       return {
         success: false,
         error: 'Failed to fetch user data',
       };
     }
 
-    console.log('[signupHost] Step 6 success: User data fetched');
+    console.log('[signupHost] Step 7 success: User data fetched');
     console.log('[signupHost] Signup complete!');
 
     return {
@@ -286,6 +302,28 @@ export function generateHostCode(): string {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
+}
+
+export interface DualRoleStatus {
+  hasHostProfile: boolean;
+  hasMemberProfile: boolean;
+  isDualRole: boolean;
+}
+
+export async function checkDualRoleStatus(userId: string, supabase: SupabaseClient): Promise<DualRoleStatus> {
+  const [hostResult, memberResult] = await Promise.all([
+    supabase.from('hosts').select('id').eq('user_id', userId).single(),
+    supabase.from('members').select('id').eq('user_id', userId).single(),
+  ]);
+
+  const hasHostProfile = !!hostResult.data && !hostResult.error;
+  const hasMemberProfile = !!memberResult.data && !memberResult.error;
+
+  return {
+    hasHostProfile,
+    hasMemberProfile,
+    isDualRole: hasHostProfile && hasMemberProfile,
+  };
 }
 
 export async function login(data: LoginData, supabase: SupabaseClient): Promise<LoginResponse> {

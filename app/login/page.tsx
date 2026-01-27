@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormData } from '@/lib/validations/login.schema';
-import { login } from '@/lib/auth';
+import { login, checkDualRoleStatus } from '@/lib/auth';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
@@ -29,14 +29,19 @@ export default function LoginPage() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
-        // User is already logged in, fetch their role and redirect
-        const { data: userData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', user.id)
-          .single();
+        // User is already logged in, check their roles and redirect
+        const dualRoleStatus = await checkDualRoleStatus(user.id, supabase);
 
-        if (userData?.role === 'host') {
+        if (dualRoleStatus.isDualRole) {
+          // For dual-role users, check localStorage for last dashboard preference
+          const lastDashboard = localStorage.getItem('lastDashboard');
+          if (lastDashboard === 'host' || lastDashboard === 'member') {
+            router.replace(`/dashboard/${lastDashboard}`);
+          } else {
+            // Default to host dashboard for dual-role users if no preference
+            router.replace('/dashboard/host');
+          }
+        } else if (dualRoleStatus.hasHostProfile) {
           router.replace('/dashboard/host');
         } else {
           router.replace('/dashboard/member');
@@ -62,8 +67,20 @@ export default function LoginPage() {
       return;
     }
 
-    // Redirect based on role - use replace to avoid back button issues
-    if (response.user?.role === 'host') {
+    // Check dual-role status and redirect appropriately
+    const supabaseForRoleCheck = createClient();
+    const dualRoleStatus = await checkDualRoleStatus(response.user!.id, supabaseForRoleCheck);
+
+    if (dualRoleStatus.isDualRole) {
+      // For dual-role users, check localStorage for last dashboard preference
+      const lastDashboard = localStorage.getItem('lastDashboard');
+      if (lastDashboard === 'host' || lastDashboard === 'member') {
+        router.replace(`/dashboard/${lastDashboard}`);
+      } else {
+        // Default to host dashboard for dual-role users if no preference
+        router.replace('/dashboard/host');
+      }
+    } else if (dualRoleStatus.hasHostProfile) {
       router.replace('/dashboard/host');
     } else {
       router.replace('/dashboard/member');
