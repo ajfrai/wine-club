@@ -26,8 +26,16 @@ export default async function HostDashboardLayout({
     redirect('/dashboard/member');
   }
 
+  // Check if user has payment method
+  const { data: hostData } = await supabase
+    .from('hosts')
+    .select('stripe_customer_id')
+    .eq('user_id', user.id)
+    .single();
+
   const userName = userProfile?.full_name || user.email || 'User';
   const userRole = userProfile?.role || 'host';
+  const hasPaymentMethod = !!hostData?.stripe_customer_id;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light">
@@ -36,6 +44,7 @@ export default async function HostDashboardLayout({
         userRole={userRole}
         isDualRole={dualRoleStatus.isDualRole}
         currentDashboard="host"
+        hasPaymentMethod={hasPaymentMethod}
       />
       <main className="max-w-4xl mx-auto px-4 py-8">
         {children}
