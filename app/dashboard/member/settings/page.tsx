@@ -51,7 +51,14 @@ export default async function SettingsPage() {
 
         {/* Payment Section */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:col-span-2 lg:col-span-1">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h2>
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Payment Method</h2>
+            {!hasPaymentMethod && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                Missing Input
+              </span>
+            )}
+          </div>
           <p className="text-sm text-gray-600 mb-6">
             {hasPaymentMethod
               ? 'You have a payment method on file.'
