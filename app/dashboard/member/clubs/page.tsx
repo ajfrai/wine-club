@@ -102,7 +102,7 @@ export default function ClubsPage() {
           id="radius"
           value={radius}
           onChange={(e) => setRadius(parseInt(e.target.value, 10))}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine"
         >
           <option value={10}>10 miles</option>
           <option value={25}>25 miles</option>
@@ -114,7 +114,7 @@ export default function ClubsPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+          <Loader2 className="w-8 h-8 text-wine animate-spin" />
         </div>
       ) : error ? (
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
