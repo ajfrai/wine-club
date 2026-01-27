@@ -16,7 +16,7 @@ export default function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
+    <aside className="w-64 bg-white border-r border-wine-light min-h-screen">
       <nav className="px-4 py-6 space-y-2">
         {navigation.map((item) => {
           const Icon = item.icon;
@@ -28,8 +28,8 @@ export default function DashboardSidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive
-                  ? 'bg-purple-50 text-purple-700 font-medium'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-wine-light text-wine-dark font-medium'
+                  : 'text-wine-dark hover:bg-wine-light/50'
               }`}
             >
               <Icon className="w-5 h-5" />

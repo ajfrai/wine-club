@@ -78,7 +78,7 @@ export default function EventCard({ event, onRegister, isLoading = false }: Even
             disabled={isLoading || !canRegister}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               canRegister
-                ? 'bg-purple-600 text-white hover:bg-purple-700'
+                ? 'bg-wine text-white hover:bg-wine-dark'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
             }`}
           >
