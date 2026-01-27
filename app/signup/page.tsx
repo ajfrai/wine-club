@@ -6,6 +6,7 @@ import { SignupContainer } from '@/components/signup/SignupContainer';
 import { PaymentSetupStep } from '@/components/signup/PaymentSetupStep';
 import { GoogleMapsProvider } from '@/components/providers/GoogleMapsProvider';
 import { signupHost, signupMember } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/client';
 import type { HostSignupData, MemberSignupData, User } from '@/types/auth.types';
 
 type SignupStep = 'account' | 'payment';
@@ -34,7 +35,8 @@ export default function SignupPage() {
 
     try {
       console.log('[SignupPage] Calling signupHost function');
-      const response = await signupHost(data);
+      const supabase = createClient();
+      const response = await signupHost(data, supabase);
 
       console.log('[SignupPage] signupHost response:', {
         success: response.success,
@@ -77,7 +79,8 @@ export default function SignupPage() {
 
     try {
       console.log('[SignupPage] Calling signupMember function');
-      const response = await signupMember(data);
+      const supabase = createClient();
+      const response = await signupMember(data, supabase);
 
       console.log('[SignupPage] signupMember response:', {
         success: response.success,

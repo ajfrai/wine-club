@@ -53,7 +53,8 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null);
 
-    const response = await login(data);
+    const supabase = createClient();
+    const response = await login(data, supabase);
 
     if (!response.success) {
       setError(response.error || 'Login failed');
