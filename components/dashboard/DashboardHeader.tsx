@@ -14,7 +14,9 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({ userName, userRole, hasPaymentMethod = true }: DashboardHeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const tooltipTimeoutRef = useRef<NodeJS.Timeout>();
   const router = useRouter();
   const supabase = createClient();
 
@@ -23,17 +25,43 @@ export default function DashboardHeader({ userName, userRole, hasPaymentMethod =
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+        setShowTooltip(false);
       }
     }
 
-    if (isDropdownOpen) {
+    if (isDropdownOpen || showTooltip) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, showTooltip]);
+
+  // Auto-hide tooltip after 5 seconds
+  useEffect(() => {
+    if (showTooltip) {
+      tooltipTimeoutRef.current = setTimeout(() => {
+        setShowTooltip(false);
+      }, 5000);
+    }
+
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, [showTooltip]);
+
+  const handleSettingsClick = () => {
+    if (!hasPaymentMethod && !showTooltip) {
+      // On mobile/first tap, show tooltip if payment is missing
+      setShowTooltip(true);
+      return;
+    }
+    setIsDropdownOpen(!isDropdownOpen);
+    setShowTooltip(false);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -54,10 +82,11 @@ export default function DashboardHeader({ userName, userRole, hasPaymentMethod =
           {/* Right side - Gear icon with dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={handleSettingsClick}
               className="relative p-2 rounded-full hover:bg-wine-light transition-colors focus:outline-none focus:ring-2 focus:ring-wine focus:ring-offset-2"
               aria-label="Settings menu"
               aria-expanded={isDropdownOpen}
+              aria-describedby={showTooltip ? "payment-tooltip" : undefined}
               title={!hasPaymentMethod ? "Payment method needed" : "Settings"}
             >
               <Settings className="w-6 h-6 text-wine-dark" />
@@ -69,6 +98,18 @@ export default function DashboardHeader({ userName, userRole, hasPaymentMethod =
                 />
               )}
             </button>
+
+            {/* Payment tooltip */}
+            {showTooltip && !hasPaymentMethod && (
+              <div
+                id="payment-tooltip"
+                className="absolute right-0 mt-2 bg-gray-900 text-white text-sm rounded-lg px-3 py-2 whitespace-nowrap z-20"
+                role="tooltip"
+              >
+                Add a payment method to complete your account setup
+                <div className="absolute bottom-full right-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-l-transparent border-r-transparent border-b-gray-900" />
+              </div>
+            )}
 
             {/* Dropdown menu */}
             {isDropdownOpen && (
