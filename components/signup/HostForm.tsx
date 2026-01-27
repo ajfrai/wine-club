@@ -8,10 +8,8 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Textarea } from '@/components/ui/Textarea';
+import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
 import { HostOnboarding } from './HostOnboarding';
-import { AddressValidationModal } from '@/components/ui/AddressValidationModal';
-import { validateAddressAction } from '@/app/actions/validate-address';
-import type { ValidatedAddress } from '@/lib/usps-address-validation';
 
 interface HostFormProps {
   onSubmit: (data: HostSignupFormData) => Promise<void>;
@@ -23,13 +21,6 @@ type HostFormInputs = HostSignupFormData;
 export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false }) => {
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [showValidationModal, setShowValidationModal] = useState(false);
-  const [validationResult, setValidationResult] = useState<{
-    original: string;
-    validated: ValidatedAddress;
-    field: 'clubAddress' | 'deliveryAddress';
-  } | null>(null);
-  const [isValidating, setIsValidating] = useState(false);
 
   const {
     register,
@@ -67,58 +58,6 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       setShowOnboarding(false);
       setIsTransitioning(false);
     }, 200);
-  };
-
-  const handleAddressValidation = async (
-    addressValue: string,
-    field: 'clubAddress' | 'deliveryAddress'
-  ) => {
-    if (!addressValue || addressValue.trim().length < 10) {
-      return; // Don't validate if address is too short
-    }
-
-    setIsValidating(true);
-    try {
-      const result = await validateAddressAction(addressValue);
-
-      if (result.success && result.validatedAddress) {
-        // Show modal if the validated address is different
-        const originalNormalized = addressValue.trim().replace(/\s+/g, ' ').toLowerCase();
-        const validatedFormatted = [
-          result.validatedAddress.secondaryAddress,
-          result.validatedAddress.streetAddress,
-          `${result.validatedAddress.city}, ${result.validatedAddress.state} ${result.validatedAddress.ZIPCode}${result.validatedAddress.ZIPPlus4 ? `-${result.validatedAddress.ZIPPlus4}` : ''}`,
-        ]
-          .filter(Boolean)
-          .join('\n')
-          .replace(/\s+/g, ' ')
-          .toLowerCase();
-
-        if (originalNormalized !== validatedFormatted) {
-          setValidationResult({
-            original: addressValue,
-            validated: result.validatedAddress,
-            field,
-          });
-          setShowValidationModal(true);
-        }
-      }
-    } catch (error) {
-      console.error('Address validation error:', error);
-    } finally {
-      setIsValidating(false);
-    }
-  };
-
-  const handleAcceptValidatedAddress = (formattedAddress: string) => {
-    if (validationResult) {
-      setValue(validationResult.field, formattedAddress);
-    }
-    setValidationResult(null);
-  };
-
-  const handleRejectValidatedAddress = () => {
-    setValidationResult(null);
   };
 
   if (showOnboarding) {
@@ -180,19 +119,14 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">Club Information</h3>
 
-        <Textarea
+        <AddressAutocomplete
           label="Club Address"
-          placeholder="Enter the address where wine tastings will be held"
-          rows={3}
+          placeholder="Start typing your club address..."
           error={errors.clubAddress?.message}
           required
-          {...register('clubAddress', {
-            onBlur: (e) => handleAddressValidation(e.target.value, 'clubAddress'),
-          })}
+          value={clubAddress}
+          onChange={(value) => setValue('clubAddress', value, { shouldValidate: true })}
         />
-        {isValidating && (
-          <p className="text-sm text-gray-500">Validating address...</p>
-        )}
 
         <Checkbox
           label="Delivery address is the same as club address"
@@ -200,15 +134,13 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
         />
 
         {!sameAsClubAddress && (
-          <Textarea
+          <AddressAutocomplete
             label="Delivery Address"
-            placeholder="Enter the address where wine deliveries should be sent"
-            rows={3}
+            placeholder="Start typing your delivery address..."
             error={errors.deliveryAddress?.message}
             required
-            {...register('deliveryAddress', {
-              onBlur: (e) => handleAddressValidation(e.target.value, 'deliveryAddress'),
-            })}
+            value={watch('deliveryAddress')}
+            onChange={(value) => setValue('deliveryAddress', value, { shouldValidate: true })}
           />
         )}
 
@@ -237,18 +169,6 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       <Button type="submit" isLoading={isLoading} className="w-full">
         Create Host Account
       </Button>
-
-      {/* Address Validation Modal */}
-      {validationResult && (
-        <AddressValidationModal
-          isOpen={showValidationModal}
-          onClose={() => setShowValidationModal(false)}
-          originalAddress={validationResult.original}
-          validatedAddress={validationResult.validated}
-          onAccept={handleAcceptValidatedAddress}
-          onReject={handleRejectValidatedAddress}
-        />
-      )}
     </form>
   );
 };
