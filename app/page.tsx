@@ -1,7 +1,51 @@
+'use client';
+
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export default function Home() {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        // User is already logged in, fetch their role and redirect
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (userData?.role === 'host') {
+          router.replace('/dashboard/host');
+        } else {
+          router.replace('/dashboard/member');
+        }
+      } else {
+        // User is not logged in, show the landing page
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // Show loading while checking auth
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light flex items-center justify-center">
+        <div className="text-wine-dark">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Header />
