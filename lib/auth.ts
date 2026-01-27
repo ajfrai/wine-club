@@ -1,7 +1,7 @@
-import { supabase } from './supabase';
 import type { SignupResponse, HostSignupData, MemberSignupData, LoginData, LoginResponse } from '@/types/auth.types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-export async function signupHost(data: HostSignupData): Promise<SignupResponse> {
+export async function signupHost(data: HostSignupData, supabase: SupabaseClient): Promise<SignupResponse> {
   try {
     console.log('[signupHost] Starting host signup process');
     console.log('[signupHost] Email:', data.email);
@@ -166,7 +166,7 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
   }
 }
 
-export async function signupMember(data: MemberSignupData): Promise<SignupResponse> {
+export async function signupMember(data: MemberSignupData, supabase: SupabaseClient): Promise<SignupResponse> {
   try {
     console.log('[signupMember] Starting member signup process');
     console.log('[signupMember] Email:', data.email);
@@ -288,7 +288,7 @@ export function generateHostCode(): string {
   return result;
 }
 
-export async function login(data: LoginData): Promise<LoginResponse> {
+export async function login(data: LoginData, supabase: SupabaseClient): Promise<LoginResponse> {
   try {
     console.log('[login] Starting login process');
     console.log('[login] Email:', data.email);
