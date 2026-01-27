@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import PaymentCard from '@/components/dashboard/PaymentCard';
 import ClubsGrid from '@/components/dashboard/ClubsGrid';
 import WinesCarousel from '@/components/dashboard/WinesCarousel';
 import EventsList from '@/components/dashboard/EventsList';
@@ -21,15 +20,6 @@ export default async function MemberDashboardPage() {
     .select('full_name')
     .eq('id', user.id)
     .single();
-
-  // Check if user has payment method (via Stripe customer ID)
-  const { data: hostData } = await supabase
-    .from('hosts')
-    .select('stripe_customer_id')
-    .eq('user_id', user.id)
-    .single();
-
-  const hasPaymentMethod = !!hostData?.stripe_customer_id;
 
   // Fetch user's memberships
   const { data: memberships } = await supabase
@@ -102,9 +92,6 @@ export default async function MemberDashboardPage() {
         </h1>
         <p className="text-gray-600 mt-2">Here's what's happening with your wine clubs.</p>
       </div>
-
-      {/* Payment Status */}
-      <PaymentCard hasPaymentMethod={hasPaymentMethod} />
 
       {/* My Clubs Section */}
       <section>
