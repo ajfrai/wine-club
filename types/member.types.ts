@@ -1,4 +1,4 @@
-import { Host } from './supabase';
+import { Host } from './auth.types';
 
 export interface Member {
   id: string;
