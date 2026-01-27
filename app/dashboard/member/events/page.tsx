@@ -65,7 +65,7 @@ export default function EventsPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+          <Loader2 className="w-8 h-8 text-wine animate-spin" />
         </div>
       ) : error ? (
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">

@@ -27,8 +27,8 @@ export default function PaymentCard({ hasPaymentMethod }: PaymentCardProps) {
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <CreditCard className="w-6 h-6 text-purple-700" />
+          <div className="p-2 bg-wine-light rounded-lg">
+            <CreditCard className="w-6 h-6 text-wine-dark" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">Payment Method</h3>
@@ -43,7 +43,7 @@ export default function PaymentCard({ hasPaymentMethod }: PaymentCardProps) {
         <button
           onClick={handleAddPayment}
           disabled={isLoading}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400"
+          className="flex items-center gap-2 px-4 py-2 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors disabled:bg-gray-400"
         >
           <Plus className="w-4 h-4" />
           {hasPaymentMethod ? 'Update' : 'Add Payment'}

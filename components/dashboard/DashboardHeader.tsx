@@ -1,6 +1,9 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Wine, Settings, LogOut } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 interface DashboardHeaderProps {
@@ -9,8 +12,27 @@ interface DashboardHeaderProps {
 }
 
 export default function DashboardHeader({ userName, userRole }: DashboardHeaderProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const supabase = createClient();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -19,24 +41,46 @@ export default function DashboardHeader({ userName, userRole }: DashboardHeaderP
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <header className="bg-white border-b border-wine-light sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-900">Wine Club</h1>
-            <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 capitalize">
-              {userRole}
-            </span>
-          </div>
+          {/* Left side - Logo */}
+          <Link href="/dashboard/member" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+            <Wine className="w-7 h-7 text-wine" />
+            <span className="text-xl font-semibold text-wine-dark">Wine Club</span>
+          </Link>
 
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-700">Welcome, {userName}</span>
+          {/* Right side - Gear icon with dropdown */}
+          <div className="relative" ref={dropdownRef}>
             <button
-              onClick={handleLogout}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="p-2 rounded-full hover:bg-wine-light transition-colors focus:outline-none focus:ring-2 focus:ring-wine focus:ring-offset-2"
+              aria-label="Settings menu"
+              aria-expanded={isDropdownOpen}
             >
-              Logout
+              <Settings className="w-6 h-6 text-wine-dark" />
             </button>
+
+            {/* Dropdown menu */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-wine-light py-1 z-20">
+                <Link
+                  href="/dashboard/member/settings"
+                  className="flex items-center gap-3 px-4 py-3 text-sm text-wine-dark hover:bg-wine-light transition-colors"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-wine-dark hover:bg-wine-light transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Log out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

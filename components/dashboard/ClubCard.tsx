@@ -50,7 +50,7 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
           className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors disabled:bg-gray-400 ${
             isJoined
               ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              : 'bg-purple-600 text-white hover:bg-purple-700'
+              : 'bg-wine text-white hover:bg-wine-dark'
           }`}
         >
           {isLoading ? 'Loading...' : isJoined ? 'Leave Club' : 'Join Club'}

@@ -26,7 +26,7 @@ export default async function MemberDashboardLayout({
   const userRole = userProfile?.role || 'member';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-sunburst-50">
       <DashboardHeader userName={userName} userRole={userRole} />
       <div className="flex">
         <DashboardSidebar />

@@ -112,7 +112,7 @@ export default async function MemberDashboardPage() {
           <h2 className="text-2xl font-bold text-gray-900">My Clubs</h2>
           <Link
             href="/dashboard/member/clubs"
-            className="text-purple-700 hover:text-purple-800 font-medium"
+            className="text-wine hover:text-wine-dark font-medium"
           >
             Browse All Clubs →
           </Link>
@@ -144,7 +144,7 @@ export default async function MemberDashboardPage() {
             <p className="text-gray-600">You haven't joined any clubs yet.</p>
             <Link
               href="/dashboard/member/clubs"
-              className="inline-block mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="inline-block mt-4 px-6 py-2 bg-wine text-white rounded-lg hover:bg-wine-dark"
             >
               Browse Nearby Clubs
             </Link>
@@ -159,7 +159,7 @@ export default async function MemberDashboardPage() {
             <h2 className="text-2xl font-bold text-gray-900">Clubs Near You</h2>
             <Link
               href="/dashboard/member/clubs"
-              className="text-purple-700 hover:text-purple-800 font-medium"
+              className="text-wine hover:text-wine-dark font-medium"
             >
               View All →
             </Link>
@@ -172,7 +172,7 @@ export default async function MemberDashboardPage() {
               >
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{club.host_name}</h3>
                 <p className="text-sm text-gray-600 mb-1">{club.club_address}</p>
-                <p className="text-sm text-purple-700 font-medium">{club.distance.toFixed(1)} miles away</p>
+                <p className="text-sm text-wine font-medium">{club.distance.toFixed(1)} miles away</p>
               </div>
             ))}
           </div>
@@ -193,7 +193,7 @@ export default async function MemberDashboardPage() {
           <h2 className="text-2xl font-bold text-gray-900">Upcoming Events</h2>
           <Link
             href="/dashboard/member/events"
-            className="text-purple-700 hover:text-purple-800 font-medium"
+            className="text-wine hover:text-wine-dark font-medium"
           >
             View All Events →
           </Link>
