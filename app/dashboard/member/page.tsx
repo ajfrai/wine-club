@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import PaymentCard from '@/components/dashboard/PaymentCard';
 import ClubsGrid from '@/components/dashboard/ClubsGrid';
 import WinesCarousel from '@/components/dashboard/WinesCarousel';
@@ -11,7 +12,7 @@ export default async function MemberDashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    return null;
+    redirect('/login');
   }
 
   // Fetch user's profile

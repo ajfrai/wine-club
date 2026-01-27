@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
 
-export default async function MemberDashboardLayout({
+export default async function HostDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -22,20 +21,20 @@ export default async function MemberDashboardLayout({
     .eq('id', user.id)
     .single();
 
+  // Redirect members to their dashboard
+  if (userProfile?.role === 'member') {
+    redirect('/dashboard/member');
+  }
+
   const userName = userProfile?.full_name || user.email || 'User';
-  const userRole = userProfile?.role || 'member';
+  const userRole = userProfile?.role || 'host';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light">
       <DashboardHeader userName={userName} userRole={userRole} />
-      <div className="flex">
-        <DashboardSidebar />
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </main>
-      </div>
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {children}
+      </main>
     </div>
   );
 }
