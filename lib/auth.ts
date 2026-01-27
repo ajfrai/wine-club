@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { SignupResponse, HostSignupData, MemberSignupData } from '@/types/auth.types';
+import type { SignupResponse, HostSignupData, MemberSignupData, LoginData, LoginResponse } from '@/types/auth.types';
 
 export async function signupHost(data: HostSignupData): Promise<SignupResponse> {
   try {
@@ -260,4 +260,66 @@ export function generateHostCode(): string {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
+}
+
+export async function login(data: LoginData): Promise<LoginResponse> {
+  try {
+    console.log('[login] Starting login process');
+    console.log('[login] Email:', data.email);
+
+    // Step 1: Sign in with Supabase auth
+    console.log('[login] Step 1: Authenticating with Supabase');
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (authError) {
+      console.error('[login] Step 1 failed: Auth error:', authError);
+      return {
+        success: false,
+        error: 'Invalid email or password',
+      };
+    }
+
+    if (!authData.user) {
+      console.error('[login] Step 1 failed: No user returned');
+      return {
+        success: false,
+        error: 'Login failed. Please try again.',
+      };
+    }
+
+    console.log('[login] Step 1 success: User authenticated:', authData.user.id);
+
+    // Step 2: Fetch user profile
+    console.log('[login] Step 2: Fetching user profile');
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', authData.user.id)
+      .single();
+
+    if (userError || !userData) {
+      console.error('[login] Step 2 failed: User profile error:', userError);
+      return {
+        success: false,
+        error: 'Failed to load user profile',
+      };
+    }
+
+    console.log('[login] Step 2 success: User profile loaded');
+    console.log('[login] Login complete!');
+
+    return {
+      success: true,
+      user: userData,
+    };
+  } catch (error) {
+    console.error('[login] Unexpected error during login:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'An unexpected error occurred',
+    };
+  }
 }
