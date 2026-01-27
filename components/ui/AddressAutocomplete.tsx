@@ -55,6 +55,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     suggestions: { status, data },
     setValue,
     clearSuggestions,
+    init,
   } = usePlacesAutocomplete({
     requestOptions: {
       componentRestrictions: { country: 'us' },
@@ -64,12 +65,19 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     initOnMount: false,
   });
 
-  // Initialize when Google Maps is loaded
+  // Initialize the autocomplete when Google Maps is loaded
   useEffect(() => {
-    if (isLoaded) {
-      setValue(externalValue || '', false);
+    if (isLoaded && !ready) {
+      init();
     }
-  }, [isLoaded, externalValue, setValue]);
+  }, [isLoaded, ready, init]);
+
+  // Sync external value when ready
+  useEffect(() => {
+    if (ready && externalValue) {
+      setValue(externalValue, false);
+    }
+  }, [ready, externalValue, setValue]);
 
   // Sync external value
   useEffect(() => {
@@ -142,7 +150,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     return components;
   };
 
-  const isDisabled = disabled || !isLoaded || !!loadError;
+  const isDisabled = disabled || !ready || !!loadError;
   const showSuggestions = status === 'OK' && data.length > 0;
 
   // Fallback to regular input if Google Maps isn't available
@@ -193,7 +201,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         value={value}
         onChange={handleInput}
         disabled={isDisabled}
-        placeholder={isLoaded ? placeholder : 'Loading...'}
+        placeholder={ready ? placeholder : 'Loading...'}
         autoComplete="off"
         className={`
           w-full px-4 py-3 rounded-lg border
