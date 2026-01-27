@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/server';
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -10,6 +10,8 @@ function getStripe() {
 
 export async function POST(req: NextRequest) {
   const stripe = getStripe();
+  const supabase = await createClient();
+
   try {
     const { userId, paymentMethodId } = await req.json();
 
