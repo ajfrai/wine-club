@@ -31,9 +31,6 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   } | null>(null);
   const [isValidating, setIsValidating] = useState(false);
 
-  // Check if test mode is enabled
-  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === 'true';
-
   const {
     register,
     handleSubmit,
@@ -42,17 +39,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
     formState: { errors },
   } = useForm<HostFormInputs>({
     resolver: zodResolver(hostSignupSchema),
-    defaultValues: isTestMode ? {
-      sameAsClubAddress: true,
-      fullName: 'Test Host User',
-      email: `test.host.${Date.now()}@example.com`,
-      password: 'TestPass123!',
-      confirmPassword: 'TestPass123!',
-      clubAddress: '123 Wine Street, Napa, CA 94558',
-      deliveryAddress: '',
-      aboutClub: 'This is a test wine club for development purposes.',
-      winePreferences: 'Pinot Noir, Chardonnay, Bordeaux blends',
-    } : {
+    defaultValues: {
       sameAsClubAddress: false,
       fullName: '',
       email: '',
@@ -60,6 +47,8 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       confirmPassword: '',
       clubAddress: '',
       deliveryAddress: '',
+      aboutClub: '',
+      winePreferences: '',
     },
   });
 

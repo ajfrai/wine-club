@@ -40,6 +40,49 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
 
     console.log('[signupHost] Step 1 success: User created with ID:', authData.user.id);
 
+    // Wait for database trigger to complete with retry logic
+    // The handle_new_user() trigger runs asynchronously after auth user creation
+    console.log('[signupHost] Waiting for database trigger to complete...');
+    let existingProfile = null;
+    let profileCheckError = null;
+    const maxRetries = 10;
+    const retryDelay = 200; // 200ms between retries
+
+    for (let i = 0; i < maxRetries; i++) {
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+
+      const result = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', authData.user.id)
+        .single();
+
+      if (result.data) {
+        existingProfile = result.data;
+        console.log(`[signupHost] Profile found after ${(i + 1) * retryDelay}ms`);
+        break;
+      }
+
+      profileCheckError = result.error;
+      console.log(`[signupHost] Profile not found yet, retry ${i + 1}/${maxRetries}`);
+    }
+
+    if (profileCheckError || !existingProfile) {
+      console.error('[signupHost] User profile not found after signup:', {
+        userId: authData.user.id,
+        error: JSON.stringify(profileCheckError, null, 2),
+        retriesAttempted: maxRetries,
+        totalWaitTime: maxRetries * retryDelay,
+        timestamp: new Date().toISOString()
+      });
+      return {
+        success: false,
+        error: 'Database error: User profile creation failed',
+      };
+    }
+
+    console.log('[signupHost] Profile verified, proceeding to Step 2');
+
     // Step 2: Update user profile with full name
     console.log('[signupHost] Step 2: Updating user profile');
     const { error: profileError } = await supabase
@@ -48,7 +91,7 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
       .eq('id', authData.user.id);
 
     if (profileError) {
-      console.error('[signupHost] Step 2 failed: Profile update error:', profileError);
+      console.error('[signupHost] Step 2 failed:', JSON.stringify(profileError, null, 2));
       return {
         success: false,
         error: 'Failed to update user profile',
@@ -197,6 +240,49 @@ export async function signupMember(data: MemberSignupData): Promise<SignupRespon
 
     console.log('[signupMember] Step 2 success: User created with ID:', authData.user.id);
 
+    // Wait for database trigger to complete with retry logic
+    // The handle_new_user() trigger runs asynchronously after auth user creation
+    console.log('[signupMember] Waiting for database trigger to complete...');
+    let existingProfile = null;
+    let profileCheckError = null;
+    const maxRetries = 10;
+    const retryDelay = 200; // 200ms between retries
+
+    for (let i = 0; i < maxRetries; i++) {
+      await new Promise(resolve => setTimeout(resolve, retryDelay));
+
+      const result = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', authData.user.id)
+        .single();
+
+      if (result.data) {
+        existingProfile = result.data;
+        console.log(`[signupMember] Profile found after ${(i + 1) * retryDelay}ms`);
+        break;
+      }
+
+      profileCheckError = result.error;
+      console.log(`[signupMember] Profile not found yet, retry ${i + 1}/${maxRetries}`);
+    }
+
+    if (profileCheckError || !existingProfile) {
+      console.error('[signupMember] User profile not found after signup:', {
+        userId: authData.user.id,
+        error: JSON.stringify(profileCheckError, null, 2),
+        retriesAttempted: maxRetries,
+        totalWaitTime: maxRetries * retryDelay,
+        timestamp: new Date().toISOString()
+      });
+      return {
+        success: false,
+        error: 'Database error: User profile creation failed',
+      };
+    }
+
+    console.log('[signupMember] Profile verified, proceeding to Step 3');
+
     // Step 3: Update user profile with full name
     console.log('[signupMember] Step 3: Updating user profile');
     const { error: profileError } = await supabase
@@ -205,7 +291,7 @@ export async function signupMember(data: MemberSignupData): Promise<SignupRespon
       .eq('id', authData.user.id);
 
     if (profileError) {
-      console.error('[signupMember] Step 3 failed: Profile update error:', profileError);
+      console.error('[signupMember] Step 3 failed:', JSON.stringify(profileError, null, 2));
       return {
         success: false,
         error: 'Failed to update user profile',
