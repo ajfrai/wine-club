@@ -16,7 +16,7 @@ export default function DashboardHeader({ userName, userRole, hasPaymentMethod =
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const tooltipTimeoutRef = useRef<NodeJS.Timeout>();
+  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
