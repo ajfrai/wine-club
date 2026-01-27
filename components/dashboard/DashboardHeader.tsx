@@ -9,9 +9,10 @@ import { createClient } from '@/lib/supabase/client';
 interface DashboardHeaderProps {
   userName: string;
   userRole: string;
+  hasPaymentMethod?: boolean;
 }
 
-export default function DashboardHeader({ userName, userRole }: DashboardHeaderProps) {
+export default function DashboardHeader({ userName, userRole, hasPaymentMethod = true }: DashboardHeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -54,11 +55,19 @@ export default function DashboardHeader({ userName, userRole }: DashboardHeaderP
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="p-2 rounded-full hover:bg-wine-light transition-colors focus:outline-none focus:ring-2 focus:ring-wine focus:ring-offset-2"
+              className="relative p-2 rounded-full hover:bg-wine-light transition-colors focus:outline-none focus:ring-2 focus:ring-wine focus:ring-offset-2"
               aria-label="Settings menu"
               aria-expanded={isDropdownOpen}
+              title={!hasPaymentMethod ? "Payment method needed" : "Settings"}
             >
               <Settings className="w-6 h-6 text-wine-dark" />
+              {!hasPaymentMethod && (
+                <div
+                  className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full"
+                  role="status"
+                  aria-label="Payment method required"
+                />
+              )}
             </button>
 
             {/* Dropdown menu */}
@@ -66,11 +75,16 @@ export default function DashboardHeader({ userName, userRole }: DashboardHeaderP
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-wine-light py-1 z-20">
                 <Link
                   href="/dashboard/member/settings"
-                  className="flex items-center gap-3 px-4 py-3 text-sm text-wine-dark hover:bg-wine-light transition-colors"
+                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm text-wine-dark hover:bg-wine-light transition-colors"
                   onClick={() => setIsDropdownOpen(false)}
                 >
-                  <Settings className="w-4 h-4" />
-                  Settings
+                  <span className="flex items-center gap-3">
+                    <Settings className="w-4 h-4" />
+                    Settings
+                  </span>
+                  {!hasPaymentMethod && (
+                    <span className="inline-flex w-2 h-2 bg-red-500 rounded-full" aria-label="Payment required" />
+                  )}
                 </Link>
                 <button
                   onClick={handleLogout}
