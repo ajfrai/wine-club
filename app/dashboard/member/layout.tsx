@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
 
 export default async function MemberDashboardLayout({
   children,
@@ -28,14 +27,11 @@ export default async function MemberDashboardLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader userName={userName} userRole={userRole} />
-      <div className="flex">
-        <DashboardSidebar />
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
-        </main>
-      </div>
+      <main className="p-8">
+        <div className="max-w-7xl mx-auto">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
