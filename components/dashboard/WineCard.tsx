@@ -10,7 +10,7 @@ interface WineCardProps {
 export default function WineCard({ wine }: WineCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex-shrink-0 w-80">
-      <div className="relative h-48 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+      <div className="relative h-48 bg-gradient-to-br from-wine-light to-sunburst-100 flex items-center justify-center">
         {wine.image_url ? (
           <img
             src={wine.image_url}
@@ -18,7 +18,7 @@ export default function WineCard({ wine }: WineCardProps) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <WineIcon className="w-16 h-16 text-purple-400" />
+          <WineIcon className="w-16 h-16 text-wine" />
         )}
       </div>
 
@@ -52,9 +52,9 @@ export default function WineCard({ wine }: WineCardProps) {
 
         <div className="flex items-center justify-between pt-3 border-t border-gray-200">
           {wine.price && (
-            <span className="text-lg font-bold text-purple-700">${wine.price.toFixed(2)}</span>
+            <span className="text-lg font-bold text-wine-dark">${wine.price.toFixed(2)}</span>
           )}
-          <button className="px-4 py-2 text-sm font-medium text-purple-700 hover:bg-purple-50 rounded-lg transition-colors">
+          <button className="px-4 py-2 text-sm font-medium text-wine hover:bg-wine-light rounded-lg transition-colors">
             Learn More
           </button>
         </div>
