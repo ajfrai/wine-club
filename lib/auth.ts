@@ -75,8 +75,32 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
 
     console.log('[signupHost] Step 3 success: Host code generated:', hostCodeData);
 
-    // Step 4: Create host profile
-    console.log('[signupHost] Step 4: Creating host profile');
+    // Step 4: Geocode club address
+    console.log('[signupHost] Step 4: Geocoding club address');
+    let latitude = null;
+    let longitude = null;
+
+    try {
+      const geocodeResponse = await fetch('/api/geocode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: data.clubAddress }),
+      });
+
+      if (geocodeResponse.ok) {
+        const geocodeData = await geocodeResponse.json();
+        latitude = geocodeData.latitude;
+        longitude = geocodeData.longitude;
+        console.log('[signupHost] Step 4 success: Address geocoded:', { latitude, longitude });
+      } else {
+        console.log('[signupHost] Step 4 warning: Geocoding failed, continuing without coordinates');
+      }
+    } catch (geocodeError) {
+      console.log('[signupHost] Step 4 warning: Geocoding error, continuing without coordinates:', geocodeError);
+    }
+
+    // Step 5: Create host profile
+    console.log('[signupHost] Step 5: Creating host profile');
     const deliveryAddress = data.sameAsClubAddress
       ? data.clubAddress
       : data.deliveryAddress;
@@ -92,22 +116,24 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
         about_club: data.aboutClub || null,
         wine_preferences: data.winePreferences || null,
         host_code: hostCodeData,
+        latitude: latitude,
+        longitude: longitude,
       })
       .select()
       .single();
 
     if (hostError) {
-      console.error('[signupHost] Step 4 failed: Host profile error:', hostError);
+      console.error('[signupHost] Step 5 failed: Host profile error:', hostError);
       return {
         success: false,
         error: 'Failed to create host profile',
       };
     }
 
-    console.log('[signupHost] Step 4 success: Host profile created');
+    console.log('[signupHost] Step 5 success: Host profile created');
 
-    // Step 5: Fetch complete user data
-    console.log('[signupHost] Step 5: Fetching complete user data');
+    // Step 6: Fetch complete user data
+    console.log('[signupHost] Step 6: Fetching complete user data');
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
@@ -115,14 +141,14 @@ export async function signupHost(data: HostSignupData): Promise<SignupResponse> 
       .single();
 
     if (userError) {
-      console.error('[signupHost] Step 5 failed: User data fetch error:', userError);
+      console.error('[signupHost] Step 6 failed: User data fetch error:', userError);
       return {
         success: false,
         error: 'Failed to fetch user data',
       };
     }
 
-    console.log('[signupHost] Step 5 success: User data fetched');
+    console.log('[signupHost] Step 6 success: User data fetched');
     console.log('[signupHost] Signup complete!');
 
     return {
