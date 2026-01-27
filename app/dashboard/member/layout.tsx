@@ -21,12 +21,20 @@ export default async function MemberDashboardLayout({
     .eq('id', user.id)
     .single();
 
+  // Check if user has payment method
+  const { data: hostData } = await supabase
+    .from('hosts')
+    .select('stripe_customer_id')
+    .eq('user_id', user.id)
+    .single();
+
   const userName = userProfile?.full_name || user.email || 'User';
   const userRole = userProfile?.role || 'member';
+  const hasPaymentMethod = !!hostData?.stripe_customer_id;
 
   return (
     <div className="min-h-screen bg-sunburst-50">
-      <DashboardHeader userName={userName} userRole={userRole} />
+      <DashboardHeader userName={userName} userRole={userRole} hasPaymentMethod={hasPaymentMethod} />
       <main className="p-8">
         <div className="max-w-7xl mx-auto">
           {children}
