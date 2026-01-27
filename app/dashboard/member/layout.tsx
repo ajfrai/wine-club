@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import { checkDualRoleStatus } from '@/lib/auth';
 
 export default async function MemberDashboardLayout({
   children,
@@ -14,12 +15,11 @@ export default async function MemberDashboardLayout({
     redirect('/login');
   }
 
-  // Fetch user profile
-  const { data: userProfile } = await supabase
-    .from('users')
-    .select('full_name, role')
-    .eq('id', user.id)
-    .single();
+  // Fetch user profile and dual-role status
+  const [{ data: userProfile }, dualRoleStatus] = await Promise.all([
+    supabase.from('users').select('full_name, role').eq('id', user.id).single(),
+    checkDualRoleStatus(user.id, supabase),
+  ]);
 
   // Check if user has payment method
   const { data: hostData } = await supabase
@@ -34,7 +34,13 @@ export default async function MemberDashboardLayout({
 
   return (
     <div className="min-h-screen bg-sunburst-50">
-      <DashboardHeader userName={userName} userRole={userRole} hasPaymentMethod={hasPaymentMethod} />
+      <DashboardHeader
+        userName={userName}
+        userRole={userRole}
+        isDualRole={dualRoleStatus.isDualRole}
+        currentDashboard="member"
+        hasPaymentMethod={hasPaymentMethod}
+      />
       <main className="p-8">
         <div className="max-w-7xl mx-auto">
           {children}
