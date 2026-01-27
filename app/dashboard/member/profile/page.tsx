@@ -118,7 +118,7 @@ export default function MemberProfilePage() {
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine"
               placeholder="123 Main St"
             />
           </div>
@@ -134,7 +134,7 @@ export default function MemberProfilePage() {
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine"
                 placeholder="San Francisco"
               />
             </div>
@@ -150,7 +150,7 @@ export default function MemberProfilePage() {
                 onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                 required
                 maxLength={2}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine"
                 placeholder="CA"
               />
             </div>
@@ -166,7 +166,7 @@ export default function MemberProfilePage() {
               value={formData.zip_code}
               onChange={(e) => setFormData({ ...formData, zip_code: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine"
               placeholder="94102"
             />
           </div>
@@ -186,7 +186,7 @@ export default function MemberProfilePage() {
           <button
             type="submit"
             disabled={isSaving}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors disabled:bg-gray-400"
           >
             <Save className="w-5 h-5" />
             {isSaving ? 'Saving...' : 'Save Profile'}
