@@ -56,3 +56,14 @@ export interface PaymentSetupData {
   paymentMethodId: string;
   userId: string;
 }
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  error?: string;
+  user?: User;
+}
