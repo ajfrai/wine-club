@@ -7,7 +7,7 @@ import { personalInfoSchema, type PersonalInfoFormData } from '@/lib/validations
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { AddressAutocomplete, type AddressComponents } from '@/components/ui/AddressAutocomplete';
-import { User, Phone, MapPin, Image as ImageIcon } from 'lucide-react';
+import { User, Phone, MapPin } from 'lucide-react';
 
 interface PersonalInfoFormProps {
   initialData?: Partial<PersonalInfoFormData>;
@@ -35,7 +35,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       full_name: '',
       email: '',
       phone: '',
-      profile_picture_url: '',
       address: '',
       city: '',
       state: '',
@@ -62,7 +61,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           setValue('full_name', info.full_name || '');
           setValue('email', info.email || '');
           setValue('phone', info.phone || '');
-          setValue('profile_picture_url', info.profile_picture_url || '');
           setValue('address', info.address || '');
           setValue('city', info.city || '');
           setValue('state', info.state || '');
@@ -230,23 +228,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             {...register('zip_code')}
           />
         </div>
-      </div>
-
-      {/* Profile Picture Section */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 mb-4">
-          <ImageIcon className="w-5 h-5 text-wine-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Profile Picture</h3>
-        </div>
-
-        <Input
-          label="Profile Picture URL"
-          type="url"
-          placeholder="https://example.com/profile.jpg"
-          error={errors.profile_picture_url?.message}
-          helperText="Enter a URL to your profile picture (file upload coming soon)"
-          {...register('profile_picture_url')}
-        />
       </div>
 
       {/* Submit Button */}
