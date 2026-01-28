@@ -42,20 +42,29 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Optional: Add role-based routing
-    // Fetch user profile to check role and redirect if accessing wrong dashboard
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+    // Check for dual-role status by querying both hosts and members tables
+    const [{ data: hostProfile }, { data: memberProfile }, { data: userData }] = await Promise.all([
+      supabase.from('hosts').select('id').eq('user_id', user.id).single(),
+      supabase.from('members').select('id').eq('user_id', user.id).single(),
+      supabase.from('users').select('role').eq('id', user.id).single(),
+    ]);
 
+    const hasHostProfile = !!hostProfile;
+    const hasMemberProfile = !!memberProfile;
+    const isDualRole = hasHostProfile && hasMemberProfile;
+
+    // Dual-role users can access both dashboards - skip redirects
+    if (isDualRole) {
+      return response;
+    }
+
+    // Single-role users: redirect if accessing wrong dashboard
     if (userData) {
-      // If host trying to access member dashboard, redirect to host dashboard
+      // If host (without member profile) trying to access member dashboard
       if (userData.role === 'host' && request.nextUrl.pathname.startsWith('/dashboard/member')) {
         return NextResponse.redirect(new URL('/dashboard/host', request.url));
       }
-      // If member trying to access host dashboard, redirect to member dashboard
+      // If member (without host profile) trying to access host dashboard
       if (userData.role === 'member' && request.nextUrl.pathname.startsWith('/dashboard/host')) {
         return NextResponse.redirect(new URL('/dashboard/member', request.url));
       }
