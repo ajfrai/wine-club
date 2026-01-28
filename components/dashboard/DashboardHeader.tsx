@@ -63,11 +63,6 @@ export default function DashboardHeader({ userName, userRole, isDualRole = false
   }, [showTooltip]);
 
   const handleSettingsClick = () => {
-    if (!hasPaymentMethod && !showTooltip) {
-      // On mobile/first tap, show tooltip if payment is missing
-      setShowTooltip(true);
-      return;
-    }
     setIsDropdownOpen(!isDropdownOpen);
     setShowTooltip(false);
   };
