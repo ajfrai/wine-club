@@ -200,7 +200,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           onChange={(value) => setValue('address', value)}
           onSelect={handleAddressSelect}
           error={errors.address?.message}
-          helperText="Used to find nearby wine club hosts"
+          helperText="Select an address from the dropdown to set your location"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -209,6 +209,8 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             type="text"
             placeholder="San Francisco"
             error={errors.city?.message}
+            readOnly
+            className="bg-gray-50"
             {...register('city')}
           />
 
@@ -217,6 +219,8 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             type="text"
             placeholder="CA"
             error={errors.state?.message}
+            readOnly
+            className="bg-gray-50"
             {...register('state')}
           />
 
@@ -225,6 +229,8 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             type="text"
             placeholder="94102"
             error={errors.zip_code?.message}
+            readOnly
+            className="bg-gray-50"
             {...register('zip_code')}
           />
         </div>
