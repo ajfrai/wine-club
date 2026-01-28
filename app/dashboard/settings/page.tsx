@@ -19,13 +19,13 @@ export default async function SettingsPage() {
   ]);
 
   // Check if user has payment method (for hosts)
-  const { data: hostData } = await supabase
-    .from('hosts')
-    .select('stripe_customer_id')
-    .eq('user_id', user.id)
+  const { data: userData } = await supabase
+    .from('users')
+    .select('has_payment_method')
+    .eq('id', user.id)
     .single();
 
-  const hasPaymentMethod = !!hostData?.stripe_customer_id;
+  const hasPaymentMethod = !!userData?.has_payment_method;
   const isHost = dualRoleStatus.hasHostProfile;
   const isMember = dualRoleStatus.hasMemberProfile;
 
@@ -102,11 +102,14 @@ export default async function SettingsPage() {
             <p className="text-sm text-gray-600 mb-6">
               {hasPaymentMethod
                 ? 'You have a payment method on file.'
-                : 'Add a payment method to complete your transactions.'}
+                : 'Add a payment method using Apple Pay, Google Pay, or PayPal.'}
             </p>
-            <button className="text-wine hover:text-wine-dark font-medium text-sm">
-              {hasPaymentMethod ? 'Update Payment' : 'Add Payment Method'} →
-            </button>
+            <Link
+              href="/dashboard/settings/payment"
+              className="text-wine hover:text-wine-dark font-medium text-sm"
+            >
+              {hasPaymentMethod ? 'Update Payment Method' : 'Add Payment Method'} →
+            </Link>
           </div>
         )}
       </div>
