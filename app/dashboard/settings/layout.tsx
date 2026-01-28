@@ -23,15 +23,15 @@ export default async function SettingsLayout({
   ]);
 
   // Check if user has payment method (for hosts)
-  const { data: hostData } = await supabase
-    .from('hosts')
+  const { data: userData } = await supabase
+    .from('users')
     .select('stripe_customer_id')
-    .eq('user_id', user.id)
+    .eq('id', user.id)
     .single();
 
   const userName = userProfile?.full_name || user.email || 'User';
   const userRole = userProfile?.role || 'member';
-  const hasPaymentMethod = !!hostData?.stripe_customer_id;
+  const hasPaymentMethod = !!userData?.stripe_customer_id;
 
   // Determine which dashboard context to use (default to user's primary role)
   const currentDashboard: 'host' | 'member' = userRole === 'host' ? 'host' : 'member';
