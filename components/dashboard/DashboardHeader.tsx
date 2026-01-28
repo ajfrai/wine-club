@@ -132,17 +132,21 @@ export default function DashboardHeader({ userName, userRole, isDualRole = false
                   )}
                 </Link>
                 {isDualRole && (
-                  <Link
-                    href={`/dashboard/${currentDashboard === 'host' ? 'member' : 'host'}`}
-                    className="flex items-center gap-3 px-4 py-3 text-sm text-wine-dark hover:bg-wine-light transition-colors border-t border-wine-light"
-                    onClick={() => setIsDropdownOpen(false)}
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      const targetDashboard = currentDashboard === 'host' ? 'member' : 'host';
+                      router.push(`/dashboard/${targetDashboard}`);
+                      router.refresh();
+                    }}
+                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-wine-dark hover:bg-wine-light transition-colors border-t border-wine-light"
                   >
                     <ArrowRightLeft className="w-4 h-4" />
                     <span className="flex flex-col">
-                      <span>Switch to {currentDashboard === 'host' ? 'Member' : 'Host'}</span>
+                      <span>Go to {currentDashboard === 'host' ? 'member' : 'host'} profile</span>
                       <span className="text-xs text-gray-500">Currently: {currentDashboard === 'host' ? 'Host' : 'Member'}</span>
                     </span>
-                  </Link>
+                  </button>
                 )}
                 <button
                   onClick={handleLogout}
