@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import PaymentCard from '@/components/dashboard/PaymentCard';
+import Link from 'next/link';
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -33,9 +34,12 @@ export default async function SettingsPage() {
           <p className="text-sm text-gray-600 mb-6">
             Update your name, email, and other personal information.
           </p>
-          <button className="text-wine hover:text-wine-dark font-medium text-sm">
+          <Link
+            href="/dashboard/member/settings/personal-info"
+            className="text-wine hover:text-wine-dark font-medium text-sm"
+          >
             Edit Personal Info →
-          </button>
+          </Link>
         </div>
 
         {/* Account Settings Section */}
