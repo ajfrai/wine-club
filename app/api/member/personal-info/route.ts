@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Fetch user data
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('id, email, full_name, phone, profile_picture_url')
+      .select('id, email, full_name, phone')
       .eq('id', user.id)
       .single();
 
@@ -74,7 +74,6 @@ export async function PUT(request: NextRequest) {
     const {
       full_name,
       phone,
-      profile_picture_url,
       address,
       city,
       state,
@@ -89,7 +88,6 @@ export async function PUT(request: NextRequest) {
       .update({
         full_name,
         phone,
-        profile_picture_url,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -159,7 +157,7 @@ export async function PUT(request: NextRequest) {
     // Fetch updated data to return
     const { data: updatedUser } = await supabase
       .from('users')
-      .select('id, email, full_name, phone, profile_picture_url')
+      .select('id, email, full_name, phone')
       .eq('id', user.id)
       .single();
 
