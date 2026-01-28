@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import {
+  Elements,
+  PaymentElement,
+  ExpressCheckoutElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
+import type { StripeExpressCheckoutElementConfirmEvent } from '@stripe/stripe-js';
 import { getStripe } from '@/lib/stripe-client';
 import { Button } from '@/components/ui/Button';
 import { CreditCard, Wallet, Check, AlertCircle } from 'lucide-react';
@@ -88,6 +95,60 @@ const PaymentForm: React.FC<{
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showExpressCheckout, setShowExpressCheckout] = useState(true);
+
+  const savePaymentMethod = async (paymentMethodId: string) => {
+    const response = await fetch('/api/stripe/save-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        paymentMethodId,
+      }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to save payment method');
+    }
+  };
+
+  const handleExpressCheckoutConfirm = async (
+    event: StripeExpressCheckoutElementConfirmEvent
+  ) => {
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { error: confirmError, setupIntent } = await stripe.confirmSetup({
+        elements,
+        confirmParams: {
+          return_url: window.location.href,
+        },
+        redirect: 'if_required',
+      });
+
+      if (confirmError) {
+        setError(confirmError.message || 'Failed to setup payment method');
+        setIsLoading(false);
+        return;
+      }
+
+      if (setupIntent?.payment_method) {
+        await savePaymentMethod(setupIntent.payment_method as string);
+        onComplete();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,22 +173,7 @@ const PaymentForm: React.FC<{
       }
 
       if (setupIntent?.payment_method) {
-        const response = await fetch('/api/stripe/save-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId,
-            paymentMethodId: setupIntent.payment_method,
-          }),
-        });
-
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to save payment method');
-        }
-
+        await savePaymentMethod(setupIntent.payment_method as string);
         onComplete();
       }
     } catch (err) {
@@ -138,11 +184,48 @@ const PaymentForm: React.FC<{
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Express Checkout for Apple Pay, Google Pay, PayPal */}
+      {showExpressCheckout && (
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-gray-700">Quick checkout</p>
+          <ExpressCheckoutElement
+            onConfirm={handleExpressCheckoutConfirm}
+            onReady={(event) => {
+              // Hide if no express payment methods are available
+              if (event.availablePaymentMethods === undefined) {
+                setShowExpressCheckout(false);
+              }
+            }}
+            options={{
+              paymentMethods: {
+                applePay: 'always',
+                googlePay: 'always',
+                paypal: 'auto',
+                link: 'auto',
+              },
+            }}
+          />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-4 text-gray-500">or pay with card</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Standard Payment Element */}
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <p className="text-sm text-gray-600 mb-4">
-          Use Apple Pay, Google Pay, or PayPal to add your payment method. Your card will be securely saved for recurring payments.
-        </p>
-        <PaymentElement />
+        <PaymentElement
+          options={{
+            wallets: {
+              applePay: 'never',
+              googlePay: 'never',
+            },
+          }}
+        />
       </div>
 
       {error && (
