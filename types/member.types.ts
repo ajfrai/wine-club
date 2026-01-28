@@ -62,5 +62,7 @@ export interface NearbyClub {
   host_code: string;
   club_address: string;
   about_club: string | null;
+  wine_preferences: string | null;
+  member_count: number;
   distance: number; // miles
 }

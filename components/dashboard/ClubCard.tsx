@@ -1,6 +1,7 @@
 'use client';
 
 import { MapPin, Users } from 'lucide-react';
+import Link from 'next/link';
 import { NearbyClub } from '@/types/member.types';
 
 interface ClubCardProps {
@@ -20,6 +21,11 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
     }
   };
 
+  // Parse wine preferences from comma-separated string
+  const winePreferences = club.wine_preferences
+    ? club.wine_preferences.split(',').map(pref => pref.trim()).filter(Boolean).slice(0, 3)
+    : [];
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
@@ -32,6 +38,24 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
           <span>{club.distance.toFixed(1)} mi</span>
         </div>
       </div>
+
+      <div className="flex items-center gap-1 mb-2 text-sm text-gray-700">
+        <Users className="w-4 h-4 flex-shrink-0" />
+        <span>{club.member_count} {club.member_count === 1 ? 'member' : 'members'}</span>
+      </div>
+
+      {winePreferences.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {winePreferences.map((pref, index) => (
+            <span
+              key={index}
+              className="inline-block px-3 py-1 bg-wine-light text-wine-dark text-xs font-medium rounded-full"
+            >
+              {pref}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-2 mb-4">
         <div className="flex items-start gap-2 text-sm text-gray-700">
@@ -55,9 +79,12 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
         >
           {isLoading ? 'Loading...' : isJoined ? 'Leave Club' : 'Join Club'}
         </button>
-        <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+        <Link
+          href={`/dashboard/member/clubs/${club.host_id}`}
+          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
+        >
           View Details
-        </button>
+        </Link>
       </div>
     </div>
   );
