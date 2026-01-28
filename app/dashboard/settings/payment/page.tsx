@@ -1,6 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { checkDualRoleStatus } from '@/lib/auth';
 import { PaymentSettingsForm } from '@/components/settings/PaymentSettingsForm';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -13,12 +12,7 @@ export default async function PaymentSettingsPage() {
     redirect('/login');
   }
 
-  // Check if user is a host - only hosts need payment settings
-  const dualRoleStatus = await checkDualRoleStatus(user.id, supabase);
-
-  if (!dualRoleStatus.hasHostProfile) {
-    redirect('/dashboard/settings');
-  }
+  // All users need payment settings for club memberships and purchases
 
   return (
     <div className="space-y-6">

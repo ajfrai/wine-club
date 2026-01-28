@@ -24,12 +24,29 @@ export const memberSignupSchema = z.object({
     .or(z.literal('')),
 
   findNearbyHosts: z.boolean(),
+
+  // Optional location fields for when findNearbyHosts is true
+  address: z.string().optional().or(z.literal('')),
+  city: z.string().optional().or(z.literal('')),
+  state: z.string().optional().or(z.literal('')),
+  zip_code: z.string().optional().or(z.literal('')),
+  latitude: z.number().optional().nullable(),
+  longitude: z.number().optional().nullable(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
 }).refine((data) => data.hostCode || data.findNearbyHosts, {
   message: 'Please enter a host code or select find nearby hosts',
   path: ['hostCode'],
+}).refine((data) => {
+  // If findNearbyHosts is true, require location data
+  if (data.findNearbyHosts) {
+    return !!data.address && !!data.latitude && !!data.longitude;
+  }
+  return true;
+}, {
+  message: 'Please select your address to find nearby hosts',
+  path: ['address'],
 });
 
 export type MemberSignupFormData = z.infer<typeof memberSignupSchema>;
