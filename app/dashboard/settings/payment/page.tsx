@@ -33,8 +33,7 @@ export default async function PaymentSettingsPage() {
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">Payment Method</h1>
         <p className="text-gray-600 mt-2">
-          Manage your payment method for wine club transactions. Use Apple Pay, Google Pay, or PayPal for secure payments.
-        </p>
+          Manage your payment method for wine club transactions.</p>
       </div>
 
       {/* Form Card */}
