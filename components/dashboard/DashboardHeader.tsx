@@ -119,7 +119,7 @@ export default function DashboardHeader({ userName, userRole, isDualRole = false
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-wine-light py-1 z-20">
                 <Link
-                  href={`/dashboard/${currentDashboard}/settings`}
+                  href="/dashboard/settings"
                   className="flex items-center justify-between gap-3 px-4 py-3 text-sm text-wine-dark hover:bg-wine-light transition-colors"
                   onClick={() => setIsDropdownOpen(false)}
                 >
