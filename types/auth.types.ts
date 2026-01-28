@@ -43,6 +43,13 @@ export interface MemberSignupData {
   fullName: string;
   hostCode?: string;
   findNearbyHosts: boolean;
+  // Optional location fields for proximity search
+  address?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface SignupResponse {
