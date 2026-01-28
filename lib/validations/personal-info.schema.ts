@@ -14,8 +14,6 @@ export const personalInfoSchema = z.object({
     .optional()
     .or(z.literal('')),
 
-  profile_picture_url: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-
   address: z.string().optional().or(z.literal('')),
   city: z.string().optional().or(z.literal('')),
   state: z.string().optional().or(z.literal('')),
