@@ -3,13 +3,34 @@ import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+  }
+
+  if (!secretKey.startsWith('sk_')) {
+    throw new Error('Invalid STRIPE_SECRET_KEY format - must start with sk_test_ or sk_live_');
+  }
+
+  return new Stripe(secretKey, {
     apiVersion: '2025-12-15.clover',
   });
 }
 
 export async function GET() {
-  const stripe = getStripe();
+  let stripe: Stripe;
+
+  try {
+    stripe = getStripe();
+  } catch (error) {
+    console.error('Stripe initialization error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to initialize Stripe' },
+      { status: 500 }
+    );
+  }
+
   const supabase = await createClient();
 
   try {
@@ -108,6 +129,18 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Get payment method error:', error);
+
+    if (error instanceof Stripe.errors.StripeError) {
+      return NextResponse.json(
+        {
+          error: error.message,
+          type: error.type,
+          code: error.code,
+        },
+        { status: error.statusCode || 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to get payment method' },
       { status: 500 }
