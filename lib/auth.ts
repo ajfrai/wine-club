@@ -148,8 +148,25 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
       console.log('[signupHost] Step 6 success: Member profile created for host');
     }
 
-    // Step 7: Fetch complete user data
-    console.log('[signupHost] Step 7: Fetching complete user data');
+    // Step 7: Add host as a member of their own club
+    console.log('[signupHost] Step 7: Adding host as member of their own club');
+    const { error: membershipError } = await supabase
+      .from('memberships')
+      .insert({
+        member_id: authData.user.id,
+        host_id: authData.user.id,
+        status: 'active',
+      });
+
+    if (membershipError) {
+      console.error('[signupHost] Step 7 warning: Membership creation failed:', membershipError);
+      // Don't fail the signup, just log the warning
+    } else {
+      console.log('[signupHost] Step 7 success: Host added as member of their own club');
+    }
+
+    // Step 8: Fetch complete user data
+    console.log('[signupHost] Step 8: Fetching complete user data');
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
@@ -157,14 +174,14 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
       .single();
 
     if (userError) {
-      console.error('[signupHost] Step 7 failed: User data fetch error:', userError);
+      console.error('[signupHost] Step 8 failed: User data fetch error:', userError);
       return {
         success: false,
         error: 'Failed to fetch user data',
       };
     }
 
-    console.log('[signupHost] Step 7 success: User data fetched');
+    console.log('[signupHost] Step 8 success: User data fetched');
     console.log('[signupHost] Signup complete!');
 
     return {
