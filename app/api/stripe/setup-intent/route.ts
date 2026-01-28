@@ -56,10 +56,15 @@ export async function POST(req: NextRequest) {
         .eq('id', userId);
     }
 
-    // Create setup intent
+    // Create setup intent with wallet payment methods
+    // Apple Pay and Google Pay work through card with wallet detection
+    // PayPal and Link are additional wallet options
     const setupIntent = await stripe.setupIntents.create({
       customer: customerId,
-      payment_method_types: ['card'],
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always',
+      },
     });
 
     return NextResponse.json({
