@@ -77,9 +77,12 @@ export default async function SettingsPage() {
           <p className="text-sm text-gray-600 mb-6">
             Manage your account security, password, and notification preferences.
           </p>
-          <button className="text-wine hover:text-wine-dark font-medium text-sm">
+          <Link
+            href="/dashboard/settings/account"
+            className="text-wine hover:text-wine-dark font-medium text-sm"
+          >
             Manage Account →
-          </button>
+          </Link>
         </div>
 
         {/* Payment Section - Hosts Only */}
