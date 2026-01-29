@@ -53,7 +53,6 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-sunburst-50 to-wine-light">
         <div className="text-center max-w-3xl">
           <Wine className="w-24 h-24 text-wine-dark mx-auto mb-6" />
-          <h1 className="sr-only">Wine Club</h1>
           <p className="text-2xl text-gray-700 mb-4 italic">
             "Wine is sunlight, held together by water."
           </p>
