@@ -56,7 +56,7 @@ export async function GET(
     const { count, error: countError } = await supabase
       .from('memberships')
       .select('*', { count: 'exact', head: true })
-      .eq('host_id', hostId)
+      .eq('host_id', host.id)
       .eq('status', 'active');
 
     if (countError) {
@@ -81,7 +81,7 @@ export async function GET(
     const { data: membership, error: membershipError } = await supabase
       .from('memberships')
       .select('status')
-      .eq('host_id', hostId)
+      .eq('host_id', host.id)
       .eq('member_id', user.id)
       .maybeSingle();
 
