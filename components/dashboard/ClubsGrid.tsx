@@ -121,18 +121,17 @@ export default function ClubsGrid({ initialClubs = [], joinedClubIds = [], onJoi
       {/* Carousel Container */}
       <div className="overflow-hidden" ref={carouselRef}>
         <div
-          className="flex transition-transform duration-500 ease-in-out gap-6"
+          className="flex transition-transform duration-500 ease-in-out"
           style={{
             transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
           }}
         >
-          {clubs.map((club, index) => (
+          {clubs.map((club) => (
             <div
               key={club.host_id}
-              className="flex-shrink-0"
+              className="flex-shrink-0 pr-6"
               style={{
-                width: `calc((100% - ${(visibleCount - 1) * 24}px) / ${visibleCount})`,
-                marginRight: index < clubs.length - 1 ? '24px' : '0',
+                width: `${100 / visibleCount}%`,
               }}
             >
               <ClubCard
