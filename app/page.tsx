@@ -56,7 +56,10 @@ export default function Home() {
             "Wine is sunlight, held together by water."
           </p>
           <p className="text-sm text-gray-500 mb-8">— Galileo Galilei</p>
-          <p className="mt-4 text-lg text-gray-600 mb-12">
+          <p className="mt-4 text-lg text-gray-600 mb-4">
+            Drink Wine, Meet People, Form Community
+          </p>
+          <p className="text-base text-gray-600 mb-12">
             Drink wine with (at least) seven strangers.
           </p>
 
