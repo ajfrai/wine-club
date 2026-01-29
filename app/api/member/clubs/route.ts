@@ -50,9 +50,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Filter out private clubs
+    const publicClubs = (clubs || []).filter((club: any) => club.join_mode !== 'private');
+
     // Fetch wines for all clubs
     const clubsWithWines = await Promise.all(
-      (clubs || []).map(async (club: any) => {
+      publicClubs.map(async (club: any) => {
         const { data: wines, error: winesError } = await supabase
           .from('wines')
           .select('*')
