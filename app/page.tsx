@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Wine } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function Home() {
@@ -51,7 +52,8 @@ export default function Home() {
       <Header />
       <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-sunburst-50 to-wine-light">
         <div className="text-center max-w-3xl">
-          <h1 className="text-6xl font-bold mb-6 text-wine-dark">Wine Club</h1>
+          <Wine className="w-24 h-24 text-wine-dark mx-auto mb-6" />
+          <h1 className="sr-only">Wine Club</h1>
           <p className="text-2xl text-gray-700 mb-4 italic">
             "Wine is sunlight, held together by water."
           </p>

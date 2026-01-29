@@ -35,6 +35,8 @@ export interface HostSignupData {
   sameAsClubAddress: boolean;
   aboutClub?: string;
   winePreferences?: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface MemberSignupData {

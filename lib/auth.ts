@@ -75,28 +75,15 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
 
     console.log('[signupHost] Step 3 success: Host code generated:', hostCodeData);
 
-    // Step 4: Geocode club address
-    console.log('[signupHost] Step 4: Geocoding club address');
-    let latitude = null;
-    let longitude = null;
+    // Step 4: Use provided coordinates (from Google Places autocomplete)
+    console.log('[signupHost] Step 4: Setting club coordinates');
+    const latitude = data.latitude ?? null;
+    const longitude = data.longitude ?? null;
 
-    try {
-      const geocodeResponse = await fetch('/api/geocode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address: data.clubAddress }),
-      });
-
-      if (geocodeResponse.ok) {
-        const geocodeData = await geocodeResponse.json();
-        latitude = geocodeData.latitude;
-        longitude = geocodeData.longitude;
-        console.log('[signupHost] Step 4 success: Address geocoded:', { latitude, longitude });
-      } else {
-        console.log('[signupHost] Step 4 warning: Geocoding failed, continuing without coordinates');
-      }
-    } catch (geocodeError) {
-      console.log('[signupHost] Step 4 warning: Geocoding error, continuing without coordinates:', geocodeError);
+    if (latitude && longitude) {
+      console.log('[signupHost] Step 4 success: Using provided coordinates:', { latitude, longitude });
+    } else {
+      console.log('[signupHost] Step 4 warning: No coordinates provided, club will not appear in discovery');
     }
 
     // Step 5: Create host profile

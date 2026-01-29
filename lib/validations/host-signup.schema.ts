@@ -34,6 +34,9 @@ export const hostSignupSchema = z.object({
   winePreferences: z.string()
     .max(500, 'Wine preferences must be less than 500 characters')
     .optional(),
+
+  latitude: z.number().nullable().optional(),
+  longitude: z.number().nullable().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],

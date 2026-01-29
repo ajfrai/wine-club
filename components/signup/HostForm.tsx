@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Textarea } from '@/components/ui/Textarea';
-import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
+import { AddressAutocomplete, type AddressComponents } from '@/components/ui/AddressAutocomplete';
 import { HostOnboarding } from './HostOnboarding';
 
 interface HostFormProps {
@@ -40,6 +40,8 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       deliveryAddress: '',
       aboutClub: '',
       winePreferences: '',
+      latitude: null,
+      longitude: null,
     },
   });
 
@@ -51,6 +53,12 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       setValue('deliveryAddress', clubAddress);
     }
   }, [sameAsClubAddress, clubAddress, setValue]);
+
+  const handleClubAddressSelect = (addressComponents: AddressComponents) => {
+    setValue('clubAddress', addressComponents.formattedAddress, { shouldValidate: true });
+    setValue('latitude', addressComponents.lat || null);
+    setValue('longitude', addressComponents.lng || null);
+  };
 
   const handleOnboardingComplete = () => {
     setIsTransitioning(true);
@@ -126,6 +134,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
           required
           value={clubAddress}
           onChange={(value) => setValue('clubAddress', value, { shouldValidate: true })}
+          onSelect={handleClubAddressSelect}
         />
 
         <Checkbox
