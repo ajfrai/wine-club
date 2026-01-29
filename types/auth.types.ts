@@ -5,9 +5,6 @@ export interface User {
   email: string;
   role: UserRole;
   full_name: string | null;
-  stripe_customer_id: string | null;
-  has_payment_method: boolean;
-  payment_setup_completed_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -20,6 +17,10 @@ export interface Host {
   about_club: string | null;
   wine_preferences: string | null;
   host_code: string;
+  venmo_username: string | null;
+  paypal_username: string | null;
+  zelle_handle: string | null;
+  accepts_cash: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -57,11 +58,6 @@ export interface SignupResponse {
   error?: string;
   user?: User;
   host?: Host;
-}
-
-export interface PaymentSetupData {
-  paymentMethodId: string;
-  userId: string;
 }
 
 export interface LoginData {
