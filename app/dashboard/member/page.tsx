@@ -36,7 +36,15 @@ export default async function MemberDashboardPage() {
     const hostUserIds = membershipsData.map(m => m.host_id);
     const { data: hosts } = await supabase
       .from('hosts')
-      .select('user_id, host_code, club_address, about_club, latitude, longitude')
+      .select(`
+        user_id,
+        host_code,
+        club_address,
+        about_club,
+        latitude,
+        longitude,
+        user:users!hosts_user_id_fkey(full_name)
+      `)
       .in('user_id', hostUserIds);
 
     const hostMap = new Map(hosts?.map(h => [h.user_id, h]) || []);
@@ -117,18 +125,19 @@ export default async function MemberDashboardPage() {
               if (!host) return null;
 
               return (
-                <div
+                <Link
                   key={membership.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+                  href={`/clubs/${host.host_code}`}
+                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow block"
                 >
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {host.host_code}
+                    {host.user?.full_name}'s Wine Club
                   </h3>
                   <p className="text-sm text-gray-600 mb-4">{host.club_address}</p>
                   {host.about_club && (
                     <p className="text-sm text-gray-600 line-clamp-2">{host.about_club}</p>
                   )}
-                </div>
+                </Link>
               );
             })}
           </div>

@@ -69,37 +69,39 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
     switch (currentSlide) {
       case 'overview':
         return (
-          <div className="space-y-4">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">{club.host_name}</h3>
-                <p className="text-sm text-gray-600 mt-1">Code: {club.host_code}</p>
+          <div className="flex flex-col h-full justify-between">
+            <div className="space-y-4">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{club.host_name}</h3>
+                  <p className="text-sm text-gray-600 mt-1">Code: {club.host_code}</p>
+                </div>
+                <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <MapPin className="w-4 h-4" />
+                  <span>{club.distance.toFixed(1)} mi</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-sm text-gray-600">
-                <MapPin className="w-4 h-4" />
-                <span>{club.distance.toFixed(1)} mi</span>
+
+              <div className="flex items-center gap-1 mb-2 text-sm text-gray-700">
+                <Users className="w-4 h-4 flex-shrink-0" />
+                <span>{club.member_count} {club.member_count === 1 ? 'member' : 'members'}</span>
               </div>
+
+              {winePreferences.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {winePreferences.map((pref, index) => (
+                    <span
+                      key={index}
+                      className="inline-block px-3 py-1 bg-wine-light text-wine-dark text-xs font-medium rounded-full"
+                    >
+                      {pref}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="flex items-center gap-1 mb-2 text-sm text-gray-700">
-              <Users className="w-4 h-4 flex-shrink-0" />
-              <span>{club.member_count} {club.member_count === 1 ? 'member' : 'members'}</span>
-            </div>
-
-            {winePreferences.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {winePreferences.map((pref, index) => (
-                  <span
-                    key={index}
-                    className="inline-block px-3 py-1 bg-wine-light text-wine-dark text-xs font-medium rounded-full"
-                  >
-                    {pref}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2">
               <div className="flex items-start gap-2 text-sm text-gray-700">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <span>{club.club_address}</span>
@@ -150,24 +152,26 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
         ];
 
         return (
-          <div className="space-y-4 h-full flex flex-col">
-            <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
-              <WineIcon className="w-5 h-5 text-wine" />
-              <h3 className="text-lg font-semibold text-gray-900">Featured Wines</h3>
-            </div>
+          <div className="h-full flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
+                <WineIcon className="w-5 h-5 text-wine" />
+                <h3 className="text-lg font-semibold text-gray-900">Featured Wines</h3>
+              </div>
 
-            {/* Hero Wine Image */}
-            <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-              <Image
-                src="https://placehold.co/400x300/8B4049/FFFFFF/png?text=Featured+Wine"
-                alt="Featured Wine"
-                fill
-                className="object-cover"
-              />
+              {/* Hero Wine Image */}
+              <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                <Image
+                  src="https://placehold.co/400x300/8B4049/FFFFFF/png?text=Featured+Wine"
+                  alt="Featured Wine"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
 
             {/* Wine List */}
-            <div className="space-y-2 flex-1">
+            <div className="space-y-2">
               {featuredWines.map((wine, index) => (
                 <div key={index} className="flex gap-3 items-center">
                   <div className="w-8 h-8 bg-wine-light rounded flex items-center justify-center flex-shrink-0">
@@ -213,7 +217,7 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow flex flex-col h-full">
       {/* Slide Content */}
-      <div className="flex-1 min-h-[280px] mb-4">
+      <div className="h-[320px] mb-4 flex flex-col">
         {renderSlide()}
       </div>
 
@@ -268,7 +272,7 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
           {isLoading ? 'Loading...' : isJoined ? 'Leave Club' : 'Join Club'}
         </button>
         <Link
-          href={`/dashboard/member/clubs/${club.host_id}`}
+          href={`/clubs/${club.host_code}`}
           className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center"
         >
           View Details
