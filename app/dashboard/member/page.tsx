@@ -112,15 +112,7 @@ export default async function MemberDashboardPage() {
 
       {/* My Clubs Section */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">My Clubs</h2>
-          <Link
-            href="/dashboard/member/clubs"
-            className="text-wine hover:text-wine-dark font-medium"
-          >
-            Browse All Clubs →
-          </Link>
-        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">My Clubs</h2>
         {memberships && memberships.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {memberships.map((membership) => {
@@ -166,7 +158,7 @@ export default async function MemberDashboardPage() {
               href="/dashboard/member/clubs"
               className="text-wine hover:text-wine-dark font-medium"
             >
-              View All →
+              Browse All Clubs →
             </Link>
           </div>
           <NearbyClubsCarousel
