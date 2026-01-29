@@ -39,7 +39,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ memberships: memberships || [] });
+    // Filter out memberships where host data is null (e.g., if host was deleted)
+    const validMemberships = (memberships || []).filter(m => m.host !== null);
+
+    return NextResponse.json({ memberships: validMemberships });
   } catch (error) {
     console.error('Memberships fetch error:', error);
     return NextResponse.json(
@@ -84,7 +87,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create membership
+    // Check if membership already exists
+    const { data: existingMembership } = await supabase
+      .from('memberships')
+      .select('id, status')
+      .eq('member_id', user.id)
+      .eq('host_id', host_id)
+      .single();
+
+    if (existingMembership) {
+      if (existingMembership.status === 'active') {
+        return NextResponse.json(
+          { error: 'You are already a member of this club' },
+          { status: 400 }
+        );
+      }
+
+      // Reactivate inactive membership
+      const { data: membership, error: updateError } = await supabase
+        .from('memberships')
+        .update({
+          status: 'active',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existingMembership.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('Error reactivating membership:', updateError);
+        return NextResponse.json(
+          { error: 'Failed to rejoin club' },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({ membership });
+    }
+
+    // Create new membership
     const { data: membership, error } = await supabase
       .from('memberships')
       .insert({
@@ -96,13 +137,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      // Check for unique constraint violation
-      if (error.code === '23505') {
-        return NextResponse.json(
-          { error: 'You are already a member of this club' },
-          { status: 400 }
-        );
-      }
       console.error('Error creating membership:', error);
       return NextResponse.json(
         { error: 'Failed to join club' },

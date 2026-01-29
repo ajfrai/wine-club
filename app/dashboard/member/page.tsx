@@ -22,7 +22,7 @@ export default async function MemberDashboardPage() {
     .single();
 
   // Fetch user's memberships
-  const { data: memberships } = await supabase
+  const { data: membershipsData } = await supabase
     .from('memberships')
     .select(`
       *,
@@ -38,6 +38,9 @@ export default async function MemberDashboardPage() {
     .eq('member_id', user.id)
     .eq('status', 'active')
     .limit(3);
+
+  // Filter out memberships where host data is null (e.g., if host was deleted)
+  const memberships = (membershipsData || []).filter(m => m.host !== null);
 
   // Fetch member location for nearby clubs
   const { data: memberProfile } = await supabase
