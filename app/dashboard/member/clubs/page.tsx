@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import ClubsGrid from '@/components/dashboard/ClubsGrid';
 import ClubCardSkeleton from '@/components/dashboard/ClubCardSkeleton';
-import { NearbyClub } from '@/types/member.types';
+import { NearbyClub, Membership } from '@/types/member.types';
 import { MapPin, Wine, Search } from 'lucide-react';
 
 type SortOption = 'distance' | 'members' | 'name';
@@ -12,11 +12,14 @@ type SortOption = 'distance' | 'members' | 'name';
 export default function ClubsPage() {
   const [clubs, setClubs] = useState<NearbyClub[]>([]);
   const [joinedClubIds, setJoinedClubIds] = useState<string[]>([]);
+  const [pendingClubIds, setPendingClubIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [radius, setRadius] = useState<number | null>(5);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('distance');
+  const [joinCode, setJoinCode] = useState('');
+  const [isJoiningWithCode, setIsJoiningWithCode] = useState(false);
 
   // Load radius from localStorage on mount
   useEffect(() => {
@@ -51,14 +54,45 @@ export default function ClubsPage() {
       const membershipsResponse = await fetch('/api/member/memberships');
       if (membershipsResponse.ok) {
         const { memberships } = await membershipsResponse.json();
-        const ids = memberships?.map((m: any) => m.host_id) || [];
-        setJoinedClubIds(ids);
+        const activeIds = memberships?.filter((m: Membership) => m.status === 'active').map((m: Membership) => m.host_id) || [];
+        const pendingIds = memberships?.filter((m: Membership) => m.status === 'pending').map((m: Membership) => m.host_id) || [];
+        setJoinedClubIds(activeIds);
+        setPendingClubIds(pendingIds);
       }
     } catch (error) {
       console.error('Error loading data:', error);
       setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleJoinWithCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!joinCode.trim()) return;
+
+    setIsJoiningWithCode(true);
+    try {
+      const response = await fetch('/api/member/join-with-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ host_code: joinCode.trim().toUpperCase() }),
+      });
+
+      if (response.ok) {
+        const { membership } = await response.json();
+        setJoinedClubIds([...joinedClubIds, membership.host_id]);
+        setJoinCode('');
+        alert('Successfully joined club!');
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to join club');
+      }
+    } catch (error) {
+      console.error('Error joining with code:', error);
+      alert('An unexpected error occurred');
+    } finally {
+      setIsJoiningWithCode(false);
     }
   };
 
@@ -71,7 +105,12 @@ export default function ClubsPage() {
       });
 
       if (response.ok) {
-        setJoinedClubIds([...joinedClubIds, hostId]);
+        const { membership } = await response.json();
+        if (membership.status === 'active') {
+          setJoinedClubIds([...joinedClubIds, hostId]);
+        } else if (membership.status === 'pending') {
+          setPendingClubIds([...pendingClubIds, hostId]);
+        }
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to join club');
@@ -90,6 +129,7 @@ export default function ClubsPage() {
 
       if (response.ok) {
         setJoinedClubIds(joinedClubIds.filter((id) => id !== hostId));
+        setPendingClubIds(pendingClubIds.filter((id) => id !== hostId));
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to leave club');
@@ -140,6 +180,33 @@ export default function ClubsPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Browse Clubs</h1>
         <p className="text-gray-600 mt-2">Find and join wine clubs near you.</p>
+      </div>
+
+      {/* Join with Code */}
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <form onSubmit={handleJoinWithCode}>
+          <label htmlFor="join-code" className="text-sm font-medium text-gray-700">
+            Join a Private Club
+          </label>
+          <div className="flex gap-2 mt-2">
+            <input
+              id="join-code"
+              type="text"
+              placeholder="Enter club code"
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value)}
+              maxLength={8}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine"
+            />
+            <button
+              type="submit"
+              disabled={isJoiningWithCode || !joinCode.trim()}
+              className="px-6 py-2 bg-wine text-white rounded-lg hover:bg-wine-dark disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {isJoiningWithCode ? 'Joining...' : 'Join'}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Search Bar */}
@@ -264,6 +331,7 @@ export default function ClubsPage() {
           <ClubsGrid
             initialClubs={sortedAndFilteredClubs}
             joinedClubIds={joinedClubIds}
+            pendingClubIds={pendingClubIds}
             onJoin={handleJoin}
             onLeave={handleLeave}
           />

@@ -9,6 +9,7 @@ import Image from 'next/image';
 interface ClubCardProps {
   club: NearbyClub;
   isJoined?: boolean;
+  isPending?: boolean;
   onJoin?: (hostId: string) => void;
   onLeave?: (hostId: string) => void;
   isLoading?: boolean;
@@ -16,7 +17,14 @@ interface ClubCardProps {
 
 type SlideType = 'overview' | 'host-note' | 'featured-wines' | 'events';
 
-export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLoading = false }: ClubCardProps) {
+export default function ClubCard({
+  club,
+  isJoined = false,
+  isPending = false,
+  onJoin,
+  onLeave,
+  isLoading = false
+}: ClubCardProps) {
   const [currentSlide, setCurrentSlide] = useState<SlideType>('overview');
   const [autoAdvance, setAutoAdvance] = useState(true);
 
@@ -46,9 +54,27 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
   const handleAction = () => {
     if (isJoined && onLeave) {
       onLeave(club.host_id);
-    } else if (!isJoined && onJoin) {
+    } else if (!isJoined && !isPending && onJoin) {
       onJoin(club.host_id);
     }
+  };
+
+  const getButtonText = () => {
+    if (isLoading) return 'Loading...';
+    if (isPending) return 'Request Pending...';
+    if (isJoined) return 'Leave Club';
+    if (club.join_mode === 'request') return 'Request to Join';
+    return 'Join Club';
+  };
+
+  const getButtonStyle = () => {
+    if (isPending) {
+      return 'bg-gray-300 text-gray-600 cursor-not-allowed';
+    }
+    if (isJoined) {
+      return 'bg-gray-100 text-gray-700 hover:bg-gray-200';
+    }
+    return 'bg-wine text-white hover:bg-wine-dark';
   };
 
   const goToNextSlide = () => {
@@ -267,14 +293,10 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
       <div className="flex gap-2">
         <button
           onClick={handleAction}
-          disabled={isLoading}
-          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors disabled:bg-gray-400 ${
-            isJoined
-              ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              : 'bg-wine text-white hover:bg-wine-dark'
-          }`}
+          disabled={isLoading || isPending}
+          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors disabled:cursor-not-allowed ${getButtonStyle()}`}
         >
-          {isLoading ? 'Loading...' : isJoined ? 'Leave Club' : 'Join Club'}
+          {getButtonText()}
         </button>
         <Link
           href={`/clubs/${club.host_code}`}

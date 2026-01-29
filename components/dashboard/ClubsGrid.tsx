@@ -8,11 +8,18 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface ClubsGridProps {
   initialClubs?: NearbyClub[];
   joinedClubIds?: string[];
+  pendingClubIds?: string[];
   onJoin?: (hostId: string) => Promise<void>;
   onLeave?: (hostId: string) => Promise<void>;
 }
 
-export default function ClubsGrid({ initialClubs = [], joinedClubIds = [], onJoin, onLeave }: ClubsGridProps) {
+export default function ClubsGrid({
+  initialClubs = [],
+  joinedClubIds = [],
+  pendingClubIds = [],
+  onJoin,
+  onLeave
+}: ClubsGridProps) {
   const [clubs, setClubs] = useState<NearbyClub[]>(initialClubs);
   const [loadingClubId, setLoadingClubId] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -137,6 +144,7 @@ export default function ClubsGrid({ initialClubs = [], joinedClubIds = [], onJoi
               <ClubCard
                 club={club}
                 isJoined={joinedClubIds.includes(club.host_id)}
+                isPending={pendingClubIds.includes(club.host_id)}
                 onJoin={handleJoin}
                 onLeave={handleLeave}
                 isLoading={loadingClubId === club.host_id}
