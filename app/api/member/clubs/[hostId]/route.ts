@@ -52,11 +52,11 @@ export async function GET(
       full_name: (hostData.users as any).full_name,
     };
 
-    // Get member count
+    // Get member count - use hostId (user_id) since memberships.host_id references users.id
     const { count, error: countError } = await supabase
       .from('memberships')
       .select('*', { count: 'exact', head: true })
-      .eq('host_id', host.id)
+      .eq('host_id', hostId)
       .eq('status', 'active');
 
     if (countError) {
@@ -77,11 +77,11 @@ export async function GET(
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
 
-    // Check if member has joined this club
+    // Check if member has joined this club - use hostId (user_id) since memberships.host_id references users.id
     const { data: membership, error: membershipError } = await supabase
       .from('memberships')
       .select('status')
-      .eq('host_id', host.id)
+      .eq('host_id', hostId)
       .eq('member_id', user.id)
       .maybeSingle();
 
