@@ -126,12 +126,13 @@ export default function ClubsGrid({ initialClubs = [], joinedClubIds = [], onJoi
             transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
           }}
         >
-          {clubs.map((club) => (
+          {clubs.map((club, index) => (
             <div
               key={club.host_id}
               className="flex-shrink-0"
               style={{
-                width: `calc(${100 / visibleCount}% - ${(visibleCount - 1) * 24 / visibleCount}px)`,
+                width: `calc((100% - ${(visibleCount - 1) * 24}px) / ${visibleCount})`,
+                marginRight: index < clubs.length - 1 ? '24px' : '0',
               }}
             >
               <ClubCard
