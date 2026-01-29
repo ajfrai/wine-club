@@ -60,7 +60,7 @@ export default function DashboardHeader({ userName, userRole, isDualRole = false
           {/* Left side - Logo */}
           <Link href={`/dashboard/${currentDashboard}`} className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <Wine className="w-7 h-7 text-wine" />
-            <span className="text-xl font-semibold text-wine-dark">Wine Club</span>
+            <span className="text-xl font-semibold text-wine-dark">Home</span>
           </Link>
 
           {/* Right side - Gear icon with dropdown */}
