@@ -59,20 +59,20 @@ export default function Home() {
             Drink Wine, Meet People, Form Community
           </p>
 
-          <div className="space-y-4">
+          <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/signup"
-              className="inline-block px-8 py-4 bg-sunburst-600 hover:bg-sunburst-700 text-white text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              className="px-8 py-4 bg-amber-100 hover:bg-amber-200 text-amber-900 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
               Get Started
             </Link>
 
-            <div className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link href="/login" className="text-sunburst-600 hover:text-sunburst-700 font-medium underline">
-                Sign in
-              </Link>
-            </div>
+            <Link
+              href="/login"
+              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 text-slate-900 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              Sign In
+            </Link>
           </div>
         </div>
       </main>
