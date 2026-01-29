@@ -18,8 +18,19 @@ export interface Membership {
   member_id: string;
   host_id: string;
   status: 'active' | 'inactive' | 'pending';
+  request_message?: string | null;
   joined_at: string;
-  host?: Host; // Joined data
+  updated_at: string;
+  host?: {
+    user_id: string;
+    host_code: string;
+    club_address: string;
+    about_club: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    join_mode: 'public' | 'request' | 'private';
+  };
+  host_name?: string;
 }
 
 export interface Wine {
@@ -63,8 +74,23 @@ export interface NearbyClub {
   club_address: string;
   about_club: string | null;
   wine_preferences: string | null;
-  member_count: number;
+  latitude: number;
+  longitude: number;
+  join_mode: 'public' | 'request' | 'private';
   distance: number; // miles
+  member_count: number;
   hero_wine?: Wine | null;
   featured_wines?: Wine[];
+}
+
+export interface PendingRequest {
+  id: string;
+  member_id: string;
+  host_id: string;
+  request_message: string | null;
+  joined_at: string;
+  user: {
+    full_name: string;
+    email: string;
+  };
 }
