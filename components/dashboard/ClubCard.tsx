@@ -71,17 +71,6 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
         return (
           <div className="flex flex-col h-full justify-between">
             <div className="space-y-4">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{club.host_name}</h3>
-                  <p className="text-sm text-gray-600 mt-1">Code: {club.host_code}</p>
-                </div>
-                <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span>{club.distance.toFixed(1)} mi</span>
-                </div>
-              </div>
-
               <div className="flex items-center gap-1 mb-2 text-sm text-gray-700">
                 <Users className="w-4 h-4 flex-shrink-0" />
                 <span>{club.member_count} {club.member_count === 1 ? 'member' : 'members'}</span>
@@ -221,8 +210,20 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow flex flex-col h-full">
+      {/* Club Header - Always Visible */}
+      <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">{club.host_name}</h3>
+          <p className="text-sm text-gray-600 mt-1">Code: {club.host_code}</p>
+        </div>
+        <div className="flex items-center gap-1 text-sm text-gray-600">
+          <MapPin className="w-4 h-4" />
+          <span>{club.distance.toFixed(1)} mi</span>
+        </div>
+      </div>
+
       {/* Slide Content */}
-      <div className="h-[320px] mb-4 flex flex-col">
+      <div className="h-[280px] mb-4 flex flex-col">
         {renderSlide()}
       </div>
 
