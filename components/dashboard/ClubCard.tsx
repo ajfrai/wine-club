@@ -102,13 +102,18 @@ export default function ClubCard({ club, isJoined = false, onJoin, onLeave, isLo
             </div>
 
             <div className="space-y-2">
+              <div className="relative w-full h-20 bg-gray-100 rounded-lg overflow-hidden mb-3">
+                <Image
+                  src="https://placehold.co/200x80/8B4049/FFFFFF/png?text=Club+Logo"
+                  alt="Club Logo"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <div className="flex items-start gap-2 text-sm text-gray-700">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <span>{club.club_address}</span>
               </div>
-              {club.about_club && (
-                <p className="text-sm text-gray-600 line-clamp-2">{club.about_club}</p>
-              )}
             </div>
           </div>
         );
