@@ -15,7 +15,10 @@ export async function GET(request: NextRequest) {
 
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
-    const radius = parseInt(searchParams.get('radius') || '50', 10);
+    const radiusParam = searchParams.get('radius');
+    const isAllClubs = radiusParam === 'all';
+    // Use a very large radius (40,000 miles, roughly Earth's diameter) to return all clubs
+    const radius = isAllClubs ? 40000 : parseInt(radiusParam || '50', 10);
 
     // Get member's location
     const { data: member, error: memberError } = await supabase
@@ -47,7 +50,36 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ clubs: clubs || [] });
+    // Fetch wines for all clubs
+    const clubsWithWines = await Promise.all(
+      (clubs || []).map(async (club: any) => {
+        const { data: wines, error: winesError } = await supabase
+          .from('wines')
+          .select('*')
+          .eq('host_id', club.host_id)
+          .order('is_featured', { ascending: false })
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (winesError) {
+          console.error(`Error fetching wines for club ${club.host_id}:`, winesError);
+        }
+
+        // Find hero wine (most recently featured)
+        const heroWine = wines?.find(w => w.is_featured) || null;
+
+        // Get featured wines (excluding hero)
+        const featuredWines = wines?.filter(w => w.is_featured && w.id !== heroWine?.id).slice(0, 3) || [];
+
+        return {
+          ...club,
+          hero_wine: heroWine,
+          featured_wines: featuredWines,
+        };
+      })
+    );
+
+    return NextResponse.json({ clubs: clubsWithWines });
   } catch (error) {
     console.error('Nearby clubs fetch error:', error);
     return NextResponse.json(

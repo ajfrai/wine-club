@@ -32,19 +32,25 @@ export async function GET(
       );
     }
 
-    // Get host details
-    const { data: host, error: hostError } = await supabase
+    // Get host details - query by user_id since that's what gets passed from the club list
+    const { data: hostData, error: hostError } = await supabase
       .from('hosts')
-      .select('id, user_id, full_name, host_code, club_address, about_club, wine_preferences, latitude, longitude')
-      .eq('id', hostId)
+      .select('id, user_id, host_code, club_address, about_club, wine_preferences, latitude, longitude, users!inner(full_name)')
+      .eq('user_id', hostId)
       .single();
 
-    if (hostError || !host) {
+    if (hostError || !hostData) {
       return NextResponse.json(
         { error: 'Club not found' },
         { status: 404 }
       );
     }
+
+    // Extract the full_name from the joined users table
+    const host = {
+      ...hostData,
+      full_name: (hostData.users as any).full_name,
+    };
 
     // Get member count
     const { count, error: countError } = await supabase
@@ -79,8 +85,27 @@ export async function GET(
       .eq('member_id', user.id)
       .maybeSingle();
 
+    // Get wines for this host
+    const { data: wines, error: winesError } = await supabase
+      .from('wines')
+      .select('*')
+      .eq('host_id', hostId)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (winesError) {
+      console.error('Error fetching wines:', winesError);
+    }
+
+    // Find hero wine (most recently featured)
+    const heroWine = wines?.find(w => w.is_featured) || null;
+
+    // Get featured wines (excluding hero)
+    const featuredWines = wines?.filter(w => w.is_featured && w.id !== heroWine?.id).slice(0, 3) || [];
+
     const club = {
-      host_id: host.id,
+      host_id: host.user_id, // Return user_id as host_id for consistency with the club list API
       host_name: host.full_name,
       host_code: host.host_code,
       club_address: host.club_address,
@@ -89,6 +114,8 @@ export async function GET(
       member_count: count || 0,
       distance: distance,
       is_joined: membership?.status === 'active',
+      hero_wine: heroWine,
+      featured_wines: featuredWines,
     };
 
     return NextResponse.json({ club });
