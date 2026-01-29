@@ -32,25 +32,31 @@ export async function GET(
       );
     }
 
-    // Get host details
-    const { data: host, error: hostError } = await supabase
+    // Get host details - query by user_id since that's what gets passed from the club list
+    const { data: hostData, error: hostError } = await supabase
       .from('hosts')
-      .select('id, user_id, full_name, host_code, club_address, about_club, wine_preferences, latitude, longitude')
-      .eq('id', hostId)
+      .select('id, user_id, host_code, club_address, about_club, wine_preferences, latitude, longitude, users!inner(full_name)')
+      .eq('user_id', hostId)
       .single();
 
-    if (hostError || !host) {
+    if (hostError || !hostData) {
       return NextResponse.json(
         { error: 'Club not found' },
         { status: 404 }
       );
     }
 
+    // Extract the full_name from the joined users table
+    const host = {
+      ...hostData,
+      full_name: (hostData.users as any).full_name,
+    };
+
     // Get member count
     const { count, error: countError } = await supabase
       .from('memberships')
       .select('*', { count: 'exact', head: true })
-      .eq('host_id', hostId)
+      .eq('host_id', host.id)
       .eq('status', 'active');
 
     if (countError) {
@@ -75,12 +81,12 @@ export async function GET(
     const { data: membership, error: membershipError } = await supabase
       .from('memberships')
       .select('status')
-      .eq('host_id', hostId)
+      .eq('host_id', host.id)
       .eq('member_id', user.id)
       .maybeSingle();
 
     const club = {
-      host_id: host.id,
+      host_id: host.user_id, // Return user_id as host_id for consistency with the club list API
       host_name: host.full_name,
       host_code: host.host_code,
       club_address: host.club_address,
