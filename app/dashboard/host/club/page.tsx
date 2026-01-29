@@ -1,9 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Users, MapPin, Wine, Copy, Settings } from 'lucide-react';
+import { Users, MapPin, Wine, Settings } from 'lucide-react';
 import { PaymentHandlesForm } from '@/components/settings/PaymentHandlesForm';
 import { CopyHostCode } from '@/components/host/CopyHostCode';
+import { PendingRequestsCard } from '@/components/host/PendingRequestsCard';
+import { PrivacySettingsCard } from '@/components/host/PrivacySettingsCard';
 
 export default async function HostClubPage() {
   const supabase = await createClient();
@@ -27,6 +29,7 @@ export default async function HostClubPage() {
       paypal_username,
       zelle_handle,
       accepts_cash,
+      join_mode,
       created_at
     `)
     .eq('user_id', user.id)
@@ -50,6 +53,30 @@ export default async function HostClubPage() {
     .eq('host_id', user.id)
     .eq('status', 'active');
 
+  // Fetch pending requests count
+  const { count: pendingCount } = await supabase
+    .from('memberships')
+    .select('*', { count: 'exact', head: true })
+    .eq('host_id', user.id)
+    .eq('status', 'pending');
+
+  // Fetch pending requests with user details
+  const { data: pendingRequests } = await supabase
+    .from('memberships')
+    .select(`
+      id,
+      request_message,
+      joined_at,
+      users:member_id (
+        id,
+        full_name,
+        email
+      )
+    `)
+    .eq('host_id', user.id)
+    .eq('status', 'pending')
+    .order('joined_at', { ascending: false });
+
   // Fetch member list
   const { data: members } = await supabase
     .from('memberships')
@@ -67,6 +94,19 @@ export default async function HostClubPage() {
     .order('created_at', { ascending: false });
 
   const clubName = userData?.full_name ? `${userData.full_name}'s Wine Club` : 'Your Wine Club';
+
+  // Get join mode label
+  const joinModeLabels = {
+    public: 'Anyone Can Join',
+    request: 'Approval Required',
+    private: 'Invite Only',
+  };
+  const joinModeLabel = joinModeLabels[hostData.join_mode as keyof typeof joinModeLabels] || 'Unknown';
+
+  // Get host code description based on join mode
+  const hostCodeDescription = hostData.join_mode === 'private'
+    ? 'Your private join code (share with people you want to invite)'
+    : 'Your club code (shown on public page)';
 
   return (
     <div className="space-y-8">
@@ -101,7 +141,12 @@ export default async function HostClubPage() {
                   </code>
                   <CopyHostCode hostCode={hostData.host_code} />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Share this code with people you want to join your club</p>
+                <p className="text-xs text-gray-500 mt-1">{hostCodeDescription}</p>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-500">Privacy Setting</label>
+                <p className="text-gray-900 font-medium">{joinModeLabel}</p>
               </div>
 
               <div className="flex items-start gap-3">
@@ -131,6 +176,9 @@ export default async function HostClubPage() {
             </div>
           </div>
 
+          {/* Privacy Settings Card */}
+          <PrivacySettingsCard currentJoinMode={hostData.join_mode} />
+
           {/* Payment Settings Card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Settings</h2>
@@ -152,6 +200,14 @@ export default async function HostClubPage() {
             <p className="text-3xl font-bold text-wine">{memberCount || 0}</p>
             <p className="text-sm text-gray-500">active members</p>
           </div>
+
+          {/* Pending Requests Card */}
+          {hostData.join_mode === 'request' && (
+            <PendingRequestsCard
+              pendingRequests={pendingRequests || []}
+              pendingCount={pendingCount || 0}
+            />
+          )}
 
           {/* Member List Card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
