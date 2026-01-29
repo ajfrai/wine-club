@@ -13,20 +13,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch memberships with joined host data
+    // Fetch memberships for this user
     const { data: memberships, error } = await supabase
       .from('memberships')
-      .select(`
-        *,
-        host:hosts!memberships_host_id_fkey(
-          user_id,
-          host_code,
-          club_address,
-          about_club,
-          latitude,
-          longitude
-        )
-      `)
+      .select('*')
       .eq('member_id', user.id)
       .eq('status', 'active')
       .order('joined_at', { ascending: false });
@@ -39,10 +29,39 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Filter out memberships where host data is null (e.g., if host was deleted)
-    const validMemberships = (memberships || []).filter(m => m.host !== null);
+    if (!memberships || memberships.length === 0) {
+      return NextResponse.json({ memberships: [] });
+    }
 
-    return NextResponse.json({ memberships: validMemberships });
+    // Get the host_ids (which are user_ids in the memberships table)
+    const hostUserIds = memberships.map(m => m.host_id);
+
+    // Fetch hosts where user_id matches the membership host_ids
+    const { data: hosts, error: hostsError } = await supabase
+      .from('hosts')
+      .select('user_id, host_code, club_address, about_club, latitude, longitude')
+      .in('user_id', hostUserIds);
+
+    if (hostsError) {
+      console.error('Error fetching hosts:', hostsError);
+      return NextResponse.json(
+        { error: 'Failed to fetch host data' },
+        { status: 500 }
+      );
+    }
+
+    // Create a map of host_id (user_id) to host data for quick lookup
+    const hostMap = new Map(hosts?.map(h => [h.user_id, h]) || []);
+
+    // Combine memberships with host data
+    const membershipsWithHosts = memberships
+      .map(m => ({
+        ...m,
+        host: hostMap.get(m.host_id) || null,
+      }))
+      .filter(m => m.host !== null);
+
+    return NextResponse.json({ memberships: membershipsWithHosts });
   } catch (error) {
     console.error('Memberships fetch error:', error);
     return NextResponse.json(

@@ -24,23 +24,26 @@ export default async function MemberDashboardPage() {
   // Fetch user's memberships
   const { data: membershipsData } = await supabase
     .from('memberships')
-    .select(`
-      *,
-      host:hosts!memberships_host_id_fkey(
-        user_id,
-        host_code,
-        club_address,
-        about_club,
-        latitude,
-        longitude
-      )
-    `)
+    .select('*')
     .eq('member_id', user.id)
     .eq('status', 'active')
+    .order('joined_at', { ascending: false })
     .limit(3);
 
-  // Filter out memberships where host data is null (e.g., if host was deleted)
-  const memberships = (membershipsData || []).filter(m => m.host !== null);
+  // Fetch hosts for these memberships (memberships.host_id references users.id, not hosts.id)
+  let memberships: any[] = [];
+  if (membershipsData && membershipsData.length > 0) {
+    const hostUserIds = membershipsData.map(m => m.host_id);
+    const { data: hosts } = await supabase
+      .from('hosts')
+      .select('user_id, host_code, club_address, about_club, latitude, longitude')
+      .in('user_id', hostUserIds);
+
+    const hostMap = new Map(hosts?.map(h => [h.user_id, h]) || []);
+    memberships = membershipsData
+      .map(m => ({ ...m, host: hostMap.get(m.host_id) || null }))
+      .filter(m => m.host !== null);
+  }
 
   // Fetch member location for nearby clubs
   const { data: memberProfile } = await supabase
