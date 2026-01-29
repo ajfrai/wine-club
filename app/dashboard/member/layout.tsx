@@ -21,16 +21,8 @@ export default async function MemberDashboardLayout({
     checkDualRoleStatus(user.id, supabase),
   ]);
 
-  // Check if user has payment method
-  const { data: userData } = await supabase
-    .from('users')
-    .select('has_payment_method')
-    .eq('id', user.id)
-    .single();
-
   const userName = userProfile?.full_name || user.email || 'User';
   const userRole = userProfile?.role || 'member';
-  const hasPaymentMethod = !!userData?.has_payment_method;
 
   return (
     <div className="min-h-screen bg-sunburst-50">
@@ -39,7 +31,6 @@ export default async function MemberDashboardLayout({
         userRole={userRole}
         isDualRole={dualRoleStatus.isDualRole}
         currentDashboard="member"
-        hasPaymentMethod={hasPaymentMethod}
       />
       <main className="p-8">
         <div className="max-w-7xl mx-auto">

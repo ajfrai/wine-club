@@ -35,7 +35,7 @@ export async function GET(
     // Get host details - query by user_id since that's what gets passed from the club list
     const { data: hostData, error: hostError } = await supabase
       .from('hosts')
-      .select('id, user_id, host_code, club_address, about_club, wine_preferences, latitude, longitude, users!inner(full_name)')
+      .select('id, user_id, host_code, club_address, about_club, wine_preferences, latitude, longitude, venmo_username, paypal_username, zelle_handle, accepts_cash, users!inner(full_name)')
       .eq('user_id', hostId)
       .single();
 
@@ -116,6 +116,11 @@ export async function GET(
       is_joined: membership?.status === 'active',
       hero_wine: heroWine,
       featured_wines: featuredWines,
+      // Payment handles - only shown to joined members
+      venmo_username: hostData.venmo_username,
+      paypal_username: hostData.paypal_username,
+      zelle_handle: hostData.zelle_handle,
+      accepts_cash: hostData.accepts_cash,
     };
 
     return NextResponse.json({ club });

@@ -4,9 +4,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, MapPin, Users, Wine, Loader2 } from 'lucide-react';
 import { NearbyClub } from '@/types/member.types';
+import { PaymentOptions } from '@/components/member/PaymentOptions';
 
 interface ClubDetails extends NearbyClub {
   is_joined: boolean;
+  venmo_username: string | null;
+  paypal_username: string | null;
+  zelle_handle: string | null;
+  accepts_cash: boolean;
 }
 
 export default function ClubDetailsPage() {
@@ -209,6 +214,16 @@ export default function ClubDetailsPage() {
               </p>
             )}
           </div>
+
+          {/* Payment Options - Only shown for joined members */}
+          {club.is_joined && (
+            <PaymentOptions
+              venmoUsername={club.venmo_username}
+              paypalUsername={club.paypal_username}
+              zelleHandle={club.zelle_handle}
+              acceptsCash={club.accepts_cash}
+            />
+          )}
         </div>
       </div>
     </div>
