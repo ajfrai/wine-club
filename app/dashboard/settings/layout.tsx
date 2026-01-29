@@ -22,16 +22,8 @@ export default async function SettingsLayout({
     checkDualRoleStatus(user.id, supabase),
   ]);
 
-  // Check if user has payment method (for hosts)
-  const { data: userData } = await supabase
-    .from('users')
-    .select('stripe_customer_id')
-    .eq('id', user.id)
-    .single();
-
   const userName = userProfile?.full_name || user.email || 'User';
   const userRole = userProfile?.role || 'member';
-  const hasPaymentMethod = !!userData?.stripe_customer_id;
 
   // Determine which dashboard context to use (default to user's primary role)
   const currentDashboard: 'host' | 'member' = userRole === 'host' ? 'host' : 'member';
@@ -43,7 +35,6 @@ export default async function SettingsLayout({
         userRole={userRole}
         isDualRole={dualRoleStatus.isDualRole}
         currentDashboard={currentDashboard}
-        hasPaymentMethod={hasPaymentMethod}
       />
       <main className="p-8">
         <div className="max-w-7xl mx-auto">
