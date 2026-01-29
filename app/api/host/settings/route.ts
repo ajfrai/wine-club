@@ -15,7 +15,7 @@ export async function GET() {
 
     const { data: host, error } = await supabase
       .from('hosts')
-      .select('venmo_username, paypal_username, zelle_handle, accepts_cash')
+      .select('venmo_username, paypal_username, zelle_handle, accepts_cash, join_mode')
       .eq('user_id', user.id)
       .single();
 
@@ -57,7 +57,15 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { venmo_username, paypal_username, zelle_handle, accepts_cash } = body;
+    const { venmo_username, paypal_username, zelle_handle, accepts_cash, join_mode } = body;
+
+    // Validate join_mode if provided
+    if (join_mode && !['public', 'request', 'private'].includes(join_mode)) {
+      return NextResponse.json(
+        { error: 'Invalid join mode. Must be: public, request, or private' },
+        { status: 400 }
+      );
+    }
 
     // Validate venmo_username: alphanumeric, underscores, hyphens, 5-30 chars, strip @ prefix
     let cleanedVenmo = venmo_username?.trim() || null;
@@ -103,17 +111,22 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
+    // Build update object with only provided fields
+    const updateData: any = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (venmo_username !== undefined) updateData.venmo_username = cleanedVenmo;
+    if (paypal_username !== undefined) updateData.paypal_username = cleanedPaypal;
+    if (zelle_handle !== undefined) updateData.zelle_handle = cleanedZelle;
+    if (accepts_cash !== undefined) updateData.accepts_cash = accepts_cash ?? false;
+    if (join_mode !== undefined) updateData.join_mode = join_mode;
+
     const { data: host, error } = await supabase
       .from('hosts')
-      .update({
-        venmo_username: cleanedVenmo,
-        paypal_username: cleanedPaypal,
-        zelle_handle: cleanedZelle,
-        accepts_cash: accepts_cash ?? false,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('user_id', user.id)
-      .select('venmo_username, paypal_username, zelle_handle, accepts_cash')
+      .select('venmo_username, paypal_username, zelle_handle, accepts_cash, join_mode')
       .single();
 
     if (error) {
