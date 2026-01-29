@@ -62,14 +62,14 @@ export default function Home() {
           <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/signup"
-              className="px-8 py-4 bg-amber-100 hover:bg-amber-200 text-amber-900 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              className="px-8 py-4 bg-wine hover:bg-wine-dark text-white text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
               Get Started
             </Link>
 
             <Link
               href="/login"
-              className="px-8 py-4 bg-slate-200 hover:bg-slate-300 text-slate-900 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              className="px-8 py-4 bg-wine-light hover:bg-sunburst-200 text-wine-dark text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
               Sign In
             </Link>
