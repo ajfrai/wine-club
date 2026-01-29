@@ -29,13 +29,13 @@ export default async function HostDashboardLayout({
   // Check if user has payment method
   const { data: userData } = await supabase
     .from('users')
-    .select('stripe_customer_id')
+    .select('has_payment_method')
     .eq('id', user.id)
     .single();
 
   const userName = userProfile?.full_name || user.email || 'User';
   const userRole = userProfile?.role || 'host';
-  const hasPaymentMethod = !!userData?.stripe_customer_id;
+  const hasPaymentMethod = !!userData?.has_payment_method;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light">
