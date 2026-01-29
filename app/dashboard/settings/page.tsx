@@ -85,33 +85,31 @@ export default async function SettingsPage() {
           </Link>
         </div>
 
-        {/* Payment Section - Hosts Only */}
-        {isHost && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-wine-light rounded-lg">
-                <CreditCard className="w-5 h-5 text-wine" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Payment Method</h2>
-              {!hasPaymentMethod && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                  Required
-                </span>
-              )}
+        {/* Payment Section - All Users */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-wine-light rounded-lg">
+              <CreditCard className="w-5 h-5 text-wine" />
             </div>
-            <p className="text-sm text-gray-600 mb-6">
-              {hasPaymentMethod
-                ? 'You have a payment method on file.'
-                : 'Add a payment method using Apple Pay, Google Pay, or PayPal.'}
-            </p>
-            <Link
-              href="/dashboard/settings/payment"
-              className="text-wine hover:text-wine-dark font-medium text-sm"
-            >
-              {hasPaymentMethod ? 'Update Payment Method' : 'Add Payment Method'} →
-            </Link>
+            <h2 className="text-lg font-semibold text-gray-900">Payment Method</h2>
+            {!hasPaymentMethod && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                Required
+              </span>
+            )}
           </div>
-        )}
+          <p className="text-sm text-gray-600 mb-6">
+            {hasPaymentMethod
+              ? 'You have a payment method on file.'
+              : 'Add a payment method to pay for club memberships and wine purchases.'}
+          </p>
+          <Link
+            href="/dashboard/settings/payment"
+            className="text-wine hover:text-wine-dark font-medium text-sm"
+          >
+            {hasPaymentMethod ? 'Update Payment Method' : 'Add Payment Method'} →
+          </Link>
+        </div>
       </div>
     </div>
   );
