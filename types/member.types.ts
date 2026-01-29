@@ -65,4 +65,6 @@ export interface NearbyClub {
   wine_preferences: string | null;
   member_count: number;
   distance: number; // miles
+  hero_wine?: Wine | null;
+  featured_wines?: Wine[];
 }
