@@ -279,8 +279,33 @@ export async function signupMember(data: MemberSignupData, supabase: SupabaseCli
 
     console.log('[signupMember] Step 3 success: Profile created');
 
-    // Step 4: Fetch complete user data
-    console.log('[signupMember] Step 4: Fetching complete user data');
+    // Step 4: Create member profile with location data if provided
+    if (data.findNearbyHosts && data.address) {
+      console.log('[signupMember] Step 4: Creating member profile with location data');
+      const { error: memberError } = await supabase
+        .from('members')
+        .insert({
+          user_id: authData.user.id,
+          address: data.address,
+          city: data.city || null,
+          state: data.state || null,
+          zip_code: data.zip_code || null,
+          latitude: data.latitude,
+          longitude: data.longitude,
+        });
+
+      if (memberError) {
+        console.error('[signupMember] Step 4 warning: Member profile creation failed:', memberError);
+        // Don't fail the signup, just log the warning
+      } else {
+        console.log('[signupMember] Step 4 success: Member profile created with location');
+      }
+    } else {
+      console.log('[signupMember] Step 4: Skipped member profile creation (no location data)');
+    }
+
+    // Step 5: Fetch complete user data
+    console.log('[signupMember] Step 5: Fetching complete user data');
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
@@ -288,14 +313,14 @@ export async function signupMember(data: MemberSignupData, supabase: SupabaseCli
       .single();
 
     if (userError) {
-      console.error('[signupMember] Step 4 failed: User data fetch error:', userError);
+      console.error('[signupMember] Step 5 failed: User data fetch error:', userError);
       return {
         success: false,
         error: 'Failed to fetch user data',
       };
     }
 
-    console.log('[signupMember] Step 4 success: User data fetched');
+    console.log('[signupMember] Step 5 success: User data fetched');
     console.log('[signupMember] Signup complete!');
 
     return {

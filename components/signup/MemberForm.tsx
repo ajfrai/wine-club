@@ -7,6 +7,7 @@ import { memberSignupSchema, type MemberSignupFormData } from '@/lib/validations
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
+import { AddressAutocomplete, type AddressComponents } from '@/components/ui/AddressAutocomplete';
 import { MemberOnboarding } from './MemberOnboarding';
 
 interface MemberFormProps {
@@ -27,6 +28,8 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
     handleSubmit,
     formState: { errors },
     clearErrors,
+    setValue,
+    watch,
   } = useForm<MemberFormInputs>({
     resolver: zodResolver(memberSignupSchema),
     defaultValues: {
@@ -36,12 +39,40 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
       password: '',
       confirmPassword: '',
       hostCode: '',
+      address: '',
+      city: '',
+      state: '',
+      zip_code: '',
+      latitude: null,
+      longitude: null,
     },
   });
+
+  const addressValue = watch('address');
 
   const handleFindNearbyChange = (checked: boolean) => {
     setUseFindNearby(checked);
     clearErrors('hostCode');
+    if (!checked) {
+      // Clear location fields when unchecking
+      setValue('address', '');
+      setValue('city', '');
+      setValue('state', '');
+      setValue('zip_code', '');
+      setValue('latitude', null);
+      setValue('longitude', null);
+      clearErrors('address');
+    }
+  };
+
+  const handleAddressSelect = (addressComponents: AddressComponents) => {
+    const fullAddress = `${addressComponents.streetNumber} ${addressComponents.route}`.trim();
+    setValue('address', fullAddress || addressComponents.formattedAddress);
+    setValue('city', addressComponents.city);
+    setValue('state', addressComponents.stateCode);
+    setValue('zip_code', addressComponents.postalCode);
+    setValue('latitude', addressComponents.lat || null);
+    setValue('longitude', addressComponents.lng || null);
   };
 
   const handleOnboardingComplete = () => {
@@ -131,8 +162,17 @@ export const MemberForm: React.FC<MemberFormProps> = ({ onSubmit, isLoading = fa
               })}
             />
           ) : (
-            <div className="text-sm text-gray-600 bg-white p-3 rounded border border-gray-200">
-              We'll show you nearby wine clubs after you create your account.
+            <div className="space-y-3">
+              <AddressAutocomplete
+                label="Your Address"
+                placeholder="Start typing your address..."
+                value={addressValue || ''}
+                onChange={(value) => setValue('address', value)}
+                onSelect={handleAddressSelect}
+                error={errors.address?.message}
+                required
+                helperText="We'll use your location to find nearby wine clubs"
+              />
             </div>
           )}
 
