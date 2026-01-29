@@ -14,9 +14,18 @@ export default function ClubsPage() {
   const [joinedClubIds, setJoinedClubIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [radius, setRadius] = useState(5);
+  const [radius, setRadius] = useState<number | null>(5);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('distance');
+
+  // Load radius from localStorage on mount
+  useEffect(() => {
+    const savedRadius = localStorage.getItem('wine-club-radius-filter');
+    if (savedRadius) {
+      const parsedRadius = savedRadius === 'all' ? null : parseInt(savedRadius, 10);
+      setRadius(parsedRadius);
+    }
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -28,7 +37,8 @@ export default function ClubsPage() {
 
     try {
       // Fetch nearby clubs
-      const clubsResponse = await fetch(`/api/member/clubs?radius=${radius}`);
+      const queryParam = radius === null ? 'radius=all' : `radius=${radius}`;
+      const clubsResponse = await fetch(`/api/member/clubs?${queryParam}`);
       if (clubsResponse.ok) {
         const { clubs: fetchedClubs } = await clubsResponse.json();
         setClubs(fetchedClubs || []);
@@ -153,10 +163,17 @@ export default function ClubsPage() {
           </label>
           <select
             id="radius"
-            value={radius}
-            onChange={(e) => setRadius(parseInt(e.target.value, 10))}
+            value={radius === null ? 'all' : radius}
+            onChange={(e) => {
+              const value = e.target.value;
+              const newRadius = value === 'all' ? null : parseInt(value, 10);
+              setRadius(newRadius);
+              // Save to localStorage
+              localStorage.setItem('wine-club-radius-filter', value);
+            }}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-wine"
           >
+            <option value="all">All Clubs</option>
             <option value={5}>5 miles</option>
             <option value={10}>10 miles</option>
             <option value={25}>25 miles</option>
