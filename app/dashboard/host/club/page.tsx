@@ -61,10 +61,12 @@ export default async function HostClubPage() {
     .eq('status', 'pending');
 
   // Fetch pending requests with user details
-  const { data: pendingRequests } = await supabase
+  const { data: rawPendingRequests } = await supabase
     .from('memberships')
     .select(`
       id,
+      member_id,
+      host_id,
       request_message,
       joined_at,
       users:member_id (
@@ -76,6 +78,19 @@ export default async function HostClubPage() {
     .eq('host_id', user.id)
     .eq('status', 'pending')
     .order('joined_at', { ascending: false });
+
+  // Transform to match PendingRequest type
+  const pendingRequests = (rawPendingRequests || []).map((req: any) => ({
+    id: req.id,
+    member_id: req.member_id,
+    host_id: req.host_id,
+    request_message: req.request_message,
+    joined_at: req.joined_at,
+    user: {
+      full_name: req.users?.full_name || 'Unknown',
+      email: req.users?.email || '',
+    },
+  }));
 
   // Fetch member list
   const { data: members } = await supabase
