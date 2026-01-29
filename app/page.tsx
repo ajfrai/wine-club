@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { Header } from '@/components/layout/Header';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Wine } from 'lucide-react';
@@ -49,7 +48,6 @@ export default function Home() {
 
   return (
     <>
-      <Header />
       <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-sunburst-50 to-wine-light">
         <div className="text-center max-w-3xl">
           <Wine className="w-24 h-24 text-wine-dark mx-auto mb-6" />
@@ -57,11 +55,8 @@ export default function Home() {
             "Wine is sunlight, held together by water."
           </p>
           <p className="text-sm text-gray-500 mb-8">— Galileo Galilei</p>
-          <p className="mt-4 text-lg text-gray-600 mb-4">
+          <p className="mt-4 text-lg text-gray-600 mb-12">
             Drink Wine, Meet People, Form Community
-          </p>
-          <p className="text-base text-gray-600 mb-12">
-            Drink wine with (at least) seven strangers.
           </p>
 
           <div className="space-y-4">
