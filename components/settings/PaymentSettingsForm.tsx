@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Elements,
   PaymentElement,
@@ -259,6 +260,7 @@ const PaymentForm: React.FC<{
 };
 
 export const PaymentSettingsForm: React.FC<PaymentSettingsFormProps> = ({ userId }) => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [hasPaymentMethod, setHasPaymentMethod] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
@@ -316,6 +318,8 @@ export const PaymentSettingsForm: React.FC<PaymentSettingsFormProps> = ({ userId
     setClientSecret(null);
     setIsLoading(true);
     fetchPaymentMethod();
+    // Refresh server components to update payment status in header
+    router.refresh();
   };
 
   const handleCancel = () => {
