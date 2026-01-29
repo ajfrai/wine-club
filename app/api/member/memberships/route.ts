@@ -13,12 +13,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch memberships for this user
+    // Fetch memberships for this user (active and pending)
     const { data: memberships, error } = await supabase
       .from('memberships')
       .select('*')
       .eq('member_id', user.id)
-      .eq('status', 'active')
+      .in('status', ['active', 'pending'])
       .order('joined_at', { ascending: false });
 
     if (error) {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     // Fetch hosts where user_id matches the membership host_ids
     const { data: hosts, error: hostsError } = await supabase
       .from('hosts')
-      .select('user_id, host_code, club_address, about_club, latitude, longitude')
+      .select('user_id, host_code, club_address, about_club, latitude, longitude, join_mode')
       .in('user_id', hostUserIds);
 
     if (hostsError) {
@@ -50,15 +50,31 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Create a map of host_id (user_id) to host data for quick lookup
+    // Fetch user names for hosts
+    const { data: users, error: usersError } = await supabase
+      .from('users')
+      .select('id, full_name')
+      .in('id', hostUserIds);
+
+    if (usersError) {
+      console.error('Error fetching users:', usersError);
+    }
+
+    // Create maps for quick lookup
     const hostMap = new Map(hosts?.map(h => [h.user_id, h]) || []);
+    const userMap = new Map(users?.map(u => [u.id, u]) || []);
 
     // Combine memberships with host data
     const membershipsWithHosts = memberships
-      .map(m => ({
-        ...m,
-        host: hostMap.get(m.host_id) || null,
-      }))
+      .map(m => {
+        const host = hostMap.get(m.host_id);
+        const user = userMap.get(m.host_id);
+        return {
+          ...m,
+          host: host || null,
+          host_name: user?.full_name || 'Unknown Host',
+        };
+      })
       .filter(m => m.host !== null);
 
     return NextResponse.json({ memberships: membershipsWithHosts });
@@ -83,7 +99,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { host_id } = await request.json();
+    const { host_id, request_message } = await request.json();
 
     if (!host_id) {
       return NextResponse.json(
@@ -92,10 +108,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify host exists
+    // Verify host exists and get join_mode
     const { data: host, error: hostError } = await supabase
       .from('hosts')
-      .select('user_id')
+      .select('user_id, join_mode')
       .eq('user_id', host_id)
       .single();
 
@@ -106,13 +122,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Block direct join for private clubs
+    if (host.join_mode === 'private') {
+      return NextResponse.json(
+        { error: 'This is a private club. Use the club code to join.' },
+        { status: 403 }
+      );
+    }
+
     // Check if membership already exists
     const { data: existingMembership } = await supabase
       .from('memberships')
       .select('id, status')
       .eq('member_id', user.id)
       .eq('host_id', host_id)
-      .single();
+      .maybeSingle();
 
     if (existingMembership) {
       if (existingMembership.status === 'active') {
@@ -121,12 +145,22 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+      if (existingMembership.status === 'pending') {
+        return NextResponse.json(
+          { error: 'You already have a pending request for this club' },
+          { status: 400 }
+        );
+      }
 
       // Reactivate inactive membership
+      // Determine status based on join_mode
+      const newStatus = host.join_mode === 'public' ? 'active' : 'pending';
+
       const { data: membership, error: updateError } = await supabase
         .from('memberships')
         .update({
-          status: 'active',
+          status: newStatus,
+          request_message: host.join_mode === 'request' ? request_message : null,
           updated_at: new Date().toISOString()
         })
         .eq('id', existingMembership.id)
@@ -144,13 +178,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ membership });
     }
 
+    // Determine status based on join_mode
+    const status = host.join_mode === 'public' ? 'active' : 'pending';
+
     // Create new membership
     const { data: membership, error } = await supabase
       .from('memberships')
       .insert({
         member_id: user.id,
         host_id: host_id,
-        status: 'active',
+        status: status,
+        request_message: host.join_mode === 'request' ? request_message : null,
       })
       .select()
       .single();
