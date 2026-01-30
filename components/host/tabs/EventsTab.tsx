@@ -125,7 +125,7 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
           </div>
           <button
             onClick={() => setIsDialogOpen(true)}
-            className="bg-white text-wine hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
+            className="bg-white text-wine-dark hover:bg-wine-light hover:text-wine-dark px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
           >
             <Plus size={20} />
             Create Event
