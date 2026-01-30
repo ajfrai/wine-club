@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
       price,
       max_attendees,
       is_recurring,
+      recurrence_count,
     } = body;
 
     // Validate required fields
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
     const eventsToCreate = [];
     const startDate = new Date(event_date);
     const endDateValue = end_date ? new Date(end_date) : null;
-    const occurrences = is_recurring ? 52 : 1;
+    const occurrences = is_recurring ? (recurrence_count || 12) : 1;
 
     for (let i = 0; i < occurrences; i++) {
       const eventDate = new Date(startDate);
@@ -110,6 +111,7 @@ export async function POST(request: NextRequest) {
         max_attendees: max_attendees ?? null,
         host_id: user.id,
         is_recurring: is_recurring || false,
+        recurrence_count: is_recurring ? (recurrence_count || 12) : null,
         status: 'scheduled',
       });
     }

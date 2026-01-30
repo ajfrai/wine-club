@@ -12,7 +12,7 @@ from .db import WineDatabase
 class KaggleDatasetLoader:
     """Download and process Kaggle Vivino wine dataset."""
 
-    DATASET_NAME = "joshuakalobbowles/vivino-wine-data"
+    DATASET_NAME = "zynicide/wine-reviews"
     RAW_DATA_DIR = Path("data/raw")
 
     def __init__(self, db_path: str = "data/wines.db"):
@@ -113,20 +113,24 @@ class KaggleDatasetLoader:
         """Normalize wine data from CSV row."""
         try:
             # Map CSV columns to our schema
-            # Note: Actual column names depend on the Kaggle dataset structure
-            # This is a best-effort mapping
+            # Wine Reviews columns: country, description, designation, points, price,
+            #                       province, region_1, region_2, variety, winery, title
+
+            # Generate wine_id from index or title
+            wine_id = row.get('') or row.get('Unnamed: 0')  # CSV index column
+
             wine = {
-                'wine_id': row.get('id') or row.get('wine_id'),
-                'name': row.get('name') or row.get('wine_name'),
-                'winery': row.get('winery') or row.get('winery_name'),
-                'region': row.get('region') or row.get('wine_region'),
+                'wine_id': wine_id,
+                'name': row.get('title'),
+                'winery': row.get('winery'),
+                'region': row.get('region_1') or row.get('province'),
                 'country': row.get('country'),
-                'vintage': self._parse_int(row.get('vintage') or row.get('year')),
-                'rating': self._parse_float(row.get('rating') or row.get('average_rating')),
-                'num_reviews': self._parse_int(row.get('num_reviews') or row.get('ratings_count')),
-                'price_usd': self._parse_price(row.get('price') or row.get('price_usd')),
-                'wine_type': self._normalize_wine_type(row.get('type') or row.get('wine_type')),
-                'grapes': row.get('grapes') or row.get('grape_variety') or row.get('varietals')
+                'vintage': self._extract_vintage(row.get('title')),
+                'rating': self._convert_points_to_rating(row.get('points')),
+                'num_reviews': 1,  # Each row is one review
+                'price_usd': self._parse_price(row.get('price')),
+                'wine_type': self._normalize_wine_type(row.get('variety')),
+                'grapes': row.get('variety')
             }
 
             # Validate required fields
@@ -175,18 +179,71 @@ class KaggleDatasetLoader:
 
         value_lower = value.lower().strip()
 
-        if 'red' in value_lower:
+        if 'red' in value_lower or 'tinto' in value_lower:
             return 'red'
-        elif 'white' in value_lower:
+        elif 'white' in value_lower or 'blanco' in value_lower:
             return 'white'
-        elif 'ros' in value_lower or 'rose' in value_lower:
+        elif 'ros' in value_lower or 'rose' in value_lower or 'rosado' in value_lower:
             return 'rosé'
-        elif 'sparkling' in value_lower or 'champagne' in value_lower:
+        elif 'sparkling' in value_lower or 'champagne' in value_lower or 'cava' in value_lower:
             return 'sparkling'
         elif 'dessert' in value_lower or 'fortified' in value_lower:
             return 'dessert'
         else:
-            return value_lower
+            return None  # Unknown type
+
+    def _extract_grapes(self, wine_name: Optional[str]) -> Optional[str]:
+        """Extract grape varietals from wine name."""
+        if not wine_name:
+            return None
+
+        # Common grape varieties
+        grapes = [
+            'Garnacha', 'Tempranillo', 'Cabernet Sauvignon', 'Merlot', 'Pinot Noir',
+            'Chardonnay', 'Sauvignon Blanc', 'Riesling', 'Syrah', 'Shiraz',
+            'Malbec', 'Grenache', 'Sangiovese', 'Nebbiolo', 'Barbera',
+            'Bobal', 'Monastrell', 'Verdejo', 'Albariño', 'Godello'
+        ]
+
+        wine_name_lower = wine_name.lower()
+        found_grapes = []
+
+        for grape in grapes:
+            if grape.lower() in wine_name_lower:
+                found_grapes.append(grape)
+
+        return ', '.join(found_grapes) if found_grapes else None
+
+    def _extract_vintage(self, title: Optional[str]) -> Optional[int]:
+        """Extract vintage year from wine title."""
+        if not title:
+            return None
+
+        import re
+        # Look for 4-digit year (1900-2099)
+        match = re.search(r'\b(19\d{2}|20\d{2})\b', title)
+        if match:
+            return int(match.group(1))
+        return None
+
+    def _convert_points_to_rating(self, points: Any) -> Optional[float]:
+        """Convert wine points (80-100) to rating (1-5)."""
+        if points is None or points == '':
+            return None
+
+        try:
+            points_val = float(points)
+            # Convert 80-100 scale to 1-5 scale
+            # 80-84 → 1.0, 85-89 → 2.0, 90-94 → 3.0, 95-99 → 4.0, 100 → 5.0
+            # More granular: (points - 80) / 4 = rating
+            if points_val < 80:
+                return 1.0
+            elif points_val > 100:
+                return 5.0
+            else:
+                return round((points_val - 80) / 4, 1)
+        except (ValueError, TypeError):
+            return None
 
     def load_into_database(self, batch_size: int = 1000) -> int:
         """Load wines from CSV files into SQLite database."""

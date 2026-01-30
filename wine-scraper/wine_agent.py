@@ -6,15 +6,23 @@ import sys
 from pathlib import Path
 
 from data.loader import KaggleDatasetLoader
+from data.multi_loader import UnifiedWineLoader
 from agent.core import WineAgent
 from themes.presets import get_theme_by_name, get_all_themes, search_themes
 
 
 def cmd_setup(args):
     """Setup: download and load Kaggle dataset."""
-    loader = KaggleDatasetLoader(args.db)
-    success = loader.setup()
-    sys.exit(0 if success else 1)
+    if args.all:
+        # Load all datasets
+        loader = UnifiedWineLoader(args.db)
+        total = loader.load_all_datasets()
+        sys.exit(0 if total > 0 else 1)
+    else:
+        # Legacy: single dataset
+        loader = KaggleDatasetLoader(args.db)
+        success = loader.setup()
+        sys.exit(0 if success else 1)
 
 
 def cmd_select(args):
@@ -180,6 +188,7 @@ def main():
         'setup',
         help='Download Kaggle dataset and setup database'
     )
+    setup_parser.add_argument('--all', action='store_true', help='Load all available datasets (recommended)')
     setup_parser.set_defaults(func=cmd_setup)
 
     # Select command

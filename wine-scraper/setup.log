@@ -1,0 +1,32 @@
+=== Wine Agent Setup ===
+
+Kaggle CLI found: Kaggle API 1.7.4.5
+Kaggle credentials found at /home/abraham/.kaggle/kaggle.json
+Downloading dataset: joshuakalobbowles/vivino-wine-data
+This may take several minutes (dataset is 1-2GB)...
+Dataset downloaded successfully
+Dataset URL: https://www.kaggle.com/datasets/joshuakalobbowles/vivino-wine-data
+License(s): unknown
+Downloading vivino-wine-data.zip to data/raw
+
+
+
+Loading wines into database...
+Found 1 CSV file(s)
+Processing vivino.csv...
+  Parsed 0 wines
+Total wines inserted: 0
+Traceback (most recent call last):
+  File "/home/abraham/wine-club/wine-scraper/wine_agent.py", line 245, in <module>
+    main()
+  File "/home/abraham/wine-club/wine-scraper/wine_agent.py", line 241, in main
+    args.func(args)
+  File "/home/abraham/wine-club/wine-scraper/wine_agent.py", line 16, in cmd_setup
+    success = loader.setup()
+  File "/home/abraham/wine-club/wine-scraper/data/loader.py", line 267, in setup
+    inserted = self.load_into_database()
+  File "/home/abraham/wine-club/wine-scraper/data/loader.py", line 232, in load_into_database
+    stats = self.db.get_statistics()
+  File "/home/abraham/wine-club/wine-scraper/data/db.py", line 228, in get_statistics
+    stats['avg_rating'] = round(cursor.fetchone()['avg'], 2)
+TypeError: type NoneType doesn't define __round__ method

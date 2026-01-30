@@ -36,7 +36,7 @@ class WineDatabase:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS wines (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                wine_id TEXT UNIQUE,
+                wine_id TEXT,
                 name TEXT NOT NULL,
                 winery TEXT,
                 region TEXT,
@@ -47,7 +47,9 @@ class WineDatabase:
                 price_usd REAL,
                 wine_type TEXT,
                 grapes TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                source TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(wine_id, source)
             )
         """)
 
@@ -91,7 +93,7 @@ class WineDatabase:
 
         self.conn.commit()
 
-    def insert_wines(self, wines: List[Dict[str, Any]]) -> int:
+    def insert_wines(self, wines: List[Dict[str, Any]], source: str = "unknown") -> int:
         """Bulk insert wines into database."""
         if not self.conn:
             self.connect()
@@ -104,8 +106,8 @@ class WineDatabase:
                 cursor.execute("""
                     INSERT OR IGNORE INTO wines
                     (wine_id, name, winery, region, country, vintage,
-                     rating, num_reviews, price_usd, wine_type, grapes)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     rating, num_reviews, price_usd, wine_type, grapes, source)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     wine.get('wine_id'),
                     wine.get('name'),
@@ -117,7 +119,8 @@ class WineDatabase:
                     wine.get('num_reviews'),
                     wine.get('price_usd'),
                     wine.get('wine_type'),
-                    wine.get('grapes')
+                    wine.get('grapes'),
+                    wine.get('source', source)
                 ))
                 inserted += cursor.rowcount
             except sqlite3.Error as e:
@@ -225,11 +228,15 @@ class WineDatabase:
 
         # Average rating
         cursor.execute("SELECT AVG(rating) as avg FROM wines WHERE rating IS NOT NULL")
-        stats['avg_rating'] = round(cursor.fetchone()['avg'], 2)
+        avg_result = cursor.fetchone()['avg']
+        stats['avg_rating'] = round(avg_result, 2) if avg_result is not None else 0.0
 
         # Price range
         cursor.execute("SELECT MIN(price_usd) as min, MAX(price_usd) as max FROM wines WHERE price_usd IS NOT NULL")
         row = cursor.fetchone()
-        stats['price_range'] = {'min': row['min'], 'max': row['max']}
+        stats['price_range'] = {
+            'min': row['min'] if row['min'] is not None else 0.0,
+            'max': row['max'] if row['max'] is not None else 0.0
+        }
 
         return stats

@@ -26,6 +26,7 @@ export const EventForm: React.FC<EventFormProps> = ({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -39,6 +40,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       price: defaultValues?.price ?? null,
       max_attendees: defaultValues?.max_attendees ?? null,
       is_recurring: defaultValues?.is_recurring ?? false,
+      recurrence_count: defaultValues?.recurrence_count ?? 12,
     },
   });
 
@@ -159,20 +161,41 @@ export const EventForm: React.FC<EventFormProps> = ({
       </div>
 
       {/* Recurring Event */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <label className="flex items-start gap-3 cursor-pointer">
+      <div className="bg-wine-light/30 border border-wine-light rounded-lg p-4">
+        <label className="flex items-start gap-3 cursor-pointer mb-3">
           <input
             type="checkbox"
             className="mt-1 h-4 w-4 rounded border-gray-300 text-wine focus:ring-wine"
             {...register('is_recurring')}
           />
-          <div>
+          <div className="flex-1">
             <span className="font-medium text-gray-900">Repeat weekly</span>
             <p className="text-sm text-gray-600 mt-1">
-              Create this event every week for the next year (52 events total)
+              Create multiple events repeating every week
             </p>
           </div>
         </label>
+
+        {watch('is_recurring') && (
+          <div className="ml-7">
+            <Input
+              label="Number of occurrences"
+              type="number"
+              min="2"
+              max="104"
+              placeholder="12"
+              error={errors.recurrence_count?.message}
+              helperText="How many weekly events to create (2-104)"
+              {...register('recurrence_count', {
+                setValueAs: (v) => {
+                  if (v === '' || v === null || v === undefined) return 12;
+                  const num = parseInt(v);
+                  return isNaN(num) ? 12 : num;
+                },
+              })}
+            />
+          </div>
+        )}
       </div>
 
       {/* Form Actions */}

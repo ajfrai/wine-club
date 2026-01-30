@@ -20,6 +20,7 @@ interface Event {
   attendee_count: number;
   status: 'scheduled' | 'cancelled' | 'completed';
   is_recurring: boolean;
+  recurrence_count: number | null;
   created_at: string;
 }
 
@@ -303,6 +304,8 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
             wines_theme: editingEvent.wines_theme || '',
             price: editingEvent.price,
             max_attendees: editingEvent.max_attendees,
+            is_recurring: editingEvent.is_recurring,
+            recurrence_count: editingEvent.recurrence_count,
           } : undefined}
           defaultLocation={defaultLocation}
         />
@@ -340,7 +343,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
   return (
     <div className={`bg-white rounded-lg border p-6 hover:shadow-md transition-shadow ${
-      isCancelled ? 'border-red-300 bg-red-50' : 'border-gray-200'
+      isCancelled ? 'border-gray-300 bg-gray-50' : 'border-gray-200'
     }`}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
@@ -349,12 +352,12 @@ const EventCard: React.FC<EventCardProps> = ({
               {event.title}
             </h3>
             {isCancelled && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-700">
                 Cancelled
               </span>
             )}
             {event.is_recurring && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-wine-light text-wine-dark">
                 <Repeat size={12} />
                 Weekly
               </span>
@@ -377,7 +380,7 @@ const EventCard: React.FC<EventCardProps> = ({
             <button
               onClick={() => onCancel(event.id)}
               disabled={isCancelling}
-              className="p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
               aria-label="Cancel event"
             >
               <Ban size={18} />

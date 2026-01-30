@@ -37,6 +37,13 @@ export const eventFormSchema = z.object({
 
   is_recurring: z.boolean()
     .optional(),
+
+  recurrence_count: z.number()
+    .int('Number of occurrences must be a whole number')
+    .min(2, 'Must have at least 2 occurrences')
+    .max(104, 'Cannot exceed 104 occurrences (2 years)')
+    .nullable()
+    .optional(),
 }).refine((data) => {
   // If end_date is provided, it should be after event_date
   if (data.end_date && data.event_date) {
