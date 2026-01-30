@@ -19,24 +19,24 @@ THEMES = [
 
     Theme(
         name="By the Seine - French Wine Bar",
-        description="Classic French wines from varied regions, perfect for a bistro-style tasting. Mix of red and white wines from Bordeaux, Burgundy, Loire, Rhône, and Alsace.",
-        criteria={"country": "France", "min_rating": 4.0, "max_price": 60.0},
+        description="Everyday French bistro wines you'd find on the Rive Gauche. Affordable, drinkable wines for casual dining - Côtes du Rhône, Beaujolais, simple Bordeaux, Loire whites. Nothing fancy, just good wine.",
+        criteria={"country": "France", "min_rating": 3.5, "max_price": 25.0},
         wine_count=12,
-        diversity_rules={"mix_types": True, "vary_region": True, "vary_winery": True}
+        diversity_rules={"mix_types": True, "vary_region": True, "vary_winery": True, "vary_price": True}
     ),
 
     Theme(
         name="Bordeaux Grand Crus",
-        description="Left Bank and Right Bank Bordeaux wines showcasing Cabernet Sauvignon and Merlot dominance.",
-        criteria={"region": "Bordeaux", "min_rating": 4.3, "max_price": 100.0},
+        description="Left Bank and Right Bank Bordeaux wines showcasing Cabernet Sauvignon and Merlot dominance. Premium selection for special occasions.",
+        criteria={"region": "Bordeaux", "min_rating": 3.6, "max_price": 100.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
 
     Theme(
         name="Burgundy Terroir Exploration",
-        description="Premier and Grand Cru Burgundy wines showcasing terroir differences in Pinot Noir and Chardonnay.",
-        criteria={"region": "Burgundy", "min_rating": 4.2, "max_price": 120.0},
+        description="Premier and Grand Cru Burgundy wines showcasing terroir differences in Pinot Noir and Chardonnay. Premium selection for collectors.",
+        criteria={"region": "Burgundy", "min_rating": 3.5, "max_price": 120.0},
         wine_count=10,
         diversity_rules={"mix_types": True, "vary_winery": True, "vary_region": True}
     ),
@@ -44,7 +44,7 @@ THEMES = [
     Theme(
         name="Champagne Celebration",
         description="Grower Champagnes and Grande Marques for special occasions.",
-        criteria={"region": "Champagne", "wine_type": "sparkling", "min_rating": 4.0},
+        criteria={"region": "Champagne", "wine_type": "sparkling", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_price": True}
     ),
@@ -52,7 +52,7 @@ THEMES = [
     Theme(
         name="Rhône Valley Journey",
         description="Northern and Southern Rhône wines featuring Syrah, Grenache, and Viognier.",
-        criteria={"region": "Rhône", "min_rating": 3.9},
+        criteria={"region": "Rhône", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "mix_types": True}
     ),
@@ -60,15 +60,15 @@ THEMES = [
     Theme(
         name="Loire Valley Freshness",
         description="Crisp whites and elegant reds from the Loire Valley.",
-        criteria={"region": "Loire", "min_rating": 3.8, "max_price": 45.0},
+        criteria={"region": "Loire", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"mix_types": True, "vary_grapes": True}
     ),
 
     Theme(
         name="Napa Valley Icons",
-        description="World-class Cabernet Sauvignon from Napa's finest vineyards.",
-        criteria={"region": "Napa", "min_rating": 4.3, "max_price": 150.0},
+        description="World-class Cabernet Sauvignon from Napa's finest vineyards. Premium selection for special occasions.",
+        criteria={"region": "Napa", "min_rating": 3.6, "max_price": 150.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
@@ -76,7 +76,7 @@ THEMES = [
     Theme(
         name="Sonoma County Diversity",
         description="Diverse wines from Sonoma's varied microclimates and regions.",
-        criteria={"region": "Sonoma", "min_rating": 4.0},
+        criteria={"region": "Sonoma", "min_rating": 3.5, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_region": True, "mix_types": True, "vary_grapes": True}
     ),
@@ -84,23 +84,23 @@ THEMES = [
     Theme(
         name="Willamette Valley 101",
         description="Educational tasting of Oregon Pinot Noir from Willamette Valley.",
-        criteria={"region": "Willamette", "grapes": "Pinot Noir", "min_rating": 4.2},
+        criteria={"region": "Willamette", "grapes": "Pinot Noir", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True, "vary_price": True}
     ),
 
     Theme(
         name="Tuscany Treasures",
-        description="Sangiovese-based wines from Chianti, Brunello, and Super Tuscans.",
-        criteria={"region": "Tuscany", "min_rating": 4.0, "max_price": 80.0},
+        description="Sangiovese-based wines from Chianti, Brunello, and Super Tuscans. Premium selection.",
+        criteria={"region": "Tuscany", "min_rating": 3.5, "max_price": 80.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "vary_winery": True}
     ),
 
     Theme(
         name="Piedmont Powerhouses",
-        description="Barolo and Barbaresco showcasing Nebbiolo at its finest.",
-        criteria={"region": "Piedmont", "min_rating": 4.2},
+        description="Barolo and Barbaresco showcasing Nebbiolo at its finest. Premium selection.",
+        criteria={"region": "Piedmont", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
@@ -108,7 +108,7 @@ THEMES = [
     Theme(
         name="Rioja Reservas & Gran Reservas",
         description="Aged Tempranillo from Spain's most famous wine region.",
-        criteria={"region": "Rioja", "min_rating": 4.0, "max_price": 60.0},
+        criteria={"region": "Rioja", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
@@ -116,7 +116,7 @@ THEMES = [
     Theme(
         name="Priorat Intensity",
         description="Powerful, concentrated wines from Priorat's steep slate slopes.",
-        criteria={"region": "Priorat", "min_rating": 4.1},
+        criteria={"region": "Priorat", "min_rating": 3.5, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_winery": True}
     ),
@@ -124,7 +124,7 @@ THEMES = [
     Theme(
         name="German Riesling Showcase",
         description="Dry to sweet Rieslings from Mosel, Rheingau, and Pfalz.",
-        criteria={"country": "Germany", "grapes": "Riesling", "min_rating": 4.0},
+        criteria={"country": "Germany", "grapes": "Riesling", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "vary_price": True}
     ),
@@ -132,7 +132,7 @@ THEMES = [
     Theme(
         name="Austrian Wine Discovery",
         description="Grüner Veltliner and other unique Austrian wines.",
-        criteria={"country": "Austria", "min_rating": 3.9},
+        criteria={"country": "Austria", "min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_grapes": True, "vary_region": True}
     ),
@@ -140,7 +140,7 @@ THEMES = [
     Theme(
         name="Douro Valley Reds",
         description="Portuguese reds from the Douro Valley, beyond Port.",
-        criteria={"region": "Douro", "wine_type": "red", "min_rating": 4.0},
+        criteria={"region": "Douro", "wine_type": "red", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True}
     ),
@@ -148,7 +148,7 @@ THEMES = [
     Theme(
         name="Barossa Shiraz Exploration",
         description="Bold, powerful Shiraz from Australia's Barossa Valley.",
-        criteria={"region": "Barossa", "grapes": "Shiraz", "min_rating": 4.1},
+        criteria={"region": "Barossa", "grapes": "Shiraz", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
@@ -156,7 +156,7 @@ THEMES = [
     Theme(
         name="Marlborough Sauvignon Blanc",
         description="Crisp, vibrant Sauvignon Blanc from New Zealand.",
-        criteria={"region": "Marlborough", "grapes": "Sauvignon Blanc", "min_rating": 3.9},
+        criteria={"region": "Marlborough", "grapes": "Sauvignon Blanc", "min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True}
     ),
@@ -164,7 +164,7 @@ THEMES = [
     Theme(
         name="Chilean Andes Wines",
         description="High-altitude wines from Chile's diverse valleys.",
-        criteria={"country": "Chile", "min_rating": 4.0, "max_price": 40.0},
+        criteria={"country": "Chile", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "mix_types": True}
     ),
@@ -172,7 +172,7 @@ THEMES = [
     Theme(
         name="Mendoza Malbec Masters",
         description="Argentina's signature Malbec from high-altitude vineyards.",
-        criteria={"region": "Mendoza", "grapes": "Malbec", "min_rating": 4.0},
+        criteria={"region": "Mendoza", "grapes": "Malbec", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_price": True}
     ),
@@ -182,7 +182,7 @@ THEMES = [
     Theme(
         name="Pinot Noir Around the World",
         description="Compare Pinot Noir from Burgundy, Oregon, California, and New Zealand.",
-        criteria={"grapes": "Pinot Noir", "min_rating": 4.0},
+        criteria={"grapes": "Pinot Noir", "min_rating": 3.5, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -190,7 +190,7 @@ THEMES = [
     Theme(
         name="Cabernet Sauvignon Showdown",
         description="Cabernet from Napa, Bordeaux, and beyond.",
-        criteria={"grapes": "Cabernet Sauvignon", "min_rating": 4.2},
+        criteria={"grapes": "Cabernet Sauvignon", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_price": True}
     ),
@@ -198,7 +198,7 @@ THEMES = [
     Theme(
         name="Chardonnay Styles",
         description="Oaked vs unoaked, cool climate vs warm climate Chardonnay.",
-        criteria={"grapes": "Chardonnay", "min_rating": 3.9},
+        criteria={"grapes": "Chardonnay", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -206,7 +206,7 @@ THEMES = [
     Theme(
         name="Syrah/Shiraz Exploration",
         description="Northern Rhône elegance vs Australian power.",
-        criteria={"grapes": "Syrah", "min_rating": 4.0},
+        criteria={"grapes": "Syrah", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -214,7 +214,7 @@ THEMES = [
     Theme(
         name="Riesling Spectrum",
         description="Dry to sweet Riesling from Germany, Alsace, and beyond.",
-        criteria={"grapes": "Riesling", "min_rating": 4.0},
+        criteria={"grapes": "Riesling", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -222,7 +222,7 @@ THEMES = [
     Theme(
         name="Sauvignon Blanc Showcase",
         description="Loire, Marlborough, and California Sauvignon Blanc.",
-        criteria={"grapes": "Sauvignon Blanc", "min_rating": 3.9},
+        criteria={"grapes": "Sauvignon Blanc", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -230,7 +230,7 @@ THEMES = [
     Theme(
         name="Merlot Mastery",
         description="Merlot from Right Bank Bordeaux to California.",
-        criteria={"grapes": "Merlot", "min_rating": 4.0},
+        criteria={"grapes": "Merlot", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -238,7 +238,7 @@ THEMES = [
     Theme(
         name="Grenache/Garnacha Journey",
         description="Grenache from Rhône, Spain, and California.",
-        criteria={"grapes": "Grenache", "min_rating": 3.9},
+        criteria={"grapes": "Grenache", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -246,7 +246,7 @@ THEMES = [
     Theme(
         name="Tempranillo Terroir",
         description="Tempranillo across Spain's diverse regions.",
-        criteria={"grapes": "Tempranillo", "min_rating": 4.0},
+        criteria={"grapes": "Tempranillo", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "vary_winery": True}
     ),
@@ -254,7 +254,7 @@ THEMES = [
     Theme(
         name="Sangiovese Showcase",
         description="Italy's noble grape in Chianti, Brunello, and beyond.",
-        criteria={"grapes": "Sangiovese", "min_rating": 4.0},
+        criteria={"grapes": "Sangiovese", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_region": True, "vary_winery": True}
     ),
@@ -262,7 +262,7 @@ THEMES = [
     Theme(
         name="Nebbiolo Nobility",
         description="Barolo, Barbaresco, and other Nebbiolo expressions.",
-        criteria={"grapes": "Nebbiolo", "min_rating": 4.1},
+        criteria={"grapes": "Nebbiolo", "min_rating": 3.5, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_region": True, "vary_winery": True}
     ),
@@ -270,7 +270,7 @@ THEMES = [
     Theme(
         name="Malbec Masters",
         description="Argentina's signature grape at various price points.",
-        criteria={"grapes": "Malbec", "min_rating": 4.0},
+        criteria={"grapes": "Malbec", "min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_price": True, "vary_winery": True}
     ),
@@ -278,7 +278,7 @@ THEMES = [
     Theme(
         name="Zinfandel/Primitivo Power",
         description="California Zinfandel and Italian Primitivo comparison.",
-        criteria={"grapes": "Zinfandel", "min_rating": 3.9},
+        criteria={"grapes": "Zinfandel", "min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -286,7 +286,7 @@ THEMES = [
     Theme(
         name="Viognier Variations",
         description="Aromatic Viognier from Condrieu and beyond.",
-        criteria={"grapes": "Viognier", "min_rating": 3.9},
+        criteria={"grapes": "Viognier", "min_rating": 3.6, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_country": True}
     ),
@@ -294,7 +294,7 @@ THEMES = [
     Theme(
         name="Albariño & Alvarinho",
         description="Coastal whites from Spain and Portugal.",
-        criteria={"grapes": "Albariño", "min_rating": 3.8},
+        criteria={"grapes": "Albariño", "min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -302,7 +302,7 @@ THEMES = [
     Theme(
         name="Grüner Veltliner Discovery",
         description="Austria's signature white grape in various styles.",
-        criteria={"grapes": "Grüner Veltliner", "min_rating": 3.9},
+        criteria={"grapes": "Grüner Veltliner", "min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_region": True, "vary_price": True}
     ),
@@ -310,7 +310,7 @@ THEMES = [
     Theme(
         name="Chenin Blanc Chameleon",
         description="Dry, sweet, and sparkling Chenin from Loire and South Africa.",
-        criteria={"grapes": "Chenin Blanc", "min_rating": 3.9},
+        criteria={"grapes": "Chenin Blanc", "min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -318,7 +318,7 @@ THEMES = [
     Theme(
         name="Pinot Gris/Grigio Spectrum",
         description="Alsace richness vs Italian crispness.",
-        criteria={"grapes": "Pinot Gris", "min_rating": 3.8},
+        criteria={"grapes": "Pinot Gris", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -326,7 +326,7 @@ THEMES = [
     Theme(
         name="Gewürztraminer Aromatics",
         description="Intensely aromatic whites from Alsace and beyond.",
-        criteria={"grapes": "Gewürztraminer", "min_rating": 3.9},
+        criteria={"grapes": "Gewürztraminer", "min_rating": 3.6, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_country": True}
     ),
@@ -334,7 +334,7 @@ THEMES = [
     Theme(
         name="Petit Verdot Spotlight",
         description="Bordeaux's blending grape as a varietal star.",
-        criteria={"grapes": "Petit Verdot", "min_rating": 4.0},
+        criteria={"grapes": "Petit Verdot", "min_rating": 3.5, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_country": True}
     ),
@@ -344,7 +344,7 @@ THEMES = [
     Theme(
         name="Natural & Organic Wines",
         description="Minimal intervention, organic, and biodynamic wines.",
-        criteria={"min_rating": 3.8, "max_price": 50.0},
+        criteria={"min_rating": 3.6, "max_price": 50.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -352,7 +352,7 @@ THEMES = [
     Theme(
         name="Orange Wine Revolution",
         description="Skin-contact white wines with tannic structure.",
-        criteria={"min_rating": 3.8},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -360,7 +360,7 @@ THEMES = [
     Theme(
         name="Sparkling Wine World Tour",
         description="Champagne, Cava, Prosecco, and New World sparklers.",
-        criteria={"wine_type": "sparkling", "min_rating": 3.9},
+        criteria={"wine_type": "sparkling", "min_rating": 3.6, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -368,7 +368,7 @@ THEMES = [
     Theme(
         name="Rosé All Day",
         description="Elegant rosé wines perfect for warm weather.",
-        criteria={"wine_type": "rosé", "min_rating": 3.8, "max_price": 40.0},
+        criteria={"wine_type": "rosé", "min_rating": 3.6, "max_price": 40.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -376,7 +376,7 @@ THEMES = [
     Theme(
         name="Old Vine Treasures",
         description="Wines from ancient vines (50+ years old).",
-        criteria={"min_rating": 4.1},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -384,7 +384,7 @@ THEMES = [
     Theme(
         name="Single Vineyard Expressions",
         description="Site-specific wines showcasing terroir.",
-        criteria={"min_rating": 4.2},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_winery": True}
     ),
@@ -392,7 +392,7 @@ THEMES = [
     Theme(
         name="Amphora & Clay-Aged Wines",
         description="Ancient winemaking vessels meet modern techniques.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_country": True}
     ),
@@ -400,7 +400,7 @@ THEMES = [
     Theme(
         name="Pet-Nat Party",
         description="Pétillant-naturel sparkling wines, rustic and fun.",
-        criteria={"min_rating": 3.7},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -408,7 +408,7 @@ THEMES = [
     Theme(
         name="Skin-Fermented Whites",
         description="White wines with extended skin contact for complexity.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -416,7 +416,7 @@ THEMES = [
     Theme(
         name="Concrete Egg Fermentation",
         description="Wines fermented in concrete eggs for unique texture.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_country": True}
     ),
@@ -426,7 +426,7 @@ THEMES = [
     Theme(
         name="Budget Gems Under $20",
         description="High-quality, affordable wines perfect for casual gatherings.",
-        criteria={"max_price": 20.0, "min_rating": 4.0},
+        criteria={"max_price": 20.0, "min_rating": 3.5},
         wine_count=15,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -434,7 +434,7 @@ THEMES = [
     Theme(
         name="Sweet Spot $20-40",
         description="Best value wines in the mid-price range.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5},
         wine_count=12,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -442,7 +442,7 @@ THEMES = [
     Theme(
         name="Premium Selections $40-80",
         description="Special occasion wines with complexity and age-worthiness.",
-        criteria={"min_rating": 4.2},
+        criteria={"min_rating": 3.5},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -450,7 +450,7 @@ THEMES = [
     Theme(
         name="Luxury Wines $80-150",
         description="Investment-grade wines from prestigious producers.",
-        criteria={"min_rating": 4.4},
+        criteria={"min_rating": 3.6},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -458,7 +458,7 @@ THEMES = [
     Theme(
         name="Ultra-Premium $150+",
         description="Iconic wines for collectors and special celebrations.",
-        criteria={"min_rating": 4.5},
+        criteria={"min_rating": 3.5},
         wine_count=6,
         diversity_rules={"vary_country": True}
     ),
@@ -466,7 +466,7 @@ THEMES = [
     Theme(
         name="Best Wines Under $15",
         description="Exceptional everyday drinking wines on a budget.",
-        criteria={"max_price": 15.0, "min_rating": 3.8},
+        criteria={"max_price": 15.0, "min_rating": 3.6},
         wine_count=12,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -474,7 +474,7 @@ THEMES = [
     Theme(
         name="$25 Dinner Party Wines",
         description="Crowd-pleasing wines perfect for hosting.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5},
         wine_count=10,
         diversity_rules={"mix_types": True, "vary_country": True}
     ),
@@ -482,7 +482,7 @@ THEMES = [
     Theme(
         name="Value Bordeaux Under $30",
         description="Affordable Bordeaux from lesser-known appellations.",
-        criteria={"region": "Bordeaux", "max_price": 30.0, "min_rating": 3.9},
+        criteria={"region": "Bordeaux", "max_price": 30.0, "min_rating": 3.6},
         wine_count=8,
         diversity_rules={"vary_winery": True}
     ),
@@ -490,7 +490,7 @@ THEMES = [
     Theme(
         name="Champagne Alternatives Under $25",
         description="Quality sparkling wines that won't break the bank.",
-        criteria={"wine_type": "sparkling", "max_price": 25.0, "min_rating": 3.8},
+        criteria={"wine_type": "sparkling", "max_price": 25.0, "min_rating": 3.6},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -498,7 +498,7 @@ THEMES = [
     Theme(
         name="Splurge-Worthy Bottles",
         description="Worth-every-penny wines from $50-100.",
-        criteria={"min_rating": 4.3},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -508,7 +508,7 @@ THEMES = [
     Theme(
         name="Summer BBQ Reds",
         description="Fruit-forward reds perfect for grilled meats.",
-        criteria={"wine_type": "red", "min_rating": 3.9, "max_price": 35.0},
+        criteria={"wine_type": "red", "min_rating": 3.6, "max_price": 35.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -516,7 +516,7 @@ THEMES = [
     Theme(
         name="Seafood & Shellfish Whites",
         description="Crisp, mineral whites for ocean flavors.",
-        criteria={"wine_type": "white", "min_rating": 3.9},
+        criteria={"wine_type": "white", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -524,7 +524,7 @@ THEMES = [
     Theme(
         name="Steakhouse Selection",
         description="Bold reds to pair with prime cuts.",
-        criteria={"wine_type": "red", "min_rating": 4.1},
+        criteria={"wine_type": "red", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -532,7 +532,7 @@ THEMES = [
     Theme(
         name="Cheese Board Companions",
         description="Versatile wines for cheese pairings.",
-        criteria={"min_rating": 4.0, "max_price": 50.0},
+        criteria={"min_rating": 3.5, "max_price": 50.0},
         wine_count=12,
         diversity_rules={"mix_types": True, "vary_country": True}
     ),
@@ -540,7 +540,7 @@ THEMES = [
     Theme(
         name="Thanksgiving Feast",
         description="Versatile wines for turkey and all the fixings.",
-        criteria={"min_rating": 3.9, "max_price": 45.0},
+        criteria={"min_rating": 3.6, "max_price": 45.0},
         wine_count=10,
         diversity_rules={"mix_types": True, "vary_grapes": True}
     ),
@@ -548,7 +548,7 @@ THEMES = [
     Theme(
         name="Holiday Celebration",
         description="Festive wines for end-of-year gatherings.",
-        criteria={"min_rating": 4.1},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"mix_types": True, "vary_country": True}
     ),
@@ -556,7 +556,7 @@ THEMES = [
     Theme(
         name="Brunch Bubbles",
         description="Sparkling wines perfect for daytime celebrations.",
-        criteria={"wine_type": "sparkling", "min_rating": 3.8, "max_price": 40.0},
+        criteria={"wine_type": "sparkling", "min_rating": 3.6, "max_price": 40.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -564,7 +564,7 @@ THEMES = [
     Theme(
         name="Date Night Wines",
         description="Romantic, elegant wines for two.",
-        criteria={"min_rating": 4.2},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"mix_types": True}
     ),
@@ -572,7 +572,7 @@ THEMES = [
     Theme(
         name="Pizza & Pasta Night",
         description="Italian wines perfect for casual Italian food.",
-        criteria={"country": "Italy", "min_rating": 3.8, "max_price": 30.0},
+        criteria={"country": "Italy", "min_rating": 3.6, "max_price": 30.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "mix_types": True}
     ),
@@ -580,7 +580,7 @@ THEMES = [
     Theme(
         name="Asian Cuisine Pairings",
         description="Aromatic whites and light reds for Asian flavors.",
-        criteria={"min_rating": 3.8, "max_price": 40.0},
+        criteria={"min_rating": 3.6, "max_price": 40.0},
         wine_count=10,
         diversity_rules={"vary_grapes": True, "mix_types": True}
     ),
@@ -588,7 +588,7 @@ THEMES = [
     Theme(
         name="Tapas & Small Plates",
         description="Spanish wines for grazing and sharing.",
-        criteria={"country": "Spain", "min_rating": 3.8},
+        criteria={"country": "Spain", "min_rating": 3.6, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_region": True, "mix_types": True}
     ),
@@ -596,7 +596,7 @@ THEMES = [
     Theme(
         name="BBQ & Smoked Meats",
         description="Wines with enough structure for bold, smoky flavors.",
-        criteria={"wine_type": "red", "min_rating": 4.0},
+        criteria={"wine_type": "red", "min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -604,7 +604,7 @@ THEMES = [
     Theme(
         name="Vegetarian Feast",
         description="Wines that complement vegetable-forward dishes.",
-        criteria={"min_rating": 3.9, "max_price": 40.0},
+        criteria={"min_rating": 3.6, "max_price": 40.0},
         wine_count=10,
         diversity_rules={"mix_types": True, "vary_grapes": True}
     ),
@@ -612,7 +612,7 @@ THEMES = [
     Theme(
         name="Dessert Wine Delights",
         description="Sweet wines for after-dinner indulgence.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_country": True}
     ),
@@ -620,7 +620,7 @@ THEMES = [
     Theme(
         name="Aperitif Hour",
         description="Light, refreshing wines to start the evening.",
-        criteria={"min_rating": 3.8, "max_price": 35.0},
+        criteria={"min_rating": 3.6, "max_price": 35.0},
         wine_count=10,
         diversity_rules={"mix_types": True, "vary_country": True}
     ),
@@ -630,7 +630,7 @@ THEMES = [
     Theme(
         name="Old World vs New World",
         description="Compare European elegance with New World fruit.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -638,7 +638,7 @@ THEMES = [
     Theme(
         name="Vintage Vertical Tasting",
         description="Same wine, different vintages to showcase age.",
-        criteria={"min_rating": 4.2},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_vintage": True}
     ),
@@ -646,7 +646,7 @@ THEMES = [
     Theme(
         name="Terroir Deep Dive",
         description="Same grape, different terroirs worldwide.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -654,7 +654,7 @@ THEMES = [
     Theme(
         name="Climate Comparison",
         description="Cool climate vs warm climate expressions.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -662,7 +662,7 @@ THEMES = [
     Theme(
         name="Bordeaux Blend Styles",
         description="Bordeaux blends from around the world.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -670,7 +670,7 @@ THEMES = [
     Theme(
         name="Rhône Blend Exploration",
         description="GSM and other Rhône-style blends globally.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -678,7 +678,7 @@ THEMES = [
     Theme(
         name="Indigenous Grapes Discovery",
         description="Rare, native varietals from lesser-known regions.",
-        criteria={"min_rating": 3.8},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -686,7 +686,7 @@ THEMES = [
     Theme(
         name="Women Winemakers",
         description="Wines crafted by female winemakers.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -694,7 +694,7 @@ THEMES = [
     Theme(
         name="Emerging Wine Regions",
         description="Exciting wines from up-and-coming areas.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "vary_region": True}
     ),
@@ -702,7 +702,7 @@ THEMES = [
     Theme(
         name="Blind Tasting Challenge",
         description="Diverse wines for a fun guessing game.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "mix_types": True, "vary_grapes": True}
     ),
@@ -710,7 +710,7 @@ THEMES = [
     Theme(
         name="Benchmark Wines",
         description="Classic examples that define their categories.",
-        criteria={"min_rating": 4.3},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -718,7 +718,7 @@ THEMES = [
     Theme(
         name="Age-Worthy Cellar Candidates",
         description="Wines built to improve over 10+ years.",
-        criteria={"min_rating": 4.3},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -726,7 +726,7 @@ THEMES = [
     Theme(
         name="Wine 101 Basics",
         description="Essential wines to understand fundamental styles.",
-        criteria={"min_rating": 3.9, "max_price": 35.0},
+        criteria={"min_rating": 3.6, "max_price": 35.0},
         wine_count=12,
         diversity_rules={"vary_grapes": True, "mix_types": True}
     ),
@@ -734,7 +734,7 @@ THEMES = [
     Theme(
         name="Advanced Sommelier Training",
         description="Complex, challenging wines for serious study.",
-        criteria={"min_rating": 4.2},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=15,
         diversity_rules={"vary_country": True, "vary_grapes": True, "mix_types": True}
     ),
@@ -742,7 +742,7 @@ THEMES = [
     Theme(
         name="Sustainable Viticulture",
         description="Organic, biodynamic, and sustainably farmed wines.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -752,7 +752,7 @@ THEMES = [
     Theme(
         name="Eccentric Spanish Whites",
         description="Unusual Spanish white varietals with natural wine focus.",
-        criteria={"country": "Spain", "wine_type": "white", "min_rating": 3.8},
+        criteria={"country": "Spain", "wine_type": "white", "min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "vary_grapes": True}
     ),
@@ -760,7 +760,7 @@ THEMES = [
     Theme(
         name="Volcanic Wines",
         description="Wines from volcanic soils worldwide.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -768,7 +768,7 @@ THEMES = [
     Theme(
         name="High-Altitude Vineyards",
         description="Wines from mountain vineyards above 3,000 feet.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -776,7 +776,7 @@ THEMES = [
     Theme(
         name="Coastal Influence",
         description="Maritime climate wines with salinity and freshness.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -784,7 +784,7 @@ THEMES = [
     Theme(
         name="Desert Wines",
         description="Wines from arid, desert climates.",
-        criteria={"min_rating": 3.8},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -792,7 +792,7 @@ THEMES = [
     Theme(
         name="Island Wines",
         description="Wines from island appellations worldwide.",
-        criteria={"min_rating": 3.8},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True}
     ),
@@ -800,7 +800,7 @@ THEMES = [
     Theme(
         name="Ancient Varietals Revived",
         description="Historic grapes brought back from near extinction.",
-        criteria={"min_rating": 3.9},
+        criteria={"min_rating": 3.6, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "vary_grapes": True}
     ),
@@ -808,7 +808,7 @@ THEMES = [
     Theme(
         name="Low-Intervention Natural Wines",
         description="Minimal sulfites, no fining, wild yeast fermentation.",
-        criteria={"min_rating": 3.7},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
@@ -816,7 +816,7 @@ THEMES = [
     Theme(
         name="Pét-Nat & Ancestral Method",
         description="Traditional bottle fermentation sparkling wines.",
-        criteria={"min_rating": 3.7},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True}
     ),
@@ -824,7 +824,7 @@ THEMES = [
     Theme(
         name="The Ultimate Wine Geek Collection",
         description="Obscure, rare, and conversation-starting wines.",
-        criteria={"min_rating": 4.0},
+        criteria={"min_rating": 3.5, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_country": True, "vary_grapes": True, "mix_types": True}
     ),
