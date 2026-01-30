@@ -211,6 +211,7 @@ export default function ClubCard({
         );
 
       case 'events':
+        const upcomingEvents = club.upcoming_events?.slice(0, 2) || [];
         return (
           <div className="space-y-4 h-full flex flex-col">
             <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
@@ -218,16 +219,49 @@ export default function ClubCard({
               <h3 className="text-lg font-semibold text-gray-900">Upcoming Events</h3>
             </div>
 
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <Calendar className="w-16 h-16 mx-auto text-gray-300" />
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-900">Join to see events</p>
-                  <p className="text-xs text-gray-600">
-                    Members get access to exclusive tastings and gatherings
-                  </p>
+            <div className="flex-1 flex flex-col">
+              {upcomingEvents.length > 0 ? (
+                <div className="space-y-3 flex-1">
+                  {upcomingEvents.map((event) => {
+                    const eventDate = new Date(event.event_date);
+                    const formattedDate = eventDate.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    });
+                    const formattedTime = eventDate.toLocaleTimeString('en-US', {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                    });
+
+                    return (
+                      <div key={event.id} className="bg-gray-50 rounded-lg p-3">
+                        <h4 className="font-medium text-gray-900 text-sm mb-1 truncate">
+                          {event.title}
+                        </h4>
+                        <div className="flex items-center gap-1 text-xs text-gray-600">
+                          <Calendar className="w-3 h-3" />
+                          <span>{formattedDate} at {formattedTime}</span>
+                        </div>
+                        {event.price !== null && event.price > 0 && (
+                          <p className="text-xs text-wine-dark mt-1">${event.price.toFixed(2)}</p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <Calendar className="w-16 h-16 mx-auto text-gray-300" />
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-gray-900">No upcoming events</p>
+                      <p className="text-xs text-gray-600">
+                        Check back later for exclusive tastings and gatherings
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         );
