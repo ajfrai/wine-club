@@ -19,6 +19,7 @@ interface ClubData {
   wine_preferences: string | null;
   member_count: number;
   is_member: boolean;
+  is_pending: boolean;
   is_host: boolean;
   is_logged_in: boolean;
   venmo_username: string | null;
@@ -247,6 +248,19 @@ export default function PublicClubPage() {
                     className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold disabled:opacity-50"
                   >
                     {isActionLoading ? 'Loading...' : 'Leave Club'}
+                  </button>
+                </div>
+              ) : club.is_pending ? (
+                <div>
+                  <p className="text-sunburst-600 font-medium text-center mb-4">
+                    Your request to join is pending
+                  </p>
+                  <button
+                    onClick={handleLeave}
+                    disabled={isActionLoading}
+                    className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold disabled:opacity-50 border border-gray-300"
+                  >
+                    {isActionLoading ? 'Loading...' : 'Cancel Request'}
                   </button>
                 </div>
               ) : club.is_logged_in ? (

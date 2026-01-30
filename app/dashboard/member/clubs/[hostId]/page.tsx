@@ -8,6 +8,7 @@ import { PaymentOptions } from '@/components/member/PaymentOptions';
 
 interface ClubDetails extends NearbyClub {
   is_joined: boolean;
+  is_pending: boolean;
   venmo_username: string | null;
   paypal_username: string | null;
   zelle_handle: string | null;
@@ -61,7 +62,14 @@ export default function ClubDetailsPage() {
       });
 
       if (response.ok) {
-        setClub({ ...club, is_joined: true, member_count: club.member_count + 1 });
+        const { membership } = await response.json();
+
+        // Check the status from the response to handle both public and request-mode clubs
+        if (membership.status === 'active') {
+          setClub({ ...club, is_joined: true, is_pending: false, member_count: club.member_count + 1 });
+        } else if (membership.status === 'pending') {
+          setClub({ ...club, is_joined: false, is_pending: true });
+        }
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to join club');
@@ -84,7 +92,13 @@ export default function ClubDetailsPage() {
       });
 
       if (response.ok) {
-        setClub({ ...club, is_joined: false, member_count: Math.max(0, club.member_count - 1) });
+        // Reset both is_joined and is_pending, and decrement member count only if was actually a member
+        setClub({
+          ...club,
+          is_joined: false,
+          is_pending: false,
+          member_count: club.is_joined ? Math.max(0, club.member_count - 1) : club.member_count
+        });
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to leave club');
@@ -198,19 +212,30 @@ export default function ClubDetailsPage() {
           {/* Action Section */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <button
-              onClick={club.is_joined ? handleLeave : handleJoin}
+              onClick={club.is_joined || club.is_pending ? handleLeave : handleJoin}
               disabled={isActionLoading}
               className={`w-full px-6 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 ${
-                club.is_joined
+                club.is_joined || club.is_pending
                   ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   : 'bg-wine text-white hover:bg-wine-dark'
-              }`}
+              } ${club.is_pending ? 'border border-gray-300' : ''}`}
             >
-              {isActionLoading ? 'Loading...' : club.is_joined ? 'Leave Club' : 'Join Club'}
+              {isActionLoading
+                ? 'Loading...'
+                : club.is_joined
+                ? 'Leave Club'
+                : club.is_pending
+                ? 'Cancel Request'
+                : 'Join Club'}
             </button>
             {club.is_joined && (
               <p className="text-sm text-gray-600 mt-3 text-center">
                 You are a member of this club
+              </p>
+            )}
+            {club.is_pending && (
+              <p className="text-sm text-sunburst-600 mt-3 text-center">
+                Your request to join is pending
               </p>
             )}
           </div>

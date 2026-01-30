@@ -52,6 +52,9 @@ export default function ClubCard({
   }, [autoAdvance, slides]);
 
   const handleAction = () => {
+    // Prevent multiple rapid clicks
+    if (isLoading) return;
+
     if (isJoined && onLeave) {
       onLeave(club.host_id);
     } else if (isPending && onLeave) {
