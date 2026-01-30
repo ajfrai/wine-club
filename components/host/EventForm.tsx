@@ -26,8 +26,6 @@ export const EventForm: React.FC<EventFormProps> = ({
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -42,9 +40,6 @@ export const EventForm: React.FC<EventFormProps> = ({
       max_attendees: defaultValues?.max_attendees ?? null,
     },
   });
-
-  const description = watch('description') || '';
-  const wines_theme = watch('wines_theme') || '';
 
   // Format datetime-local value for input
   const formatDateTimeLocal = (dateString: string | undefined): string => {
@@ -96,7 +91,6 @@ export const EventForm: React.FC<EventFormProps> = ({
         rows={4}
         maxLength={2000}
         showCharCount
-        currentLength={description.length}
         error={errors.description?.message}
         {...register('description')}
       />
@@ -108,7 +102,6 @@ export const EventForm: React.FC<EventFormProps> = ({
         rows={3}
         maxLength={500}
         showCharCount
-        currentLength={wines_theme.length}
         error={errors.wines_theme?.message}
         helperText="What wines will be featured, or describe the theme"
         {...register('wines_theme')}

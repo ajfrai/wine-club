@@ -62,7 +62,8 @@ export default async function EventDetailPage({
         id,
         status,
         registered_at,
-        users:user_id (
+        user_id,
+        users!event_attendees_user_id_fkey (
           id,
           full_name,
           email
@@ -72,7 +73,13 @@ export default async function EventDetailPage({
       .eq('status', 'registered')
       .order('registered_at', { ascending: true });
 
-    attendees = attendeesList;
+    // Transform the data to match expected type (users is returned as array from Supabase)
+    attendees = (attendeesList || []).map((attendee: any) => ({
+      id: attendee.id,
+      status: attendee.status,
+      registered_at: attendee.registered_at,
+      users: Array.isArray(attendee.users) ? attendee.users[0] : attendee.users,
+    }));
   }
 
   return (
