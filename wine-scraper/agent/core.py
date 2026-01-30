@@ -2,6 +2,8 @@
 import json
 import sys
 import os
+import subprocess
+import tempfile
 from typing import Dict, Any, List, Optional
 
 # Add parent directory to path for imports
@@ -19,12 +21,40 @@ class WineAgent:
     It uses the database directly with intelligent heuristics for theme-based selection.
     """
 
-    def __init__(self):
+    def __init__(self, agentic=True):
         self.db = WineDatabase()
+        self.agentic = agentic
 
     def select_for_theme(self, theme: Theme) -> List[Dict[str, Any]]:
+        """Select wines for theme using agentic or deterministic approach."""
+        if self.agentic:
+            return self._select_agentic(theme)
+        else:
+            return self._select_deterministic(theme)
+
+    def _select_agentic(self, theme: Theme) -> List[Dict[str, Any]]:
         """
-        Select wines matching a theme with intelligent diversity.
+        Use Claude LLM to intelligently curate wines for a theme.
+        The LLM reads the theme description and uses search tools to explore.
+        """
+        from agent.agentic import select_wines_agentic
+
+        wines = select_wines_agentic(
+            theme_name=theme.name,
+            theme_description=theme.description,
+            wine_count=theme.wine_count
+        )
+
+        # Add selection reasons if not present
+        for wine in wines:
+            if 'selection_reason' not in wine:
+                wine['selection_reason'] = self._explain_selection(wine, theme)
+
+        return wines
+
+    def _select_deterministic(self, theme: Theme) -> List[Dict[str, Any]]:
+        """
+        Original deterministic selection using hardcoded criteria.
 
         Args:
             theme: Theme with criteria and diversity rules
@@ -259,3 +289,4 @@ class WineAgent:
 
         finally:
             self.db.close()
+

@@ -44,7 +44,7 @@ THEMES = [
     Theme(
         name="Champagne Celebration",
         description="Grower Champagnes and Grande Marques for special occasions.",
-        criteria={"region": "Champagne", "wine_type": "sparkling", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Champagne", "wine_type": "sparkling", "min_rating": 3.0, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_price": True}
     ),
@@ -52,7 +52,7 @@ THEMES = [
     Theme(
         name="Rhône Valley Journey",
         description="Northern and Southern Rhône wines featuring Syrah, Grenache, and Viognier.",
-        criteria={"region": "Rhône", "min_rating": 3.6, "max_price": 38.0},
+        criteria={"region": "Rhône", "min_rating": 3.0, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "mix_types": True}
     ),
@@ -60,7 +60,7 @@ THEMES = [
     Theme(
         name="Loire Valley Freshness",
         description="Crisp whites and elegant reds from the Loire Valley.",
-        criteria={"region": "Loire", "min_rating": 3.6, "max_price": 38.0},
+        criteria={"region": "Loire", "min_rating": 3.0, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"mix_types": True, "vary_grapes": True}
     ),
@@ -76,7 +76,7 @@ THEMES = [
     Theme(
         name="Sonoma County Diversity",
         description="Diverse wines from Sonoma's varied microclimates and regions.",
-        criteria={"region": "Sonoma", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Sonoma", "min_rating": 3.0, "max_price": 38.0},
         wine_count=12,
         diversity_rules={"vary_region": True, "mix_types": True, "vary_grapes": True}
     ),
@@ -84,7 +84,7 @@ THEMES = [
     Theme(
         name="Willamette Valley 101",
         description="Educational tasting of Oregon Pinot Noir from Willamette Valley.",
-        criteria={"region": "Willamette", "grapes": "Pinot Noir", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Willamette", "grapes": "Pinot Noir", "min_rating": 2.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True, "vary_price": True}
     ),
@@ -100,7 +100,7 @@ THEMES = [
     Theme(
         name="Piedmont Powerhouses",
         description="Barolo and Barbaresco showcasing Nebbiolo at its finest. Premium selection.",
-        criteria={"region": "Piedmont", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Piedmont", "min_rating": 3.0, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
@@ -108,7 +108,7 @@ THEMES = [
     Theme(
         name="Rioja Reservas & Gran Reservas",
         description="Aged Tempranillo from Spain's most famous wine region.",
-        criteria={"region": "Rioja", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Rioja", "min_rating": 3.0, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
@@ -116,7 +116,7 @@ THEMES = [
     Theme(
         name="Priorat Intensity",
         description="Powerful, concentrated wines from Priorat's steep slate slopes.",
-        criteria={"region": "Priorat", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Priorat", "min_rating": 3.0, "max_price": 38.0},
         wine_count=6,
         diversity_rules={"vary_winery": True}
     ),
@@ -124,7 +124,7 @@ THEMES = [
     Theme(
         name="German Riesling Showcase",
         description="Dry to sweet Rieslings from Mosel, Rheingau, and Pfalz.",
-        criteria={"country": "Germany", "grapes": "Riesling", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"country": "Germany", "grapes": "Riesling", "min_rating": 2.5, "max_price": 38.0},
         wine_count=10,
         diversity_rules={"vary_region": True, "vary_price": True}
     ),
@@ -140,7 +140,7 @@ THEMES = [
     Theme(
         name="Douro Valley Reds",
         description="Portuguese reds from the Douro Valley, beyond Port.",
-        criteria={"region": "Douro", "wine_type": "red", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Douro", "wine_type": "red", "min_rating": 3.0, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True}
     ),
@@ -148,7 +148,7 @@ THEMES = [
     Theme(
         name="Barossa Shiraz Exploration",
         description="Bold, powerful Shiraz from Australia's Barossa Valley.",
-        criteria={"region": "Barossa", "grapes": "Shiraz", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Barossa", "grapes": "Shiraz", "min_rating": 2.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_vintage": True}
     ),
@@ -156,7 +156,7 @@ THEMES = [
     Theme(
         name="Marlborough Sauvignon Blanc",
         description="Crisp, vibrant Sauvignon Blanc from New Zealand.",
-        criteria={"region": "Marlborough", "grapes": "Sauvignon Blanc", "min_rating": 3.6, "max_price": 38.0},
+        criteria={"region": "Marlborough", "grapes": "Sauvignon Blanc", "min_rating": 2.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True}
     ),
@@ -172,7 +172,7 @@ THEMES = [
     Theme(
         name="Mendoza Malbec Masters",
         description="Argentina's signature Malbec from high-altitude vineyards.",
-        criteria={"region": "Mendoza", "grapes": "Malbec", "min_rating": 3.5, "max_price": 38.0},
+        criteria={"region": "Mendoza", "grapes": "Malbec", "min_rating": 2.5, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_winery": True, "vary_price": True}
     ),
@@ -498,7 +498,7 @@ THEMES = [
     Theme(
         name="Splurge-Worthy Bottles",
         description="Worth-every-penny wines from $50-100.",
-        criteria={"min_rating": 3.6, "max_price": 38.0},
+        criteria={"min_rating": 3.0, "max_price": 38.0},
         wine_count=8,
         diversity_rules={"vary_country": True, "mix_types": True}
     ),
