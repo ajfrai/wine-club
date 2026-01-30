@@ -1,12 +1,48 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Calendar, Plus } from 'lucide-react';
+import { Dialog } from '@/components/ui/Dialog';
+import { EventForm } from '@/components/host/EventForm';
+import { EventFormData } from '@/lib/validations/event-form.schema';
 
 interface EventsTabProps {
   upcomingEventsCount: number;
+  defaultLocation: string;
 }
 
-export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount }) => {
+export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defaultLocation }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleCreateEvent = async (data: EventFormData) => {
+    try {
+      setIsSubmitting(true);
+      const response = await fetch('/api/host/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setIsDialogOpen(false);
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to create event');
+      }
+    } catch (error) {
+      console.error('Error creating event:', error);
+      alert('Failed to create event');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Events Overview Card */}
@@ -19,13 +55,13 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount }) => 
               <p className="text-wine-light">Create and manage events for your wine club</p>
             </div>
           </div>
-          <Link
-            href="/dashboard/host/club/events"
+          <button
+            onClick={() => setIsDialogOpen(true)}
             className="bg-white text-wine hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
           >
             <Plus size={20} />
             Create Event
-          </Link>
+          </button>
         </div>
         {upcomingEventsCount > 0 && (
           <div className="mt-6 pt-6 border-t border-wine-light/30">
@@ -67,6 +103,21 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount }) => 
           </li>
         </ul>
       </div>
+
+      {/* Create Event Dialog */}
+      <Dialog
+        isOpen={isDialogOpen}
+        onClose={closeDialog}
+        title="Create Event"
+        maxWidth="lg"
+      >
+        <EventForm
+          onSubmit={handleCreateEvent}
+          onCancel={closeDialog}
+          isLoading={isSubmitting}
+          defaultLocation={defaultLocation}
+        />
+      </Dialog>
     </div>
   );
 };

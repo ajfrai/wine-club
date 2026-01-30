@@ -138,7 +138,7 @@ export default async function HostClubPage() {
       label: 'Events',
       icon: <Calendar className="w-5 h-5" />,
       badge: upcomingEventsCount || 0,
-      content: <EventsTab upcomingEventsCount={upcomingEventsCount || 0} />,
+      content: <EventsTab upcomingEventsCount={upcomingEventsCount || 0} defaultLocation={hostData.club_address || ''} />,
     },
     {
       id: 'wines',
