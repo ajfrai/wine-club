@@ -58,6 +58,8 @@ export interface Event {
   event_date: string;
   end_date: string | null;
   location: string | null;
+  wines_theme: string | null;
+  price: number | null;
   host_id: string;
   max_attendees: number | null;
   created_at: string;
@@ -81,6 +83,7 @@ export interface NearbyClub {
   member_count: number;
   hero_wine?: Wine | null;
   featured_wines?: Wine[];
+  upcoming_events?: Event[];
 }
 
 export interface PendingRequest {

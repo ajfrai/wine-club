@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Users, MapPin, Wine, Settings } from 'lucide-react';
+import { Users, MapPin, Wine, Settings, Calendar } from 'lucide-react';
 import { PaymentHandlesForm } from '@/components/settings/PaymentHandlesForm';
 import { CopyHostCode } from '@/components/host/CopyHostCode';
 import { PendingRequestsCard } from '@/components/host/PendingRequestsCard';
@@ -59,6 +59,13 @@ export default async function HostClubPage() {
     .select('*', { count: 'exact', head: true })
     .eq('host_id', user.id)
     .eq('status', 'pending');
+
+  // Fetch upcoming events count
+  const { count: upcomingEventsCount } = await supabase
+    .from('events')
+    .select('*', { count: 'exact', head: true })
+    .eq('host_id', user.id)
+    .gte('event_date', new Date().toISOString());
 
   // Fetch pending requests with user details
   const { data: rawPendingRequests } = await supabase
@@ -138,6 +145,32 @@ export default async function HostClubPage() {
         >
           View public page →
         </Link>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-gradient-to-r from-wine to-wine-dark rounded-lg p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Calendar className="w-8 h-8" />
+            <div>
+              <h2 className="text-xl font-semibold">Manage Events</h2>
+              <p className="text-wine-light text-sm">Create and manage events for your wine club</p>
+            </div>
+          </div>
+          <Link
+            href="/dashboard/host/club/events"
+            className="bg-white text-wine hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors"
+          >
+            Manage Events
+          </Link>
+        </div>
+        {upcomingEventsCount !== null && upcomingEventsCount > 0 && (
+          <div className="mt-4 pt-4 border-t border-wine-light/30">
+            <p className="text-sm">
+              You have <span className="font-semibold">{upcomingEventsCount}</span> upcoming {upcomingEventsCount === 1 ? 'event' : 'events'}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
