@@ -1,11 +1,12 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { Users, MapPin, Wine, Settings, Calendar } from 'lucide-react';
-import { PaymentHandlesForm } from '@/components/settings/PaymentHandlesForm';
-import { CopyHostCode } from '@/components/host/CopyHostCode';
-import { PendingRequestsCard } from '@/components/host/PendingRequestsCard';
-import { PrivacySettingsCard } from '@/components/host/PrivacySettingsCard';
+import { Calendar, Users, Wine, Receipt, Settings } from 'lucide-react';
+import { Tabs } from '@/components/ui/Tabs';
+import { EventsTab } from '@/components/host/tabs/EventsTab';
+import { MembersTab } from '@/components/host/tabs/MembersTab';
+import { SettingsTab } from '@/components/host/tabs/SettingsTab';
+import { WinesTab } from '@/components/host/tabs/WinesTab';
+import { LedgerTab } from '@/components/host/tabs/LedgerTab';
 
 export default async function HostClubPage() {
   const supabase = await createClient();
@@ -130,157 +131,66 @@ export default async function HostClubPage() {
     ? 'Your private join code (share with people you want to invite)'
     : 'Your club code (shown on public page)';
 
+  // Build tabs
+  const tabs = [
+    {
+      id: 'events',
+      label: 'Events',
+      icon: <Calendar className="w-5 h-5" />,
+      badge: upcomingEventsCount || 0,
+      content: <EventsTab upcomingEventsCount={upcomingEventsCount || 0} />,
+    },
+    {
+      id: 'wines',
+      label: 'Wines',
+      icon: <Wine className="w-5 h-5" />,
+      content: <WinesTab />,
+    },
+    {
+      id: 'ledger',
+      label: 'Ledger',
+      icon: <Receipt className="w-5 h-5" />,
+      content: <LedgerTab />,
+    },
+    {
+      id: 'members',
+      label: 'Members',
+      icon: <Users className="w-5 h-5" />,
+      badge: hostData.join_mode === 'request' ? (pendingCount || 0) : undefined,
+      content: (
+        <MembersTab
+          memberCount={memberCount || 0}
+          members={members || []}
+          pendingRequests={pendingRequests}
+          pendingCount={pendingCount || 0}
+          joinMode={hostData.join_mode}
+        />
+      ),
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings className="w-5 h-5" />,
+      content: (
+        <SettingsTab
+          hostData={hostData}
+          joinModeLabel={joinModeLabel}
+          hostCodeDescription={hostCodeDescription}
+        />
+      ),
+    },
+  ];
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{clubName}</h1>
-          <p className="text-gray-600 mt-1">Manage your club settings and members</p>
-        </div>
-        <Link
-          href={`/clubs/${hostData.host_code}`}
-          className="text-wine hover:text-wine-dark text-sm font-medium"
-          target="_blank"
-        >
-          View public page →
-        </Link>
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">{clubName}</h1>
+        <p className="text-gray-600 mt-1">Manage your club and members</p>
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-gradient-to-r from-wine to-wine-dark rounded-lg p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Calendar className="w-8 h-8" />
-            <div>
-              <h2 className="text-xl font-semibold">Manage Events</h2>
-              <p className="text-wine-light text-sm">Create and manage events for your wine club</p>
-            </div>
-          </div>
-          <Link
-            href="/dashboard/host/club/events"
-            className="bg-white text-wine hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors"
-          >
-            Manage Events
-          </Link>
-        </div>
-        {upcomingEventsCount !== null && upcomingEventsCount > 0 && (
-          <div className="mt-4 pt-4 border-t border-wine-light/30">
-            <p className="text-sm">
-              You have <span className="font-semibold">{upcomingEventsCount}</span> upcoming {upcomingEventsCount === 1 ? 'event' : 'events'}
-            </p>
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content - Left 2 columns */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Club Info Card */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Club Information</h2>
-
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm text-gray-500">Host Code</label>
-                <div className="flex items-center gap-2 mt-1">
-                  <code className="text-lg font-mono font-semibold text-wine bg-wine-light px-3 py-1 rounded">
-                    {hostData.host_code}
-                  </code>
-                  <CopyHostCode hostCode={hostData.host_code} />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">{hostCodeDescription}</p>
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-500">Privacy Setting</label>
-                <p className="text-gray-900 font-medium">{joinModeLabel}</p>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div>
-                  <label className="text-sm text-gray-500">Location</label>
-                  <p className="text-gray-900">{hostData.club_address}</p>
-                </div>
-              </div>
-
-              {hostData.about_club && (
-                <div>
-                  <label className="text-sm text-gray-500">About</label>
-                  <p className="text-gray-900 mt-1">{hostData.about_club}</p>
-                </div>
-              )}
-
-              {hostData.wine_preferences && (
-                <div className="flex items-start gap-3">
-                  <Wine className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <label className="text-sm text-gray-500">Wine Preferences</label>
-                    <p className="text-gray-900">{hostData.wine_preferences}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Privacy Settings Card */}
-          <PrivacySettingsCard currentJoinMode={hostData.join_mode} />
-
-          {/* Payment Settings Card */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Settings</h2>
-            <p className="text-sm text-gray-600 mb-6">
-              Configure how members can pay you. Members will see these options when they view your club.
-            </p>
-            <PaymentHandlesForm />
-          </div>
-        </div>
-
-        {/* Sidebar - Right column */}
-        <div className="space-y-6">
-          {/* Stats Card */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Users className="w-5 h-5 text-wine" />
-              <h2 className="text-lg font-semibold text-gray-900">Members</h2>
-            </div>
-            <p className="text-3xl font-bold text-wine">{memberCount || 0}</p>
-            <p className="text-sm text-gray-500">active members</p>
-          </div>
-
-          {/* Pending Requests Card */}
-          {hostData.join_mode === 'request' && (
-            <PendingRequestsCard
-              pendingRequests={pendingRequests || []}
-              pendingCount={pendingCount || 0}
-            />
-          )}
-
-          {/* Member List Card */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Member List</h3>
-            {members && members.length > 0 ? (
-              <ul className="space-y-3">
-                {members.map((membership: any) => (
-                  <li key={membership.id} className="flex items-center justify-between text-sm">
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {membership.users?.full_name || 'Unknown'}
-                      </p>
-                      <p className="text-gray-500 text-xs">
-                        Joined {new Date(membership.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-gray-500">No members yet. Share your host code to invite people!</p>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Tabs */}
+      <Tabs tabs={tabs} defaultTab="events" />
     </div>
   );
 }
