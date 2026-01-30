@@ -150,13 +150,13 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
       </div>
 
       {/* Upcoming Events */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <div className="bg-wine-light/30 border border-wine-light rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-blue-900">Upcoming Events</h3>
+          <h3 className="text-lg font-semibold text-wine-dark">Upcoming Events</h3>
           {upcomingEvents.length > 0 && (
             <Link
               href="/dashboard/host/club/events"
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className="text-wine hover:text-wine-dark text-sm font-medium"
             >
               View All →
             </Link>
@@ -164,12 +164,12 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
         </div>
 
         {isLoadingEvents ? (
-          <div className="text-center py-8 text-blue-600">Loading events...</div>
+          <div className="text-center py-8 text-wine">Loading events...</div>
         ) : upcomingEvents.length === 0 ? (
           <div className="text-center py-8">
-            <Calendar className="w-12 h-12 text-blue-300 mx-auto mb-3" />
-            <p className="text-blue-700 mb-2">No upcoming events scheduled</p>
-            <p className="text-sm text-blue-600">Create your first event to get started!</p>
+            <Calendar className="w-12 h-12 text-wine-light mx-auto mb-3" />
+            <p className="text-wine-dark mb-2">No upcoming events scheduled</p>
+            <p className="text-sm text-wine">Create your first event to get started!</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -177,27 +177,27 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
               <Link
                 key={event.id}
                 href="/dashboard/host/club/events"
-                className="block bg-white border border-blue-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                className="block bg-white border border-wine-light rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-blue-900 mb-1">{event.title}</h4>
-                    <div className="space-y-1 text-sm text-blue-700">
+                    <h4 className="font-semibold text-wine-dark mb-1">{event.title}</h4>
+                    <div className="space-y-1 text-sm text-gray-700">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
+                        <Calendar className="w-4 h-4 text-wine" />
                         <span>
                           {formatDate(event.event_date)} at {formatTime(event.event_date)}
                         </span>
                       </div>
                       {event.location && (
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
+                          <MapPin className="w-4 h-4 text-wine" />
                           <span>{event.location}</span>
                         </div>
                       )}
                       {event.max_attendees && (
                         <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4" />
+                          <Users className="w-4 h-4 text-wine" />
                           <span>
                             {event.attendee_count} / {event.max_attendees} attendees
                           </span>
@@ -207,7 +207,7 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
                   </div>
                   {event.price && (
                     <div className="ml-4 text-right">
-                      <div className="text-lg font-bold text-blue-900">${event.price}</div>
+                      <div className="text-lg font-bold text-wine-dark">${event.price}</div>
                     </div>
                   )}
                 </div>
