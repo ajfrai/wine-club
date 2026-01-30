@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calendar, Plus, Edit2, Trash2, Users, DollarSign, MapPin, Wine, Ban, Repeat } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { EventForm } from '@/components/host/EventForm';
 import { EventFormData } from '@/lib/validations/event-form.schema';
@@ -202,19 +201,18 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-wine-dark">Manage Events</h1>
           <p className="text-wine mt-1">Create and manage events for your wine club</p>
         </div>
-        <Button
+        <button
           onClick={openCreateDialog}
-          variant="primary"
-          className="flex items-center gap-2"
+          className="bg-wine-dark hover:bg-wine text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
         >
           <Plus size={20} />
           Create Event
-        </Button>
+        </button>
       </div>
 
       {/* Events List */}
@@ -275,10 +273,13 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
               <Calendar size={48} className="mx-auto text-wine-light mb-4" />
               <h3 className="text-lg font-semibold text-wine-dark mb-2">No events yet</h3>
               <p className="text-wine mb-6">Create your first event to get started</p>
-              <Button onClick={openCreateDialog} variant="primary">
-                <Plus size={20} className="mr-2" />
+              <button
+                onClick={openCreateDialog}
+                className="bg-wine-dark hover:bg-wine text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 inline-flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              >
+                <Plus size={20} />
                 Create Event
-              </Button>
+              </button>
             </div>
           )}
         </div>
