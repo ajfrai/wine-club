@@ -146,7 +146,7 @@ export default function PublicClubPage() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-wine hover:text-wine-dark">
             <Wine className="w-6 h-6" />
-            <span className="font-semibold">Wine Club</span>
+            <span className="font-semibold">Home</span>
           </Link>
           {club.is_host ? (
             <Link

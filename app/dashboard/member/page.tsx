@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import ClubsGrid from '@/components/dashboard/ClubsGrid';
+import NearbyClubsCarousel from '@/components/dashboard/NearbyClubsCarousel';
 import WinesCarousel from '@/components/dashboard/WinesCarousel';
 import EventsList from '@/components/dashboard/EventsList';
 import { Wine, Event, NearbyClub } from '@/types/member.types';
@@ -67,8 +67,11 @@ export default async function MemberDashboardPage() {
       member_lon: memberProfile.longitude,
       radius_miles: 50,
     });
-    nearbyClubs = (data || []).slice(0, 3);
+    nearbyClubs = data || [];
   }
+
+  // Fetch joined club IDs for the carousel
+  const joinedClubIds = memberships?.map((m) => m.host_id) || [];
 
   // Fetch featured wines
   const { data: featuredWines } = await supabase
@@ -109,15 +112,7 @@ export default async function MemberDashboardPage() {
 
       {/* My Clubs Section */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">My Clubs</h2>
-          <Link
-            href="/dashboard/member/clubs"
-            className="text-wine hover:text-wine-dark font-medium"
-          >
-            Browse All Clubs →
-          </Link>
-        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">My Clubs</h2>
         {memberships && memberships.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {memberships.map((membership) => {
@@ -163,21 +158,13 @@ export default async function MemberDashboardPage() {
               href="/dashboard/member/clubs"
               className="text-wine hover:text-wine-dark font-medium"
             >
-              View All →
+              Browse All Clubs →
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {nearbyClubs.map((club) => (
-              <div
-                key={club.host_id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-              >
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{club.host_name}</h3>
-                <p className="text-sm text-gray-600 mb-1">{club.club_address}</p>
-                <p className="text-sm text-wine font-medium">{club.distance.toFixed(1)} miles away</p>
-              </div>
-            ))}
-          </div>
+          <NearbyClubsCarousel
+            initialClubs={nearbyClubs}
+            initialJoinedClubIds={joinedClubIds}
+          />
         </section>
       )}
 
