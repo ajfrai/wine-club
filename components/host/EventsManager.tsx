@@ -204,8 +204,8 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Events</h1>
-          <p className="text-gray-600 mt-1">Create and manage events for your wine club</p>
+          <h1 className="text-3xl font-bold text-wine-dark">Manage Events</h1>
+          <p className="text-wine mt-1">Create and manage events for your wine club</p>
         </div>
         <Button
           onClick={openCreateDialog}
@@ -220,14 +220,14 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
       {/* Events List */}
       {isLoading ? (
         <div className="text-center py-12">
-          <p className="text-gray-600">Loading events...</p>
+          <p className="text-wine">Loading events...</p>
         </div>
       ) : (
         <div className="space-y-8">
           {/* Upcoming Events */}
           {upcomingEvents.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Upcoming Events</h2>
+              <h2 className="text-xl font-semibold text-wine-dark mb-4">Upcoming Events</h2>
               <div className="space-y-4">
                 {upcomingEvents.map((event) => (
                   <EventCard
@@ -249,7 +249,7 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
           {/* Past Events */}
           {pastEvents.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-500 mb-4">Past Events</h2>
+              <h2 className="text-xl font-semibold text-wine/60 mb-4">Past Events</h2>
               <div className="space-y-4 opacity-60">
                 {pastEvents.map((event) => (
                   <EventCard
@@ -271,10 +271,10 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
 
           {/* Empty State */}
           {events.length === 0 && (
-            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-              <Calendar size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No events yet</h3>
-              <p className="text-gray-600 mb-6">Create your first event to get started</p>
+            <div className="text-center py-12 bg-white rounded-lg border border-wine-light">
+              <Calendar size={48} className="mx-auto text-wine-light mb-4" />
+              <h3 className="text-lg font-semibold text-wine-dark mb-2">No events yet</h3>
+              <p className="text-wine mb-6">Create your first event to get started</p>
               <Button onClick={openCreateDialog} variant="primary">
                 <Plus size={20} className="mr-2" />
                 Create Event
@@ -343,16 +343,16 @@ const EventCard: React.FC<EventCardProps> = ({
 
   return (
     <div className={`bg-white rounded-lg border p-6 hover:shadow-md transition-shadow ${
-      isCancelled ? 'border-gray-300 bg-gray-50' : 'border-gray-200'
+      isCancelled ? 'border-wine-light/50 bg-wine-light/10' : 'border-wine-light'
     }`}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className={`text-xl font-semibold ${isCancelled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+            <h3 className={`text-xl font-semibold ${isCancelled ? 'text-wine/50 line-through' : 'text-wine-dark'}`}>
               {event.title}
             </h3>
             {isCancelled && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-700">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-wine-light/50 text-wine-dark">
                 Cancelled
               </span>
             )}
@@ -363,7 +363,7 @@ const EventCard: React.FC<EventCardProps> = ({
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-wine">
             <Calendar size={16} />
             <span>{formatDate(event.event_date)} at {formatTime(event.event_date)}</span>
           </div>
@@ -371,7 +371,7 @@ const EventCard: React.FC<EventCardProps> = ({
         <div className="flex gap-2">
           <button
             onClick={() => onEdit(event)}
-            className="p-2 text-gray-600 hover:text-sunburst-600 hover:bg-sunburst-50 rounded-lg transition-colors"
+            className="p-2 text-wine hover:text-wine-dark hover:bg-wine-light/30 rounded-lg transition-colors"
             aria-label="Edit event"
           >
             <Edit2 size={18} />
@@ -380,7 +380,7 @@ const EventCard: React.FC<EventCardProps> = ({
             <button
               onClick={() => onCancel(event.id)}
               disabled={isCancelling}
-              className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 text-wine hover:text-wine-dark hover:bg-wine-light/30 rounded-lg transition-colors disabled:opacity-50"
               aria-label="Cancel event"
             >
               <Ban size={18} />
@@ -389,7 +389,7 @@ const EventCard: React.FC<EventCardProps> = ({
           <button
             onClick={() => onDelete(event.id)}
             disabled={isDeleting}
-            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+            className="p-2 text-wine hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
             aria-label="Delete event"
           >
             <Trash2 size={18} />
@@ -398,48 +398,48 @@ const EventCard: React.FC<EventCardProps> = ({
       </div>
 
       {event.description && (
-        <p className="text-gray-700 mb-4">{event.description}</p>
+        <p className="text-wine-dark/80 mb-4">{event.description}</p>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-wine-light/50">
         {event.location && (
           <div className="flex items-start gap-2">
-            <MapPin size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+            <MapPin size={16} className="text-wine mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Location</p>
-              <p className="text-sm text-gray-900">{event.location}</p>
+              <p className="text-xs text-wine">Location</p>
+              <p className="text-sm text-wine-dark">{event.location}</p>
             </div>
           </div>
         )}
 
         {event.wines_theme && (
           <div className="flex items-start gap-2">
-            <Wine size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+            <Wine size={16} className="text-wine mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Wines/Theme</p>
-              <p className="text-sm text-gray-900">{event.wines_theme}</p>
+              <p className="text-xs text-wine">Wines/Theme</p>
+              <p className="text-sm text-wine-dark">{event.wines_theme}</p>
             </div>
           </div>
         )}
 
         <div className="flex items-start gap-2">
-          <DollarSign size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+          <DollarSign size={16} className="text-wine mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-xs text-gray-500">Price</p>
-            <p className="text-sm text-gray-900">
+            <p className="text-xs text-wine">Price</p>
+            <p className="text-sm text-wine-dark">
               {event.price ? `$${event.price.toFixed(2)}` : 'Free'}
             </p>
           </div>
         </div>
 
         <div className="flex items-start gap-2">
-          <Users size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
+          <Users size={16} className="text-wine mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-xs text-gray-500">Attendees</p>
-            <p className="text-sm text-gray-900">
+            <p className="text-xs text-wine">Attendees</p>
+            <p className="text-sm text-wine-dark">
               {event.attendee_count}
               {event.max_attendees ? ` / ${event.max_attendees}` : ''}
-              {isFull && <span className="text-sunburst-600 ml-1">(Full)</span>}
+              {isFull && <span className="text-wine-dark font-semibold ml-1">(Full)</span>}
             </p>
           </div>
         </div>
