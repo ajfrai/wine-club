@@ -28,12 +28,14 @@ export async function PATCH(
       wines_theme,
       price,
       max_attendees,
+      is_recurring,
+      recurrence_count,
     } = body;
 
     // Verify event exists and user is the host
     const { data: existingEvent, error: fetchError } = await supabase
       .from('events')
-      .select('id, host_id')
+      .select('id, host_id, is_recurring, recurrence_count, created_at')
       .eq('id', id)
       .single();
 
@@ -51,7 +53,140 @@ export async function PATCH(
       );
     }
 
-    // Update event
+    // Check if recurrence settings have changed
+    const recurrenceChanged =
+      is_recurring !== undefined &&
+      (is_recurring !== existingEvent.is_recurring ||
+       (is_recurring && recurrence_count !== existingEvent.recurrence_count));
+
+    if (recurrenceChanged && existingEvent.is_recurring) {
+      // When recurrence changes on a recurring event, we need to:
+      // 1. Find all events in the same series (created together)
+      // 2. Delete them all
+      // 3. Recreate with new recurrence settings
+
+      // Find all events in the same series (created within 1 second of each other)
+      const createdAt = new Date(existingEvent.created_at);
+      const createdAtStart = new Date(createdAt.getTime() - 1000);
+      const createdAtEnd = new Date(createdAt.getTime() + 1000);
+
+      const { data: seriesEvents, error: seriesError } = await supabase
+        .from('events')
+        .select('id')
+        .eq('host_id', user.id)
+        .eq('is_recurring', true)
+        .gte('created_at', createdAtStart.toISOString())
+        .lte('created_at', createdAtEnd.toISOString());
+
+      if (seriesError) {
+        console.error('Error finding series events:', seriesError);
+        return NextResponse.json(
+          { error: 'Failed to find series events' },
+          { status: 500 }
+        );
+      }
+
+      // Delete all events in the series
+      const eventIds = seriesEvents?.map(e => e.id) || [];
+      if (eventIds.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('events')
+          .delete()
+          .in('id', eventIds);
+
+        if (deleteError) {
+          console.error('Error deleting series events:', deleteError);
+          return NextResponse.json(
+            { error: 'Failed to delete series events' },
+            { status: 500 }
+          );
+        }
+      }
+
+      // Recreate series with new settings if still recurring
+      if (is_recurring) {
+        const eventsToCreate = [];
+        const startDate = new Date(event_date);
+        const endDateValue = end_date ? new Date(end_date) : null;
+        const occurrences = recurrence_count || 12;
+
+        for (let i = 0; i < occurrences; i++) {
+          const eventDate = new Date(startDate);
+          eventDate.setDate(startDate.getDate() + (i * 7));
+
+          let eventEndDate: Date | null = null;
+          if (endDateValue) {
+            eventEndDate = new Date(endDateValue);
+            eventEndDate.setDate(endDateValue.getDate() + (i * 7));
+          }
+
+          eventsToCreate.push({
+            title,
+            description: description || null,
+            event_date: eventDate.toISOString(),
+            end_date: eventEndDate ? eventEndDate.toISOString() : null,
+            location: location || null,
+            wines_theme: wines_theme || null,
+            price: price ?? null,
+            max_attendees: max_attendees ?? null,
+            host_id: user.id,
+            is_recurring: true,
+            recurrence_count: occurrences,
+            status: 'scheduled',
+          });
+        }
+
+        const { data: newEvents, error: createError } = await supabase
+          .from('events')
+          .insert(eventsToCreate)
+          .select();
+
+        if (createError) {
+          console.error('Error recreating series:', createError);
+          return NextResponse.json(
+            { error: 'Failed to recreate series' },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json({
+          events: newEvents,
+          message: `Updated recurring series: ${newEvents.length} events`
+        });
+      } else {
+        // If changing from recurring to non-recurring, create single event
+        const { data: newEvent, error: createError } = await supabase
+          .from('events')
+          .insert({
+            title,
+            description: description || null,
+            event_date,
+            end_date: end_date || null,
+            location: location || null,
+            wines_theme: wines_theme || null,
+            price: price ?? null,
+            max_attendees: max_attendees ?? null,
+            host_id: user.id,
+            is_recurring: false,
+            recurrence_count: null,
+            status: 'scheduled',
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating single event:', createError);
+          return NextResponse.json(
+            { error: 'Failed to create event' },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json({ event: newEvent });
+      }
+    }
+
+    // Normal update (no recurrence changes)
     const { data: event, error } = await supabase
       .from('events')
       .update({
