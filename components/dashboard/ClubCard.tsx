@@ -54,6 +54,9 @@ export default function ClubCard({
   const handleAction = () => {
     if (isJoined && onLeave) {
       onLeave(club.host_id);
+    } else if (isPending && onLeave) {
+      // Allow canceling pending requests
+      onLeave(club.host_id);
     } else if (!isJoined && !isPending && onJoin) {
       onJoin(club.host_id);
     }
@@ -61,7 +64,7 @@ export default function ClubCard({
 
   const getButtonText = () => {
     if (isLoading) return 'Loading...';
-    if (isPending) return 'Request Pending...';
+    if (isPending) return 'Cancel Request';
     if (isJoined) return 'Leave Club';
     if (club.join_mode === 'request') return 'Request to Join';
     return 'Join Club';
@@ -69,7 +72,7 @@ export default function ClubCard({
 
   const getButtonStyle = () => {
     if (isPending) {
-      return 'bg-gray-300 text-gray-600 cursor-not-allowed';
+      return 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300';
     }
     if (isJoined) {
       return 'bg-gray-100 text-gray-700 hover:bg-gray-200';
@@ -328,7 +331,7 @@ export default function ClubCard({
       <div className="flex gap-2">
         <button
           onClick={handleAction}
-          disabled={isLoading || isPending}
+          disabled={isLoading}
           className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors disabled:cursor-not-allowed ${getButtonStyle()}`}
         >
           {getButtonText()}
