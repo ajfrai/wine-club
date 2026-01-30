@@ -114,6 +114,7 @@ export async function GET(
       member_count: count || 0,
       distance: distance,
       is_joined: membership?.status === 'active',
+      is_pending: membership?.status === 'pending',
       hero_wine: heroWine,
       featured_wines: featuredWines,
       // Payment handles - only shown to joined members

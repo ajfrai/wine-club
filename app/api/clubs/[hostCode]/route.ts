@@ -45,22 +45,23 @@ export async function GET(
     // Check if current user is logged in and is a member
     const { data: { user } } = await supabase.auth.getUser();
     let isMember = false;
+    let isPending = false;
     let isHost = false;
 
     if (user) {
       // Check if user is the host
       isHost = user.id === hostData.user_id;
 
-      // Check if user is a member of this club
+      // Check if user is a member of this club (or has pending request)
       const { data: membership } = await supabase
         .from('memberships')
         .select('status')
         .eq('host_id', hostData.user_id)
         .eq('member_id', user.id)
-        .eq('status', 'active')
         .maybeSingle();
 
-      isMember = !!membership;
+      isMember = membership?.status === 'active';
+      isPending = membership?.status === 'pending';
     }
 
     const club = {
@@ -72,6 +73,7 @@ export async function GET(
       wine_preferences: hostData.wine_preferences,
       member_count: memberCount || 0,
       is_member: isMember,
+      is_pending: isPending,
       is_host: isHost,
       is_logged_in: !!user,
       // Only include payment info for members
