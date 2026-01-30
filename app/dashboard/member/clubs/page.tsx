@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ClubsGrid from '@/components/dashboard/ClubsGrid';
 import ClubCardSkeleton from '@/components/dashboard/ClubCardSkeleton';
 import { NearbyClub, Membership } from '@/types/member.types';
@@ -10,6 +11,7 @@ import { MapPin, Wine, Search } from 'lucide-react';
 type SortOption = 'distance' | 'members' | 'name';
 
 export default function ClubsPage() {
+  const router = useRouter();
   const [clubs, setClubs] = useState<NearbyClub[]>([]);
   const [joinedClubIds, setJoinedClubIds] = useState<string[]>([]);
   const [pendingClubIds, setPendingClubIds] = useState<string[]>([]);
@@ -83,6 +85,7 @@ export default function ClubsPage() {
         const { membership } = await response.json();
         setJoinedClubIds([...joinedClubIds, membership.host_id]);
         setJoinCode('');
+        router.refresh(); // Refresh server-side data to update "My Clubs"
         alert('Successfully joined club!');
       } else {
         const error = await response.json();
@@ -111,6 +114,7 @@ export default function ClubsPage() {
         } else if (membership.status === 'pending') {
           setPendingClubIds([...pendingClubIds, hostId]);
         }
+        router.refresh(); // Refresh server-side data to update "My Clubs"
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to join club');
@@ -130,6 +134,7 @@ export default function ClubsPage() {
       if (response.ok) {
         setJoinedClubIds(joinedClubIds.filter((id) => id !== hostId));
         setPendingClubIds(pendingClubIds.filter((id) => id !== hostId));
+        router.refresh(); // Refresh server-side data to update "My Clubs"
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to leave club');

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ClubsGrid from './ClubsGrid';
 import { NearbyClub } from '@/types/member.types';
 
@@ -10,6 +11,7 @@ interface NearbyClubsCarouselProps {
 }
 
 export default function NearbyClubsCarousel({ initialClubs, initialJoinedClubIds }: NearbyClubsCarouselProps) {
+  const router = useRouter();
   const [joinedClubIds, setJoinedClubIds] = useState<string[]>(initialJoinedClubIds);
 
   const handleJoin = async (hostId: string) => {
@@ -22,6 +24,7 @@ export default function NearbyClubsCarousel({ initialClubs, initialJoinedClubIds
 
       if (response.ok) {
         setJoinedClubIds([...joinedClubIds, hostId]);
+        router.refresh(); // Refresh server-side data to update "My Clubs"
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to join club');
@@ -40,6 +43,7 @@ export default function NearbyClubsCarousel({ initialClubs, initialJoinedClubIds
 
       if (response.ok) {
         setJoinedClubIds(joinedClubIds.filter((id) => id !== hostId));
+        router.refresh(); // Refresh server-side data to update "My Clubs"
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to leave club');
