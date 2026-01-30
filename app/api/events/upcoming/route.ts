@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
         attendee_count:event_attendees(count)
       `)
       .in('host_id', hostIds)
+      .eq('status', 'scheduled')
       .gte('event_date', new Date().toISOString())
       .order('event_date', { ascending: true })
       .range(offset, offset + limit - 1);

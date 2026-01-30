@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
       wines_theme,
       price,
       max_attendees,
+      is_recurring,
     } = body;
 
     // Validate required fields
@@ -82,32 +83,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create event
-    const { data: event, error } = await supabase
-      .from('events')
-      .insert({
+    // Generate events array
+    const eventsToCreate = [];
+    const startDate = new Date(event_date);
+    const endDateValue = end_date ? new Date(end_date) : null;
+    const occurrences = is_recurring ? 52 : 1;
+
+    for (let i = 0; i < occurrences; i++) {
+      const eventDate = new Date(startDate);
+      eventDate.setDate(startDate.getDate() + (i * 7)); // Add weeks
+
+      let eventEndDate: Date | null = null;
+      if (endDateValue) {
+        eventEndDate = new Date(endDateValue);
+        eventEndDate.setDate(endDateValue.getDate() + (i * 7));
+      }
+
+      eventsToCreate.push({
         title,
         description: description || null,
-        event_date,
-        end_date: end_date || null,
+        event_date: eventDate.toISOString(),
+        end_date: eventEndDate ? eventEndDate.toISOString() : null,
         location: location || null,
         wines_theme: wines_theme || null,
         price: price ?? null,
         max_attendees: max_attendees ?? null,
         host_id: user.id,
-      })
-      .select()
-      .single();
+        is_recurring: is_recurring || false,
+        status: 'scheduled',
+      });
+    }
+
+    // Create event(s)
+    const { data: events, error } = await supabase
+      .from('events')
+      .insert(eventsToCreate)
+      .select();
 
     if (error) {
-      console.error('Error creating event:', error);
+      console.error('Error creating event(s):', error);
       return NextResponse.json(
-        { error: 'Failed to create event' },
+        { error: 'Failed to create event(s)' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ event }, { status: 201 });
+    return NextResponse.json({
+      events,
+      message: is_recurring ? `Created ${events.length} recurring events` : 'Event created'
+    }, { status: 201 });
   } catch (error) {
     console.error('Error in POST /api/host/events:', error);
     return NextResponse.json(

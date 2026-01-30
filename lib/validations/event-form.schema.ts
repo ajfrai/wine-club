@@ -34,6 +34,9 @@ export const eventFormSchema = z.object({
     .max(1000, 'Max attendees must be less than 1000')
     .nullable()
     .optional(),
+
+  is_recurring: z.boolean()
+    .optional(),
 }).refine((data) => {
   // If end_date is provided, it should be after event_date
   if (data.end_date && data.event_date) {

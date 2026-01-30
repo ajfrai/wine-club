@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ theme.name }} - Wine Selection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <a href="/" class="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">← Back to Themes</a>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ theme.name }}</h1>
+                        <p class="mt-2 text-gray-600">{{ theme.description }}</p>
+                    </div>
+                    <button onclick="exportJSON()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors">
+                        Export JSON
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Selected Wines ({{ wines|length }})</h2>
+            </div>
+
+            {% if wines %}
+            <div class="grid grid-cols-1 gap-6">
+                {% for wine in wines %}
+                <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-gray-900">
+                                    {{ wine.name }}
+                                    {% if wine.vintage %}
+                                    <span class="text-gray-600 font-normal">{{ wine.vintage }}</span>
+                                    {% endif %}
+                                </h3>
+
+                                <div class="mt-2 space-y-1">
+                                    {% if wine.winery %}
+                                    <div class="text-gray-700">
+                                        <span class="font-medium">Winery:</span> {{ wine.winery }}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if wine.region or wine.country %}
+                                    <div class="text-gray-700">
+                                        <span class="font-medium">Location:</span>
+                                        {{ wine.region }}{% if wine.region and wine.country %}, {% endif %}{{ wine.country }}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if wine.wine_type %}
+                                    <div class="text-gray-700">
+                                        <span class="font-medium">Type:</span>
+                                        <span class="capitalize">{{ wine.wine_type }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if wine.grapes %}
+                                    <div class="text-gray-700">
+                                        <span class="font-medium">Grapes:</span> {{ wine.grapes }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mt-4 flex items-center space-x-6">
+                                    {% if wine.rating %}
+                                    <div>
+                                        <span class="text-2xl font-bold text-indigo-600">{{ wine.rating }}</span>
+                                        <span class="text-gray-600">/5</span>
+                                        {% if wine.num_reviews %}
+                                        <span class="text-sm text-gray-500">({{ wine.num_reviews }} reviews)</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+
+                                    {% if wine.price_usd %}
+                                    <div>
+                                        <span class="text-2xl font-bold text-green-600">${{ "%.2f"|format(wine.price_usd) }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                {% if wine.selection_reason %}
+                                <div class="mt-4 p-3 bg-indigo-50 rounded">
+                                    <div class="text-sm text-indigo-900">
+                                        <span class="font-medium">Why selected:</span> {{ wine.selection_reason }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="bg-white rounded-lg shadow p-8 text-center">
+                <p class="text-gray-600">No wines found matching this theme's criteria.</p>
+                <a href="/" class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                    Try Another Theme
+                </a>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <script>
+        const wineData = {{ wines|tojson }};
+        const themeData = {
+            name: {{ theme.name|tojson }},
+            description: {{ theme.description|tojson }}
+        };
+
+        function exportJSON() {
+            const data = {
+                theme: themeData,
+                wines: wineData,
+                exported_at: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${themeData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_wines.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

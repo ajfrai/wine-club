@@ -1,0 +1,37 @@
+# Database files
+data/wines.db
+data/wines.db-journal
+data/wines.db-shm
+data/wines.db-wal
+
+# Raw Kaggle data
+data/raw/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Flask cache
+instance/
+.webassets-cache
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output files
+*.json
+!requirements.txt

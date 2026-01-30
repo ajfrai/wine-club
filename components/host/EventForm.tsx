@@ -38,6 +38,7 @@ export const EventForm: React.FC<EventFormProps> = ({
       wines_theme: defaultValues?.wines_theme || '',
       price: defaultValues?.price ?? null,
       max_attendees: defaultValues?.max_attendees ?? null,
+      is_recurring: defaultValues?.is_recurring ?? false,
     },
   });
 
@@ -155,6 +156,23 @@ export const EventForm: React.FC<EventFormProps> = ({
             })}
           />
         </div>
+      </div>
+
+      {/* Recurring Event */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4 rounded border-gray-300 text-wine focus:ring-wine"
+            {...register('is_recurring')}
+          />
+          <div>
+            <span className="font-medium text-gray-900">Repeat weekly</span>
+            <p className="text-sm text-gray-600 mt-1">
+              Create this event every week for the next year (52 events total)
+            </p>
+          </div>
+        </label>
       </div>
 
       {/* Form Actions */}

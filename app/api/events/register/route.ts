@@ -22,10 +22,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify event exists
+    // Verify event exists and is not cancelled
     const { data: event, error: eventError } = await supabase
       .from('events')
-      .select('id, max_attendees')
+      .select('id, max_attendees, status')
       .eq('id', event_id)
       .single();
 
@@ -33,6 +33,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Event not found' },
         { status: 404 }
+      );
+    }
+
+    if (event.status === 'cancelled') {
+      return NextResponse.json(
+        { error: 'This event has been cancelled' },
+        { status: 400 }
       );
     }
 

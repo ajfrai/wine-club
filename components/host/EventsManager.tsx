@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, Plus, Edit2, Trash2, Users, DollarSign, MapPin, Wine } from 'lucide-react';
+import { Calendar, Plus, Edit2, Trash2, Users, DollarSign, MapPin, Wine, Ban, Repeat } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { EventForm } from '@/components/host/EventForm';
@@ -18,6 +18,8 @@ interface Event {
   price: number | null;
   max_attendees: number | null;
   attendee_count: number;
+  status: 'scheduled' | 'cancelled' | 'completed';
+  is_recurring: boolean;
   created_at: string;
 }
 
@@ -32,6 +34,7 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
+  const [cancellingEventId, setCancellingEventId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchEvents();
@@ -128,6 +131,31 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
     }
   };
 
+  const handleCancelEvent = async (eventId: string) => {
+    if (!confirm('Are you sure you want to cancel this event? Registered members will need to be notified.')) {
+      return;
+    }
+
+    try {
+      setCancellingEventId(eventId);
+      const response = await fetch(`/api/host/events/${eventId}/cancel`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        await fetchEvents();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to cancel event');
+      }
+    } catch (error) {
+      console.error('Error cancelling event:', error);
+      alert('Failed to cancel event');
+    } finally {
+      setCancellingEventId(null);
+    }
+  };
+
   const openCreateDialog = () => {
     setEditingEvent(null);
     setIsDialogOpen(true);
@@ -206,7 +234,9 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
                     event={event}
                     onEdit={openEditDialog}
                     onDelete={handleDeleteEvent}
+                    onCancel={handleCancelEvent}
                     isDeleting={deletingEventId === event.id}
+                    isCancelling={cancellingEventId === event.id}
                     formatDate={formatDate}
                     formatTime={formatTime}
                   />
@@ -226,7 +256,9 @@ export const EventsManager: React.FC<EventsManagerProps> = ({ defaultLocation })
                     event={event}
                     onEdit={openEditDialog}
                     onDelete={handleDeleteEvent}
+                    onCancel={handleCancelEvent}
                     isDeleting={deletingEventId === event.id}
+                    isCancelling={cancellingEventId === event.id}
                     formatDate={formatDate}
                     formatTime={formatTime}
                     isPast
@@ -284,7 +316,9 @@ interface EventCardProps {
   event: Event;
   onEdit: (event: Event) => void;
   onDelete: (eventId: string) => void;
+  onCancel: (eventId: string) => void;
   isDeleting: boolean;
+  isCancelling: boolean;
   formatDate: (date: string) => string;
   formatTime: (date: string) => string;
   isPast?: boolean;
@@ -294,18 +328,38 @@ const EventCard: React.FC<EventCardProps> = ({
   event,
   onEdit,
   onDelete,
+  onCancel,
   isDeleting,
+  isCancelling,
   formatDate,
   formatTime,
   isPast = false,
 }) => {
   const isFull = event.max_attendees && event.attendee_count >= event.max_attendees;
+  const isCancelled = event.status === 'cancelled';
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className={`bg-white rounded-lg border p-6 hover:shadow-md transition-shadow ${
+      isCancelled ? 'border-red-300 bg-red-50' : 'border-gray-200'
+    }`}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
-          <h3 className="text-xl font-semibold text-gray-900 mb-1">{event.title}</h3>
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className={`text-xl font-semibold ${isCancelled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+              {event.title}
+            </h3>
+            {isCancelled && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                Cancelled
+              </span>
+            )}
+            {event.is_recurring && (
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <Repeat size={12} />
+                Weekly
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2 text-gray-600">
             <Calendar size={16} />
             <span>{formatDate(event.event_date)} at {formatTime(event.event_date)}</span>
@@ -319,6 +373,16 @@ const EventCard: React.FC<EventCardProps> = ({
           >
             <Edit2 size={18} />
           </button>
+          {event.status === 'scheduled' && (
+            <button
+              onClick={() => onCancel(event.id)}
+              disabled={isCancelling}
+              className="p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
+              aria-label="Cancel event"
+            >
+              <Ban size={18} />
+            </button>
+          )}
           <button
             onClick={() => onDelete(event.id)}
             disabled={isDeleting}

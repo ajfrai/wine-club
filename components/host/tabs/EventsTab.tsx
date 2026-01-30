@@ -1,11 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, Plus } from 'lucide-react';
+import { Calendar, Plus, MapPin, Users } from 'lucide-react';
 import { Dialog } from '@/components/ui/Dialog';
 import { EventForm } from '@/components/host/EventForm';
 import { EventFormData } from '@/lib/validations/event-form.schema';
+
+interface Event {
+  id: string;
+  title: string;
+  description: string | null;
+  event_date: string;
+  end_date: string | null;
+  location: string | null;
+  wines_theme: string | null;
+  price: number | null;
+  max_attendees: number | null;
+  attendee_count: number;
+}
 
 interface EventsTabProps {
   upcomingEventsCount: number;
@@ -15,6 +28,32 @@ interface EventsTabProps {
 export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defaultLocation }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        setIsLoadingEvents(true);
+        const response = await fetch('/api/host/events');
+        if (response.ok) {
+          const data = await response.json();
+          // Filter for upcoming events and take first 3
+          const now = new Date();
+          const upcoming = data.events
+            .filter((event: Event) => new Date(event.event_date) >= now)
+            .slice(0, 3);
+          setUpcomingEvents(upcoming);
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+
+    fetchUpcomingEvents();
+  }, []);
 
   const handleCreateEvent = async (data: EventFormData) => {
     try {
@@ -27,6 +66,16 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
 
       if (response.ok) {
         setIsDialogOpen(false);
+        // Refresh events list
+        const refreshResponse = await fetch('/api/host/events');
+        if (refreshResponse.ok) {
+          const data = await refreshResponse.json();
+          const now = new Date();
+          const upcoming = data.events
+            .filter((event: Event) => new Date(event.event_date) >= now)
+            .slice(0, 3);
+          setUpcomingEvents(upcoming);
+        }
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to create event');
@@ -41,6 +90,25 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
 
   const closeDialog = () => {
     setIsDialogOpen(false);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
   };
 
   return (
@@ -81,27 +149,72 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
         )}
       </div>
 
-      {/* Quick Tips */}
+      {/* Upcoming Events */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-blue-900 mb-3">Tips for Great Events</h3>
-        <ul className="space-y-2 text-sm text-blue-800">
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600 mt-0.5">•</span>
-            <span>Create events at least 2 weeks in advance to give members time to RSVP</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600 mt-0.5">•</span>
-            <span>Include details about wines, food pairings, and what to expect</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600 mt-0.5">•</span>
-            <span>Set capacity limits to ensure an intimate experience</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-600 mt-0.5">•</span>
-            <span>Use the price field to indicate if members should bring cash or Venmo you</span>
-          </li>
-        </ul>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-blue-900">Upcoming Events</h3>
+          {upcomingEvents.length > 0 && (
+            <Link
+              href="/dashboard/host/club/events"
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            >
+              View All →
+            </Link>
+          )}
+        </div>
+
+        {isLoadingEvents ? (
+          <div className="text-center py-8 text-blue-600">Loading events...</div>
+        ) : upcomingEvents.length === 0 ? (
+          <div className="text-center py-8">
+            <Calendar className="w-12 h-12 text-blue-300 mx-auto mb-3" />
+            <p className="text-blue-700 mb-2">No upcoming events scheduled</p>
+            <p className="text-sm text-blue-600">Create your first event to get started!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {upcomingEvents.map((event) => (
+              <Link
+                key={event.id}
+                href="/dashboard/host/club/events"
+                className="block bg-white border border-blue-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-blue-900 mb-1">{event.title}</h4>
+                    <div className="space-y-1 text-sm text-blue-700">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {formatDate(event.event_date)} at {formatTime(event.event_date)}
+                        </span>
+                      </div>
+                      {event.location && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          <span>{event.location}</span>
+                        </div>
+                      )}
+                      {event.max_attendees && (
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          <span>
+                            {event.attendee_count} / {event.max_attendees} attendees
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {event.price && (
+                    <div className="ml-4 text-right">
+                      <div className="text-lg font-bold text-blue-900">${event.price}</div>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Create Event Dialog */}
