@@ -14,6 +14,9 @@ export function PendingRequestsCard({ pendingRequests, pendingCount }: PendingRe
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const handleApprove = async (membershipId: string) => {
+    // Prevent duplicate processing
+    if (processingId !== null) return;
+
     setProcessingId(membershipId);
     try {
       const response = await fetch('/api/host/memberships/approve', {
@@ -38,6 +41,9 @@ export function PendingRequestsCard({ pendingRequests, pendingCount }: PendingRe
   };
 
   const handleDeny = async (membershipId: string) => {
+    // Prevent duplicate processing
+    if (processingId !== null) return;
+
     setProcessingId(membershipId);
     try {
       const response = await fetch('/api/host/memberships/deny', {
