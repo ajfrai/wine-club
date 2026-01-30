@@ -1,10 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Users, Wine, Loader2, LogIn, Settings } from 'lucide-react';
+import { Users, Wine, Loader2, LogIn, Settings, Calendar, Info } from 'lucide-react';
 import { PaymentOptions } from '@/components/member/PaymentOptions';
+import { Tabs } from '@/components/ui/Tabs';
+import { PublicAboutTab } from '@/components/club/tabs/PublicAboutTab';
+import { PublicEventsTab } from '@/components/club/tabs/PublicEventsTab';
+import { PublicWinesTab } from '@/components/club/tabs/PublicWinesTab';
 
 interface ClubData {
   host_id: string;
@@ -25,7 +29,6 @@ interface ClubData {
 
 export default function PublicClubPage() {
   const params = useParams();
-  const router = useRouter();
   const hostCode = params.hostCode as string;
 
   const [club, setClub] = useState<ClubData | null>(null);
@@ -72,7 +75,6 @@ export default function PublicClubPage() {
       });
 
       if (response.ok) {
-        // Reload to get updated membership status and payment info
         await loadClub();
       } else {
         const error = await response.json();
@@ -139,11 +141,38 @@ export default function PublicClubPage() {
 
   const clubName = `${club.host_name}'s Wine Club`;
 
+  const tabs = [
+    {
+      id: 'about',
+      label: 'About',
+      icon: <Info className="w-5 h-5" />,
+      content: (
+        <PublicAboutTab
+          aboutClub={club.about_club}
+          clubAddress={club.club_address}
+          winePreferences={club.wine_preferences}
+        />
+      ),
+    },
+    {
+      id: 'events',
+      label: 'Events',
+      icon: <Calendar className="w-5 h-5" />,
+      content: <PublicEventsTab hostCode={hostCode} />,
+    },
+    {
+      id: 'wines',
+      label: 'Wines',
+      icon: <Wine className="w-5 h-5" />,
+      content: <PublicWinesTab />,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light">
       {/* Header */}
       <header className="bg-white border-b border-wine-light">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-wine hover:text-wine-dark">
             <Wine className="w-6 h-6" />
             <span className="font-semibold">Home</span>
@@ -168,121 +197,94 @@ export default function PublicClubPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="space-y-6">
-          {/* Hero Card */}
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="flex items-start justify-between flex-wrap gap-4">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">{clubName}</h1>
-                <p className="text-gray-500 mt-1">Code: <span className="font-mono font-semibold">{club.host_code}</span></p>
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Hero Card */}
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <div className="flex items-start justify-between flex-wrap gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">{clubName}</h1>
+                  <p className="text-gray-500 mt-1">Code: <span className="font-mono font-semibold">{club.host_code}</span></p>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
+                  <Users className="w-5 h-5" />
+                  <span className="font-semibold">{club.member_count}</span>
+                  <span>members</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
-                <Users className="w-5 h-5" />
-                <span className="font-semibold">{club.member_count}</span>
-                <span>members</span>
-              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <Tabs tabs={tabs} defaultTab="about" />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* About */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">About This Club</h2>
-                {club.about_club ? (
-                  <p className="text-gray-700 whitespace-pre-wrap">{club.about_club}</p>
-                ) : (
-                  <p className="text-gray-500 italic">No description yet.</p>
-                )}
-              </div>
-
-              {/* Location */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Location</h2>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                  <span className="text-gray-700">{club.club_address}</span>
-                </div>
-              </div>
-
-              {/* Wine Preferences */}
-              {club.wine_preferences && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Wine Preferences</h2>
-                  <div className="flex items-start gap-3">
-                    <Wine className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <span className="text-gray-700">{club.wine_preferences}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Action Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                {club.is_host ? (
-                  <div className="text-center">
-                    <p className="text-gray-600 mb-4">You are the host of this club</p>
-                    <Link
-                      href="/dashboard/host/club"
-                      className="block w-full px-6 py-3 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors font-semibold text-center"
-                    >
-                      Manage Club
-                    </Link>
-                  </div>
-                ) : club.is_member ? (
-                  <div>
-                    <p className="text-green-700 font-medium text-center mb-4">
-                      You are a member of this club
-                    </p>
-                    <button
-                      onClick={handleLeave}
-                      disabled={isActionLoading}
-                      className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold disabled:opacity-50"
-                    >
-                      {isActionLoading ? 'Loading...' : 'Leave Club'}
-                    </button>
-                  </div>
-                ) : club.is_logged_in ? (
-                  <button
-                    onClick={handleJoin}
-                    disabled={isActionLoading}
-                    className="w-full px-6 py-3 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors font-semibold disabled:opacity-50"
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Action Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              {club.is_host ? (
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">You are the host of this club</p>
+                  <Link
+                    href="/dashboard/host/club"
+                    className="block w-full px-6 py-3 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors font-semibold text-center"
                   >
-                    {isActionLoading ? 'Loading...' : 'Join Club'}
+                    Manage Club
+                  </Link>
+                </div>
+              ) : club.is_member ? (
+                <div>
+                  <p className="text-green-700 font-medium text-center mb-4">
+                    You are a member of this club
+                  </p>
+                  <button
+                    onClick={handleLeave}
+                    disabled={isActionLoading}
+                    className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold disabled:opacity-50"
+                  >
+                    {isActionLoading ? 'Loading...' : 'Leave Club'}
                   </button>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-gray-600 mb-4">Log in to join this club</p>
-                    <Link
-                      href={`/login?redirect=/clubs/${club.host_code}`}
-                      className="block w-full px-6 py-3 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors font-semibold text-center"
-                    >
-                      Log in to Join
+                </div>
+              ) : club.is_logged_in ? (
+                <button
+                  onClick={handleJoin}
+                  disabled={isActionLoading}
+                  className="w-full px-6 py-3 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors font-semibold disabled:opacity-50"
+                >
+                  {isActionLoading ? 'Loading...' : 'Join Club'}
+                </button>
+              ) : (
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">Log in to join this club</p>
+                  <Link
+                    href={`/login?redirect=/clubs/${club.host_code}`}
+                    className="block w-full px-6 py-3 bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors font-semibold text-center"
+                  >
+                    Log in to Join
+                  </Link>
+                  <p className="text-sm text-gray-500 mt-3">
+                    Don't have an account?{' '}
+                    <Link href="/signup" className="text-wine hover:text-wine-dark">
+                      Sign up
                     </Link>
-                    <p className="text-sm text-gray-500 mt-3">
-                      Don't have an account?{' '}
-                      <Link href="/signup" className="text-wine hover:text-wine-dark">
-                        Sign up
-                      </Link>
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Payment Options - Only for members */}
-              {club.is_member && (
-                <PaymentOptions
-                  venmoUsername={club.venmo_username}
-                  paypalUsername={club.paypal_username}
-                  zelleHandle={club.zelle_handle}
-                  acceptsCash={club.accepts_cash}
-                />
+                  </p>
+                </div>
               )}
             </div>
+
+            {/* Payment Options - Only for members */}
+            {club.is_member && (
+              <PaymentOptions
+                venmoUsername={club.venmo_username}
+                paypalUsername={club.paypal_username}
+                zelleHandle={club.zelle_handle}
+                acceptsCash={club.accepts_cash}
+              />
+            )}
           </div>
         </div>
       </main>

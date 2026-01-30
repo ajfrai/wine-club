@@ -1,9 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import NearbyClubsCarousel from '@/components/dashboard/NearbyClubsCarousel';
 import WinesCarousel from '@/components/dashboard/WinesCarousel';
-import EventsList from '@/components/dashboard/EventsList';
-import { Wine, Event, NearbyClub } from '@/types/member.types';
+import { Event } from '@/types/member.types';
 import Link from 'next/link';
 
 export default async function MemberDashboardPage() {
@@ -53,26 +51,6 @@ export default async function MemberDashboardPage() {
       .filter(m => m.host !== null);
   }
 
-  // Fetch member location for nearby clubs
-  const { data: memberProfile } = await supabase
-    .from('members')
-    .select('latitude, longitude')
-    .eq('user_id', user.id)
-    .single();
-
-  let nearbyClubs: NearbyClub[] = [];
-  if (memberProfile?.latitude && memberProfile?.longitude) {
-    const { data } = await supabase.rpc('get_nearby_clubs', {
-      member_lat: memberProfile.latitude,
-      member_lon: memberProfile.longitude,
-      radius_miles: 50,
-    });
-    nearbyClubs = data || [];
-  }
-
-  // Fetch joined club IDs for the carousel
-  const joinedClubIds = memberships?.map((m) => m.host_id) || [];
-
   // Fetch featured wines
   const { data: featuredWines } = await supabase
     .from('wines')
@@ -112,7 +90,15 @@ export default async function MemberDashboardPage() {
 
       {/* My Clubs Section */}
       <section>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">My Clubs</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">My Clubs</h2>
+          <Link
+            href="/dashboard/member/clubs"
+            className="text-wine hover:text-wine-dark font-medium"
+          >
+            View Clubs →
+          </Link>
+        </div>
         {memberships && memberships.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {memberships.map((membership) => {
@@ -148,25 +134,6 @@ export default async function MemberDashboardPage() {
           </div>
         )}
       </section>
-
-      {/* Browse Nearby Clubs Section */}
-      {nearbyClubs.length > 0 && (
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Clubs Near You</h2>
-            <Link
-              href="/dashboard/member/clubs"
-              className="text-wine hover:text-wine-dark font-medium"
-            >
-              Browse All Clubs →
-            </Link>
-          </div>
-          <NearbyClubsCarousel
-            initialClubs={nearbyClubs}
-            initialJoinedClubIds={joinedClubIds}
-          />
-        </section>
-      )}
 
       {/* Featured Wines Section */}
       {featuredWines && featuredWines.length > 0 && (
