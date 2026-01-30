@@ -1,3 +1,4 @@
+import React from 'react';
 import { Wine, Plus, Star } from 'lucide-react';
 
 export const WinesTab: React.FC = () => {

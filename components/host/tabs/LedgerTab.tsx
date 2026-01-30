@@ -1,3 +1,4 @@
+import React from 'react';
 import { DollarSign, TrendingUp, Receipt, Calendar } from 'lucide-react';
 
 export const LedgerTab: React.FC = () => {

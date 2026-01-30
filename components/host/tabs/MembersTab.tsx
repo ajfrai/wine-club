@@ -1,3 +1,4 @@
+import React from 'react';
 import { Users, Clock } from 'lucide-react';
 import { PendingRequestsCard } from '@/components/host/PendingRequestsCard';
 import { PendingRequest } from '@/types/member.types';

@@ -1,3 +1,4 @@
+import React from 'react';
 import { MapPin, Wine, Settings as SettingsIcon, Code } from 'lucide-react';
 import { PaymentHandlesForm } from '@/components/settings/PaymentHandlesForm';
 import { CopyHostCode } from '@/components/host/CopyHostCode';
