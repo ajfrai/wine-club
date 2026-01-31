@@ -19,6 +19,7 @@ interface HostFormProps {
 type HostFormInputs = HostSignupFormData;
 
 export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false }) => {
+  console.log('[HostForm] Component rendered, isLoading:', isLoading);
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -54,6 +55,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   };
 
   const handleOnboardingComplete = () => {
+    console.log('[HostForm] Onboarding completed - transitioning to form');
     setIsTransitioning(true);
     setTimeout(() => {
       setShowOnboarding(false);
@@ -62,6 +64,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   };
 
   if (showOnboarding) {
+    console.log('[HostForm] Showing onboarding screen');
     return (
       <div className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
         <HostOnboarding onComplete={handleOnboardingComplete} />
@@ -69,9 +72,22 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
     );
   }
 
+  const handleFormSubmit = async (data: HostFormInputs) => {
+    console.log('[HostForm] Form submitted');
+    console.log('[HostForm] Form data:', {
+      email: data.email,
+      fullName: data.fullName,
+      clubType: data.clubType,
+      clubAddress: data.clubAddress,
+      hasCoordinates: !!(data.latitude && data.longitude),
+    });
+    await onSubmit(data);
+  };
+
+  console.log('[HostForm] Rendering main form');
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       className={`space-y-6 transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
     >
       {/* Personal Information */}
@@ -198,7 +214,12 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
         />
       </div>
 
-      <Button type="submit" isLoading={isLoading} className="w-full">
+      <Button
+        type="submit"
+        isLoading={isLoading}
+        className="w-full"
+        onClick={() => console.log('[HostForm] Create Club Account button clicked')}
+      >
         Create Club Account
       </Button>
     </form>

@@ -24,10 +24,12 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
   const [panelState, setPanelState] = useState<PanelState>('collapsed');
 
   const handleHostClick = () => {
+    console.log('[SignupContainer] Create Club panel clicked - expanding host form');
     setPanelState('host');
   };
 
   const handleMemberClick = () => {
+    console.log('[SignupContainer] Join Club panel clicked - expanding member form');
     setPanelState('member');
   };
 

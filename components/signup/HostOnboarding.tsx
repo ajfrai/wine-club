@@ -14,9 +14,12 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
   const totalSlides = 3;
 
   const goToNext = () => {
+    console.log('[HostOnboarding] goToNext called, currentSlide:', currentSlide);
     if (currentSlide < totalSlides - 1) {
+      console.log('[HostOnboarding] Moving to next slide:', currentSlide + 1);
       setCurrentSlide(currentSlide + 1);
     } else {
+      console.log('[HostOnboarding] Last slide - completing onboarding');
       setIsExiting(true);
       setTimeout(onComplete, 400);
     }
@@ -169,7 +172,10 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
 
             {/* Continue button */}
             <button
-              onClick={goToNext}
+              onClick={() => {
+                console.log('[HostOnboarding] Continue/Ready button clicked');
+                goToNext();
+              }}
               className={`flex items-center gap-3 px-8 py-4 rounded-full font-medium transition-all duration-300 ${
                 isLastSlide
                   ? 'bg-wine text-white hover:bg-wine-dark'

@@ -67,7 +67,10 @@ export const SplitPanel: React.FC<SplitPanelProps> = ({
       {/* Collapsed View - Click Target */}
       {!isExpanded && !isHidden && (
         <div
-          onClick={onClick}
+          onClick={() => {
+            console.log(`[SplitPanel] Panel clicked: "${title}"`);
+            onClick();
+          }}
           className="h-full w-full flex flex-col items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105 p-8"
         >
           <motion.div
