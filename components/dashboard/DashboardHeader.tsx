@@ -8,12 +8,11 @@ import { createClient } from '@/lib/supabase/client';
 
 interface DashboardHeaderProps {
   userName: string;
-  userRole: string;
   isDualRole?: boolean;
   currentDashboard: 'host' | 'member';
 }
 
-export default function DashboardHeader({ userName, userRole, isDualRole = false, currentDashboard }: DashboardHeaderProps) {
+export default function DashboardHeader({ userName, isDualRole = false, currentDashboard }: DashboardHeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();

@@ -15,20 +15,18 @@ export default async function MemberDashboardLayout({
     redirect('/login');
   }
 
-  // Fetch user profile and dual-role status
+  // Fetch user profile and capability status
   const [{ data: userProfile }, dualRoleStatus] = await Promise.all([
-    supabase.from('users').select('full_name, role').eq('id', user.id).single(),
+    supabase.from('users').select('full_name').eq('id', user.id).single(),
     checkDualRoleStatus(user.id, supabase),
   ]);
 
   const userName = userProfile?.full_name || user.email || 'User';
-  const userRole = userProfile?.role || 'member';
 
   return (
     <div className="min-h-screen bg-sunburst-50">
       <DashboardHeader
         userName={userName}
-        userRole={userRole}
         isDualRole={dualRoleStatus.isDualRole}
         currentDashboard="member"
       />
