@@ -1,12 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { Calendar, Users, Wine, Receipt, Settings } from 'lucide-react';
-import { Tabs } from '@/components/ui/Tabs';
-import { EventsTab } from '@/components/host/tabs/EventsTab';
-import { MembersTab } from '@/components/host/tabs/MembersTab';
-import { SettingsTab } from '@/components/host/tabs/SettingsTab';
-import { WinesTab } from '@/components/host/tabs/WinesTab';
-import { LedgerTab } from '@/components/host/tabs/LedgerTab';
+import { ClubManagementView } from '@/components/host/ClubManagementView';
 
 export default async function HostClubPage() {
   const supabase = await createClient();
@@ -131,66 +125,22 @@ export default async function HostClubPage() {
     ? 'Your private join code (share with people you want to invite)'
     : 'Your club code (shown on public page)';
 
-  // Build tabs
-  const tabs = [
-    {
-      id: 'events',
-      label: 'Events',
-      icon: <Calendar className="w-5 h-5" />,
-      badge: upcomingEventsCount || 0,
-      content: <EventsTab upcomingEventsCount={upcomingEventsCount || 0} defaultLocation={hostData.club_address || ''} />,
-    },
-    {
-      id: 'wines',
-      label: 'Wines',
-      icon: <Wine className="w-5 h-5" />,
-      content: <WinesTab />,
-    },
-    {
-      id: 'ledger',
-      label: 'Ledger',
-      icon: <Receipt className="w-5 h-5" />,
-      content: <LedgerTab />,
-    },
-    {
-      id: 'members',
-      label: 'Members',
-      icon: <Users className="w-5 h-5" />,
-      badge: hostData.join_mode === 'request' ? (pendingCount || 0) : undefined,
-      content: (
-        <MembersTab
-          memberCount={memberCount || 0}
-          members={members || []}
-          pendingRequests={pendingRequests}
-          pendingCount={pendingCount || 0}
-          joinMode={hostData.join_mode}
-        />
-      ),
-    },
-    {
-      id: 'settings',
-      label: 'Settings',
-      icon: <Settings className="w-5 h-5" />,
-      content: (
-        <SettingsTab
-          hostData={hostData}
-          joinModeLabel={joinModeLabel}
-          hostCodeDescription={hostCodeDescription}
-        />
-      ),
-    },
-  ];
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">{clubName}</h1>
-        <p className="text-gray-600 mt-1">Manage your club and members</p>
-      </div>
-
-      {/* Tabs */}
-      <Tabs tabs={tabs} defaultTab="events" />
-    </div>
+    <ClubManagementView
+      clubName={clubName}
+      hostCode={hostData.host_code}
+      clubAddress={hostData.club_address}
+      aboutClub={hostData.about_club}
+      winePreferences={hostData.wine_preferences}
+      memberCount={memberCount || 0}
+      upcomingEventsCount={upcomingEventsCount || 0}
+      pendingCount={pendingCount || 0}
+      joinMode={hostData.join_mode}
+      hostData={hostData}
+      members={members || []}
+      pendingRequests={pendingRequests}
+      joinModeLabel={joinModeLabel}
+      hostCodeDescription={hostCodeDescription}
+    />
   );
 }

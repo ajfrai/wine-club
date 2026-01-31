@@ -5,7 +5,7 @@ import { MapPin, Wine } from 'lucide-react';
 
 interface PublicAboutTabProps {
   aboutClub: string | null;
-  clubAddress: string;
+  clubAddress: string | null;
   winePreferences: string | null;
 }
 
@@ -31,7 +31,11 @@ export const PublicAboutTab: React.FC<PublicAboutTabProps> = ({
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Location</h2>
         <div className="flex items-start gap-3">
           <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-          <span className="text-gray-700">{clubAddress}</span>
+          {clubAddress ? (
+            <span className="text-gray-700">{clubAddress}</span>
+          ) : (
+            <span className="text-gray-500 italic">No location specified</span>
+          )}
         </div>
       </div>
 
