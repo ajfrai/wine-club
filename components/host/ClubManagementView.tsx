@@ -11,6 +11,7 @@ import { LedgerTab } from '@/components/host/tabs/LedgerTab';
 import { PublicAboutTab } from '@/components/club/tabs/PublicAboutTab';
 import { PublicEventsTab } from '@/components/club/tabs/PublicEventsTab';
 import { PublicWinesTab } from '@/components/club/tabs/PublicWinesTab';
+import { PaymentOptions } from '@/components/member/PaymentOptions';
 
 interface ClubManagementViewProps {
   clubName: string;
@@ -167,11 +168,27 @@ export function ClubManagementView({
         </div>
       )}
 
-      {/* Tabs */}
-      <Tabs
-        tabs={viewAsMember ? memberTabs : managementTabs}
-        defaultTab={viewAsMember ? 'about' : 'events'}
-      />
+      {/* Content */}
+      <div className={viewAsMember ? 'grid grid-cols-1 lg:grid-cols-4 gap-6' : ''}>
+        <div className={viewAsMember ? 'lg:col-span-3' : ''}>
+          <Tabs
+            tabs={viewAsMember ? memberTabs : managementTabs}
+            defaultTab={viewAsMember ? 'about' : 'events'}
+          />
+        </div>
+
+        {/* Payment Options Sidebar - Only shown in member view */}
+        {viewAsMember && (
+          <div className="space-y-6">
+            <PaymentOptions
+              venmoUsername={hostData?.venmo_username || null}
+              paypalUsername={hostData?.paypal_username || null}
+              zelleHandle={hostData?.zelle_handle || null}
+              acceptsCash={hostData?.accepts_cash || false}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
