@@ -69,7 +69,7 @@ export default function Home() {
 
             <Link
               href="/login"
-              className="px-8 py-4 bg-wine-light hover:bg-sunburst-200 text-wine-dark text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              className="px-8 py-4 bg-wine hover:bg-wine-dark text-white text-lg font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
               Sign In
             </Link>
