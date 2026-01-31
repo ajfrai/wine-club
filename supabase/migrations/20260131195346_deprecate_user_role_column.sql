@@ -18,7 +18,10 @@ ALTER TABLE public.users ALTER COLUMN role DROP NOT NULL;
 -- Step 2: Update the handle_new_user trigger to set role to NULL by default
 -- (keeping the trigger for now to maintain backward compatibility with existing flows)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   INSERT INTO public.users (id, email, role, full_name)
   VALUES (
@@ -33,8 +36,13 @@ BEGIN
     NEW.raw_user_meta_data->>'full_name'
   );
   RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    -- Log the error but don't block auth user creation
+    RAISE WARNING 'Failed to create user profile for %: %', NEW.id, SQLERRM;
+    RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql;
 
 -- Step 3: Update create_user_profile function to accept optional role
 -- Drop the old function signature and create a new one with optional role
