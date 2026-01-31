@@ -9,9 +9,15 @@ interface ClubTypeSelectionProps {
 }
 
 export const ClubTypeSelection: React.FC<ClubTypeSelectionProps> = ({ onSelect }) => {
+  const handleSelect = (clubType: ClubType) => {
+    console.log('[ClubTypeSelection] Club type selected:', clubType);
+    console.log('[ClubTypeSelection] Calling onSelect callback');
+    onSelect(clubType);
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen px-8">
-      <div className="max-w-4xl w-full">
+    <div className="flex items-center justify-center min-h-screen px-4 sm:px-8 w-full">
+      <div className="w-full max-w-6xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
             What type of club do you want to create?
@@ -24,7 +30,7 @@ export const ClubTypeSelection: React.FC<ClubTypeSelectionProps> = ({ onSelect }
         <div className="grid md:grid-cols-2 gap-6">
           {/* Fixed Location Club */}
           <button
-            onClick={() => onSelect('fixed')}
+            onClick={() => handleSelect('fixed')}
             className="group relative bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-left border-2 border-transparent hover:border-wine-dark"
           >
             <div className="w-16 h-16 rounded-full bg-wine-dark bg-opacity-10 flex items-center justify-center mb-6 group-hover:bg-opacity-20 transition-colors">
@@ -62,7 +68,7 @@ export const ClubTypeSelection: React.FC<ClubTypeSelectionProps> = ({ onSelect }
 
           {/* Multi-Host Club */}
           <button
-            onClick={() => onSelect('multi_host')}
+            onClick={() => handleSelect('multi_host')}
             className="group relative bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-left border-2 border-transparent hover:border-wine-dark"
           >
             <div className="w-16 h-16 rounded-full bg-wine-dark bg-opacity-10 flex items-center justify-center mb-6 group-hover:bg-opacity-20 transition-colors">

@@ -69,22 +69,60 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
 
   const handleAuthComplete = async (data: { fullName: string; email: string; password: string }) => {
     console.log('[SignupContainer] Auth complete, moving to club details');
-    await onAuth(data);
-    // After successful auth, move to club details step
-    setClubCreationStep('club-details');
+    console.log('[SignupContainer] Current step before auth:', clubCreationStep);
+    console.log('[SignupContainer] Selected club type:', selectedClubType);
+
+    try {
+      await onAuth(data);
+      console.log('[SignupContainer] onAuth completed successfully');
+      // After successful auth, move to club details step
+      setClubCreationStep('club-details');
+      console.log('[SignupContainer] Step changed to club-details');
+    } catch (error) {
+      console.error('[SignupContainer] Error in onAuth:', error);
+      throw error;
+    }
   };
 
   const handleLoginComplete = async (data: { email: string; password: string }) => {
     console.log('[SignupContainer] Login complete, moving to club details');
-    await onLogin(data);
-    // After successful login, move to club details step
-    setClubCreationStep('club-details');
+    console.log('[SignupContainer] Current step before login:', clubCreationStep);
+    console.log('[SignupContainer] Selected club type:', selectedClubType);
+
+    try {
+      await onLogin(data);
+      console.log('[SignupContainer] onLogin completed successfully');
+      // After successful login, move to club details step
+      setClubCreationStep('club-details');
+      console.log('[SignupContainer] Step changed to club-details');
+    } catch (error) {
+      console.error('[SignupContainer] Error in onLogin:', error);
+      throw error;
+    }
   };
 
   const handleClubCreationComplete = async (data: ClubCreationFormData) => {
-    console.log('[SignupContainer] Club creation complete');
-    await onClubCreation(data);
+    console.log('[SignupContainer] Club creation initiated');
+    console.log('[SignupContainer] Current step:', clubCreationStep);
+    console.log('[SignupContainer] Selected club type:', selectedClubType);
+    console.log('[SignupContainer] Club data:', data);
+
+    try {
+      await onClubCreation(data);
+      console.log('[SignupContainer] onClubCreation completed successfully');
+    } catch (error) {
+      console.error('[SignupContainer] Error in onClubCreation:', error);
+      throw error;
+    }
   };
+
+  console.log('[SignupContainer] Rendering with state:', {
+    panelState,
+    clubCreationStep,
+    selectedClubType,
+    isAuthenticated,
+    isLoading,
+  });
 
   return (
     <div className="relative h-screen w-full flex overflow-hidden">
@@ -100,22 +138,31 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
       >
         <div className="h-full overflow-y-auto">
           {clubCreationStep === 'club-type' && (
-            <ClubTypeSelection onSelect={handleClubTypeSelect} />
+            <>
+              {console.log('[SignupContainer] Rendering ClubTypeSelection')}
+              <ClubTypeSelection onSelect={handleClubTypeSelect} />
+            </>
           )}
           {clubCreationStep === 'auth' && selectedClubType && (
-            <AuthForm
-              clubType={selectedClubType}
-              onSignup={handleAuthComplete}
-              onLogin={handleLoginComplete}
-              isLoading={isLoading}
-            />
+            <>
+              {console.log('[SignupContainer] Rendering AuthForm for club type:', selectedClubType)}
+              <AuthForm
+                clubType={selectedClubType}
+                onSignup={handleAuthComplete}
+                onLogin={handleLoginComplete}
+                isLoading={isLoading}
+              />
+            </>
           )}
           {clubCreationStep === 'club-details' && selectedClubType && (
-            <ClubCreationForm
-              clubType={selectedClubType}
-              onSubmit={handleClubCreationComplete}
-              isLoading={isLoading}
-            />
+            <>
+              {console.log('[SignupContainer] Rendering ClubCreationForm for club type:', selectedClubType)}
+              <ClubCreationForm
+                clubType={selectedClubType}
+                onSubmit={handleClubCreationComplete}
+                isLoading={isLoading}
+              />
+            </>
           )}
         </div>
       </SplitPanel>

@@ -73,20 +73,29 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   });
 
   const handleSignupSubmit = async (data: SignupFormData) => {
+    console.log('[AuthForm] Signup form submitted');
+    console.log('[AuthForm] Email:', data.email);
+    console.log('[AuthForm] Full name:', data.fullName);
+    console.log('[AuthForm] Calling onSignup callback');
     await onSignup({
       fullName: data.fullName,
       email: data.email,
       password: data.password,
     });
+    console.log('[AuthForm] onSignup callback completed');
   };
 
   const handleLoginSubmit = async (data: LoginFormData) => {
+    console.log('[AuthForm] Login form submitted');
+    console.log('[AuthForm] Email:', data.email);
+    console.log('[AuthForm] Calling onLogin callback');
     await onLogin(data);
+    console.log('[AuthForm] onLogin callback completed');
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-8">
-      <div className="max-w-md w-full">
+    <div className="flex items-center justify-center min-h-screen px-4 sm:px-8 w-full">
+      <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-light text-gray-900 mb-3">
             {clubType === 'multi_host'

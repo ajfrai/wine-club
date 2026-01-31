@@ -33,16 +33,19 @@ export default function SignupPage() {
   }, []);
 
   const handleAuth = async (data: { fullName: string; email: string; password: string }) => {
-    console.log('[SignupPage] handleAuth called');
-    console.log('[SignupPage] Email:', data.email);
+    console.log('[SignupPage] ========== handleAuth START ==========');
+    console.log('[SignupPage] handleAuth called with email:', data.email);
+    console.log('[SignupPage] Current state - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'userId:', userId);
 
     setIsLoading(true);
     setError(null);
 
     try {
       const supabase = createClient();
+      console.log('[SignupPage] Supabase client created');
 
       // Create auth user
+      console.log('[SignupPage] Creating auth user...');
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -55,18 +58,23 @@ export default function SignupPage() {
       });
 
       if (authError) {
+        console.error('[SignupPage] Auth error:', authError);
         setError(authError.message);
         setIsLoading(false);
         return;
       }
 
       if (!authData.user) {
+        console.error('[SignupPage] No user returned from signUp');
         setError('Failed to create user account');
         setIsLoading(false);
         return;
       }
 
+      console.log('[SignupPage] Auth user created with ID:', authData.user.id);
+
       // Create user profile
+      console.log('[SignupPage] Creating user profile...');
       const { error: profileError } = await supabase
         .rpc('create_user_profile', {
           user_id: authData.user.id,
@@ -76,14 +84,19 @@ export default function SignupPage() {
         });
 
       if (profileError) {
+        console.error('[SignupPage] Profile creation error:', profileError);
         setError('Failed to create user profile');
         setIsLoading(false);
         return;
       }
 
+      console.log('[SignupPage] User profile created successfully');
+      console.log('[SignupPage] Setting authentication state...');
       setIsAuthenticated(true);
       setUserId(authData.user.id);
       setIsLoading(false);
+      console.log('[SignupPage] Auth state updated - isAuthenticated: true, userId:', authData.user.id);
+      console.log('[SignupPage] ========== handleAuth COMPLETE ==========');
     } catch (err) {
       console.error('[SignupPage] Exception during auth:', err);
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -92,27 +105,37 @@ export default function SignupPage() {
   };
 
   const handleLogin = async (data: { email: string; password: string }) => {
-    console.log('[SignupPage] handleLogin called');
+    console.log('[SignupPage] ========== handleLogin START ==========');
+    console.log('[SignupPage] handleLogin called with email:', data.email);
+    console.log('[SignupPage] Current state - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'userId:', userId);
 
     setIsLoading(true);
     setError(null);
 
     try {
       const supabase = createClient();
+      console.log('[SignupPage] Supabase client created, calling login...');
       const response = await login(data, supabase);
 
+      console.log('[SignupPage] Login response received:', { success: response.success, hasUser: !!response.user });
+
       if (!response.success) {
+        console.error('[SignupPage] Login failed:', response.error);
         setError(response.error || 'Login failed');
         setIsLoading(false);
         return;
       }
 
       if (response.user) {
+        console.log('[SignupPage] Login successful, user ID:', response.user.id);
+        console.log('[SignupPage] Setting authentication state...');
         setIsAuthenticated(true);
         setUserId(response.user.id);
+        console.log('[SignupPage] Auth state updated - isAuthenticated: true, userId:', response.user.id);
       }
 
       setIsLoading(false);
+      console.log('[SignupPage] ========== handleLogin COMPLETE ==========');
     } catch (err) {
       console.error('[SignupPage] Exception during login:', err);
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -121,30 +144,61 @@ export default function SignupPage() {
   };
 
   const handleClubCreation = async (data: ClubCreationFormData) => {
+    console.log('[SignupPage] ========== handleClubCreation START ==========');
     console.log('[SignupPage] handleClubCreation called');
+    console.log('[SignupPage] Current state - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'userId:', userId);
+    console.log('[SignupPage] Club data received:', {
+      clubName: data.clubName,
+      clubType: data.clubType,
+      hasAddress: !!data.clubAddress,
+      hasCoordinates: !!(data.latitude && data.longitude),
+    });
 
     if (!userId) {
+      console.error('[SignupPage] ERROR: No userId - user must be logged in');
       setError('You must be logged in to create a club');
       return;
     }
 
+    console.log('[SignupPage] User ID verified:', userId);
+    console.log('[SignupPage] Setting isLoading to true...');
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log('[SignupPage] Creating Supabase client...');
       const supabase = createClient();
+
+      console.log('[SignupPage] Calling createClub function...');
+      console.log('[SignupPage] Parameters:', {
+        userId,
+        clubName: data.clubName,
+        clubType: data.clubType,
+        clubAddress: data.clubAddress,
+      });
+
       const response = await createClub(userId, data, supabase);
 
+      console.log('[SignupPage] createClub response received:', {
+        success: response.success,
+        error: response.error,
+        hostId: response.hostId,
+      });
+
       if (!response.success) {
+        console.error('[SignupPage] Club creation failed:', response.error);
         setError(response.error || 'Failed to create club');
         setIsLoading(false);
         return;
       }
 
-      console.log('[SignupPage] Club creation successful, redirecting to dashboard');
+      console.log('[SignupPage] Club creation successful!');
+      console.log('[SignupPage] Redirecting to /dashboard/host...');
       router.push('/dashboard/host');
+      console.log('[SignupPage] ========== handleClubCreation COMPLETE ==========');
     } catch (err) {
       console.error('[SignupPage] Exception during club creation:', err);
+      console.error('[SignupPage] Exception stack:', err instanceof Error ? err.stack : 'No stack trace');
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
       setIsLoading(false);
     }

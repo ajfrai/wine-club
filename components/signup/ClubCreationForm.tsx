@@ -49,12 +49,25 @@ export const ClubCreationForm: React.FC<ClubCreationFormProps> = ({
   };
 
   const handleFormSubmit = async (data: ClubCreationFormData) => {
-    await onSubmit(data);
+    console.log('[ClubCreationForm] Form submitted');
+    console.log('[ClubCreationForm] Club type:', data.clubType);
+    console.log('[ClubCreationForm] Club name:', data.clubName);
+    console.log('[ClubCreationForm] Has address:', !!data.clubAddress);
+    console.log('[ClubCreationForm] Has coordinates:', !!(data.latitude && data.longitude));
+    console.log('[ClubCreationForm] Calling onSubmit callback');
+
+    try {
+      await onSubmit(data);
+      console.log('[ClubCreationForm] onSubmit callback completed successfully');
+    } catch (error) {
+      console.error('[ClubCreationForm] Error in onSubmit callback:', error);
+      throw error;
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-8">
-      <div className="max-w-2xl w-full">
+    <div className="flex items-center justify-center min-h-screen px-4 sm:px-8 w-full">
+      <div className="w-full max-w-4xl">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-light text-gray-900 mb-3">
             {clubType === 'multi_host' ? 'Create Your Friend-Group Club' : 'Create Your Wine Club'}
@@ -115,7 +128,16 @@ export const ClubCreationForm: React.FC<ClubCreationFormProps> = ({
               {...register('winePreferences')}
             />
 
-            <Button type="submit" isLoading={isLoading} className="w-full">
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              className="w-full"
+              onClick={() => {
+                console.log('[ClubCreationForm] Create Club button clicked');
+                console.log('[ClubCreationForm] isLoading:', isLoading);
+                console.log('[ClubCreationForm] Form errors:', errors);
+              }}
+            >
               Create Club
             </Button>
           </form>
