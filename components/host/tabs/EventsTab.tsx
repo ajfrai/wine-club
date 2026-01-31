@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Calendar, Plus, MapPin, Users } from 'lucide-react';
+import { Calendar, Plus, MapPin, Users, Receipt } from 'lucide-react';
 import { Dialog } from '@/components/ui/Dialog';
 import { EventForm } from '@/components/host/EventForm';
 import { EventFormData } from '@/lib/validations/event-form.schema';
+import { EventLedgerDialog } from '@/components/host/EventLedgerDialog';
 
 interface Event {
   id: string;
@@ -30,6 +31,8 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [isLedgerOpen, setIsLedgerOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
@@ -90,6 +93,18 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
 
   const closeDialog = () => {
     setIsDialogOpen(false);
+  };
+
+  const handleViewLedger = (event: Event, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedEvent(event);
+    setIsLedgerOpen(true);
+  };
+
+  const closeLedger = () => {
+    setIsLedgerOpen(false);
+    setSelectedEvent(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -174,13 +189,9 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
         ) : (
           <div className="space-y-3">
             {upcomingEvents.map((event) => (
-              <Link
-                key={event.id}
-                href="/dashboard/host/club/events"
-                className="block bg-white border border-wine-light rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
+              <div key={event.id} className="bg-white border border-wine-light rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between gap-4">
+                  <Link href="/dashboard/host/club/events" className="flex-1">
                     <h4 className="font-semibold text-wine-dark mb-1">{event.title}</h4>
                     <div className="space-y-1 text-sm text-gray-700">
                       <div className="flex items-center gap-2">
@@ -204,14 +215,23 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
                         </div>
                       )}
                     </div>
-                  </div>
-                  {event.price && (
-                    <div className="ml-4 text-right">
+                  </Link>
+                  <div className="flex flex-col items-end gap-2">
+                    {event.price && (
                       <div className="text-lg font-bold text-wine-dark">${event.price}</div>
-                    </div>
-                  )}
+                    )}
+                    {event.price && (
+                      <button
+                        onClick={(e) => handleViewLedger(event, e)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-wine text-white rounded hover:bg-wine-dark transition-colors"
+                      >
+                        <Receipt className="w-3.5 h-3.5" />
+                        Ledger
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
@@ -231,6 +251,16 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
           defaultLocation={defaultLocation}
         />
       </Dialog>
+
+      {/* Event Ledger Dialog */}
+      {selectedEvent && (
+        <EventLedgerDialog
+          isOpen={isLedgerOpen}
+          onClose={closeLedger}
+          eventId={selectedEvent.id}
+          eventTitle={selectedEvent.title}
+        />
+      )}
     </div>
   );
 };
