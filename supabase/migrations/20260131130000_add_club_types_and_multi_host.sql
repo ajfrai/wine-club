@@ -95,154 +95,169 @@ USING (
   )
 );
 
--- Update general_charges policies for multi-host clubs
-DROP POLICY IF EXISTS "Hosts can create charges" ON general_charges;
-DROP POLICY IF EXISTS "Hosts can update their charges" ON general_charges;
-DROP POLICY IF EXISTS "Hosts can delete their charges" ON general_charges;
+-- Update general_charges policies for multi-host clubs (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'general_charges') THEN
+    DROP POLICY IF EXISTS "Hosts can create charges" ON general_charges;
+    DROP POLICY IF EXISTS "Hosts can update their charges" ON general_charges;
+    DROP POLICY IF EXISTS "Hosts can delete their charges" ON general_charges;
 
-CREATE POLICY "Club admins can create charges"
-ON general_charges FOR INSERT
-TO authenticated
-WITH CHECK (
-  -- Original: user is the host
-  host_id = auth.uid()
-  OR
-  -- New: user is a member of a multi-host club
-  EXISTS (
-    SELECT 1 FROM hosts h
-    INNER JOIN memberships m ON m.host_id = h.user_id
-    WHERE h.user_id = general_charges.host_id
-    AND h.club_type = 'multi_host'
-    AND m.member_id = auth.uid()
-    AND m.status = 'active'
-  )
-);
+    CREATE POLICY "Club admins can create charges"
+    ON general_charges FOR INSERT
+    TO authenticated
+    WITH CHECK (
+      -- Original: user is the host
+      host_id = auth.uid()
+      OR
+      -- New: user is a member of a multi-host club
+      EXISTS (
+        SELECT 1 FROM hosts h
+        INNER JOIN memberships m ON m.host_id = h.user_id
+        WHERE h.user_id = general_charges.host_id
+        AND h.club_type = 'multi_host'
+        AND m.member_id = auth.uid()
+        AND m.status = 'active'
+      )
+    );
 
-CREATE POLICY "Club admins can update charges"
-ON general_charges FOR UPDATE
-TO authenticated
-USING (
-  -- Original: user is the host
-  host_id = auth.uid()
-  OR
-  -- New: user is a member of a multi-host club
-  EXISTS (
-    SELECT 1 FROM hosts h
-    INNER JOIN memberships m ON m.host_id = h.user_id
-    WHERE h.user_id = general_charges.host_id
-    AND h.club_type = 'multi_host'
-    AND m.member_id = auth.uid()
-    AND m.status = 'active'
-  )
-);
+    CREATE POLICY "Club admins can update charges"
+    ON general_charges FOR UPDATE
+    TO authenticated
+    USING (
+      -- Original: user is the host
+      host_id = auth.uid()
+      OR
+      -- New: user is a member of a multi-host club
+      EXISTS (
+        SELECT 1 FROM hosts h
+        INNER JOIN memberships m ON m.host_id = h.user_id
+        WHERE h.user_id = general_charges.host_id
+        AND h.club_type = 'multi_host'
+        AND m.member_id = auth.uid()
+        AND m.status = 'active'
+      )
+    );
 
-CREATE POLICY "Club admins can delete charges"
-ON general_charges FOR DELETE
-TO authenticated
-USING (
-  -- Original: user is the host
-  host_id = auth.uid()
-  OR
-  -- New: user is a member of a multi-host club
-  EXISTS (
-    SELECT 1 FROM hosts h
-    INNER JOIN memberships m ON m.host_id = h.user_id
-    WHERE h.user_id = general_charges.host_id
-    AND h.club_type = 'multi_host'
-    AND m.member_id = auth.uid()
-    AND m.status = 'active'
-  )
-);
+    CREATE POLICY "Club admins can delete charges"
+    ON general_charges FOR DELETE
+    TO authenticated
+    USING (
+      -- Original: user is the host
+      host_id = auth.uid()
+      OR
+      -- New: user is a member of a multi-host club
+      EXISTS (
+        SELECT 1 FROM hosts h
+        INNER JOIN memberships m ON m.host_id = h.user_id
+        WHERE h.user_id = general_charges.host_id
+        AND h.club_type = 'multi_host'
+        AND m.member_id = auth.uid()
+        AND m.status = 'active'
+      )
+    );
+  END IF;
+END $$;
 
--- Update event_payments policies for multi-host clubs
-DROP POLICY IF EXISTS "Hosts can insert event payments" ON event_payments;
-DROP POLICY IF EXISTS "Hosts can update event payments" ON event_payments;
+-- Update event_payments policies for multi-host clubs (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'event_payments') THEN
+    DROP POLICY IF EXISTS "Hosts can insert event payments" ON event_payments;
+    DROP POLICY IF EXISTS "Hosts can update event payments" ON event_payments;
 
-CREATE POLICY "Club admins can insert event payments"
-ON event_payments FOR INSERT
-TO authenticated
-WITH CHECK (
-  -- User is the host of the event
-  EXISTS (
-    SELECT 1 FROM events e
-    WHERE e.id = event_payments.event_id
-    AND e.host_id = auth.uid()
-  )
-  OR
-  -- User is a member of a multi-host club that owns the event
-  EXISTS (
-    SELECT 1 FROM events e
-    INNER JOIN hosts h ON h.user_id = e.host_id
-    INNER JOIN memberships m ON m.host_id = h.user_id
-    WHERE e.id = event_payments.event_id
-    AND h.club_type = 'multi_host'
-    AND m.member_id = auth.uid()
-    AND m.status = 'active'
-  )
-);
+    CREATE POLICY "Club admins can insert event payments"
+    ON event_payments FOR INSERT
+    TO authenticated
+    WITH CHECK (
+      -- User is the host of the event
+      EXISTS (
+        SELECT 1 FROM events e
+        WHERE e.id = event_payments.event_id
+        AND e.host_id = auth.uid()
+      )
+      OR
+      -- User is a member of a multi-host club that owns the event
+      EXISTS (
+        SELECT 1 FROM events e
+        INNER JOIN hosts h ON h.user_id = e.host_id
+        INNER JOIN memberships m ON m.host_id = h.user_id
+        WHERE e.id = event_payments.event_id
+        AND h.club_type = 'multi_host'
+        AND m.member_id = auth.uid()
+        AND m.status = 'active'
+      )
+    );
 
-CREATE POLICY "Club admins can update event payments"
-ON event_payments FOR UPDATE
-TO authenticated
-USING (
-  -- User is the host of the event
-  EXISTS (
-    SELECT 1 FROM events e
-    WHERE e.id = event_payments.event_id
-    AND e.host_id = auth.uid()
-  )
-  OR
-  -- User is a member of a multi-host club that owns the event
-  EXISTS (
-    SELECT 1 FROM events e
-    INNER JOIN hosts h ON h.user_id = e.host_id
-    INNER JOIN memberships m ON m.host_id = h.user_id
-    WHERE e.id = event_payments.event_id
-    AND h.club_type = 'multi_host'
-    AND m.member_id = auth.uid()
-    AND m.status = 'active'
-  )
-);
+    CREATE POLICY "Club admins can update event payments"
+    ON event_payments FOR UPDATE
+    TO authenticated
+    USING (
+      -- User is the host of the event
+      EXISTS (
+        SELECT 1 FROM events e
+        WHERE e.id = event_payments.event_id
+        AND e.host_id = auth.uid()
+      )
+      OR
+      -- User is a member of a multi-host club that owns the event
+      EXISTS (
+        SELECT 1 FROM events e
+        INNER JOIN hosts h ON h.user_id = e.host_id
+        INNER JOIN memberships m ON m.host_id = h.user_id
+        WHERE e.id = event_payments.event_id
+        AND h.club_type = 'multi_host'
+        AND m.member_id = auth.uid()
+        AND m.status = 'active'
+      )
+    );
+  END IF;
+END $$;
 
--- Update wines policies for multi-host clubs
-DROP POLICY IF EXISTS "Hosts can update their wines" ON wines;
-DROP POLICY IF EXISTS "Hosts can delete their wines" ON wines;
+-- Update wines policies for multi-host clubs (only if table exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'wines') THEN
+    DROP POLICY IF EXISTS "Hosts can update their wines" ON wines;
+    DROP POLICY IF EXISTS "Hosts can delete their wines" ON wines;
 
-CREATE POLICY "Club admins can update wines"
-ON wines FOR UPDATE
-TO authenticated
-USING (
-  -- Original: user is the host
-  host_id = auth.uid()
-  OR
-  -- New: user is a member of a multi-host club
-  EXISTS (
-    SELECT 1 FROM hosts h
-    INNER JOIN memberships m ON m.host_id = h.user_id
-    WHERE h.user_id = wines.host_id
-    AND h.club_type = 'multi_host'
-    AND m.member_id = auth.uid()
-    AND m.status = 'active'
-  )
-);
+    CREATE POLICY "Club admins can update wines"
+    ON wines FOR UPDATE
+    TO authenticated
+    USING (
+      -- Original: user is the host
+      host_id = auth.uid()
+      OR
+      -- New: user is a member of a multi-host club
+      EXISTS (
+        SELECT 1 FROM hosts h
+        INNER JOIN memberships m ON m.host_id = h.user_id
+        WHERE h.user_id = wines.host_id
+        AND h.club_type = 'multi_host'
+        AND m.member_id = auth.uid()
+        AND m.status = 'active'
+      )
+    );
 
-CREATE POLICY "Club admins can delete wines"
-ON wines FOR DELETE
-TO authenticated
-USING (
-  -- Original: user is the host
-  host_id = auth.uid()
-  OR
-  -- New: user is a member of a multi-host club
-  EXISTS (
-    SELECT 1 FROM hosts h
-    INNER JOIN memberships m ON m.host_id = h.user_id
-    WHERE h.user_id = wines.host_id
-    AND h.club_type = 'multi_host'
-    AND m.member_id = auth.uid()
-    AND m.status = 'active'
-  )
-);
+    CREATE POLICY "Club admins can delete wines"
+    ON wines FOR DELETE
+    TO authenticated
+    USING (
+      -- Original: user is the host
+      host_id = auth.uid()
+      OR
+      -- New: user is a member of a multi-host club
+      EXISTS (
+        SELECT 1 FROM hosts h
+        INNER JOIN memberships m ON m.host_id = h.user_id
+        WHERE h.user_id = wines.host_id
+        AND h.club_type = 'multi_host'
+        AND m.member_id = auth.uid()
+        AND m.status = 'active'
+      )
+    );
+  END IF;
+END $$;
 
 -- Update hosts table policies for multi-host clubs
 DROP POLICY IF EXISTS "Hosts can update their own profile" ON hosts;
