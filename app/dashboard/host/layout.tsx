@@ -15,25 +15,23 @@ export default async function HostDashboardLayout({
     redirect('/login');
   }
 
-  // Fetch user profile and dual-role status
+  // Fetch user profile and capability status
   const [{ data: userProfile }, dualRoleStatus] = await Promise.all([
-    supabase.from('users').select('full_name, role').eq('id', user.id).single(),
+    supabase.from('users').select('full_name').eq('id', user.id).single(),
     checkDualRoleStatus(user.id, supabase),
   ]);
 
-  // Redirect users without host profile to member dashboard
+  // Redirect users without host profile (club ownership) to member dashboard
   if (!dualRoleStatus.hasHostProfile) {
     redirect('/dashboard/member');
   }
 
   const userName = userProfile?.full_name || user.email || 'User';
-  const userRole = userProfile?.role || 'host';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sunburst-50 to-wine-light">
       <DashboardHeader
         userName={userName}
-        userRole={userRole}
         isDualRole={dualRoleStatus.isDualRole}
         currentDashboard="host"
       />

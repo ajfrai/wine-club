@@ -1,10 +1,21 @@
+/**
+ * @deprecated UserRole is being deprecated in favor of capability-based access.
+ * Use checkDualRoleStatus() to determine user capabilities instead.
+ */
 export type UserRole = 'host' | 'member';
 export type ClubType = 'fixed' | 'multi_host';
 
 export interface User {
   id: string;
   email: string;
-  role: UserRole;
+  /**
+   * @deprecated role is being deprecated in favor of capability-based access.
+   * Capabilities are determined by table presence:
+   * - hosts table presence → can manage clubs
+   * - members table presence → can join clubs
+   * Use checkDualRoleStatus() instead of checking this field.
+   */
+  role?: UserRole | null;
   full_name: string | null;
   created_at: string;
   updated_at: string;

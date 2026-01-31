@@ -1,6 +1,13 @@
 import type { SignupResponse, HostSignupData, MemberSignupData, LoginData, LoginResponse } from '@/types/auth.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+/**
+ * Sign up a user who wants to create and manage a club.
+ * Creates a user profile, host (club) profile, and member profile.
+ *
+ * Note: The 'role' field in auth metadata and users table is deprecated.
+ * Capabilities are now determined by table presence (hosts, members tables).
+ */
 export async function signupHost(data: HostSignupData, supabase: SupabaseClient): Promise<SignupResponse> {
   try {
     console.log('[signupHost] Starting host signup process');
@@ -182,6 +189,13 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
   }
 }
 
+/**
+ * Sign up a user who wants to join clubs as a member.
+ * Creates a user profile and optionally a member profile with location data.
+ *
+ * Note: The 'role' field in auth metadata and users table is deprecated.
+ * Capabilities are now determined by table presence (hosts, members tables).
+ */
 export async function signupMember(data: MemberSignupData, supabase: SupabaseClient): Promise<SignupResponse> {
   try {
     console.log('[signupMember] Starting member signup process');
