@@ -37,9 +37,9 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
 
   return (
     <div className="relative h-screen w-full flex overflow-hidden">
-      {/* Host Panel */}
+      {/* Club Creation Panel */}
       <SplitPanel
-        title="Become a Host"
+        title="Create a Club"
         subtitle="Start your own wine club"
         gradientFrom="rgb(92, 41, 49)"
         gradientTo="rgb(127, 29, 29)"
@@ -52,8 +52,8 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
 
       {/* Member Panel */}
       <SplitPanel
-        title="Become a Member"
-        subtitle="Join a wine club near you"
+        title="Join a Club"
+        subtitle="Find a wine club near you"
         gradientFrom="rgb(220, 180, 180)"
         gradientTo="rgb(245, 140, 140)"
         isExpanded={panelState === 'member'}

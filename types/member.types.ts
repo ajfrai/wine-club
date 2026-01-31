@@ -24,7 +24,8 @@ export interface Membership {
   host?: {
     user_id: string;
     host_code: string;
-    club_address: string;
+    club_type: 'fixed' | 'multi_host';
+    club_address: string | null;
     about_club: string | null;
     latitude: number | null;
     longitude: number | null;
@@ -61,10 +62,13 @@ export interface Event {
   wines_theme: string | null;
   price: number | null;
   host_id: string;
+  event_host_id: string | null; // For multi-host clubs: the member hosting this specific event
+  event_location: string | null; // For multi-host clubs: the location for this specific event
   max_attendees: number | null;
   created_at: string;
   updated_at: string;
   host?: { full_name: string; host_code: string };
+  event_host?: { full_name: string }; // Details of the member hosting this event (for multi-host clubs)
   attendee_count?: number;
   user_registered?: boolean;
 }
@@ -73,11 +77,12 @@ export interface NearbyClub {
   host_id: string;
   host_name: string;
   host_code: string;
-  club_address: string;
+  club_type: 'fixed' | 'multi_host';
+  club_address: string | null;
   about_club: string | null;
   wine_preferences: string | null;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   join_mode: 'public' | 'request' | 'private';
   distance: number; // miles
   member_count: number;

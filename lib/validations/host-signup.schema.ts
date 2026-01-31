@@ -17,9 +17,12 @@ export const hostSignupSchema = z.object({
 
   confirmPassword: z.string(),
 
+  clubType: z.enum(['fixed', 'multi_host']),
+
   clubAddress: z.string()
     .min(10, 'Please provide a complete club address')
-    .max(500, 'Club address must be less than 500 characters'),
+    .max(500, 'Club address must be less than 500 characters')
+    .optional(),
 
   aboutClub: z.string()
     .max(500, 'About club must be less than 500 characters')
@@ -31,9 +34,20 @@ export const hostSignupSchema = z.object({
 
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
+})
+.refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
+})
+.refine((data) => {
+  // For fixed clubs, address is required
+  if (data.clubType === 'fixed' && !data.clubAddress) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'Club address is required for fixed location clubs',
+  path: ['clubAddress'],
 });
 
 export type HostSignupFormData = z.infer<typeof hostSignupSchema>;

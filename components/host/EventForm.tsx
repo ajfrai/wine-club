@@ -7,6 +7,12 @@ import { eventFormSchema, type EventFormData } from '@/lib/validations/event-for
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
+import type { ClubType } from '@/types/auth.types';
+
+interface ClubMember {
+  user_id: string;
+  full_name: string;
+}
 
 interface EventFormProps {
   onSubmit: (data: EventFormData) => Promise<void>;
@@ -14,6 +20,8 @@ interface EventFormProps {
   isLoading?: boolean;
   defaultValues?: Partial<EventFormData>;
   defaultLocation?: string;
+  clubType?: ClubType;
+  clubMembers?: ClubMember[];
 }
 
 export const EventForm: React.FC<EventFormProps> = ({
@@ -22,6 +30,8 @@ export const EventForm: React.FC<EventFormProps> = ({
   isLoading = false,
   defaultValues,
   defaultLocation,
+  clubType = 'fixed',
+  clubMembers = [],
 }) => {
   const {
     register,
@@ -41,6 +51,8 @@ export const EventForm: React.FC<EventFormProps> = ({
       max_attendees: defaultValues?.max_attendees ?? null,
       is_recurring: defaultValues?.is_recurring ?? false,
       recurrence_count: defaultValues?.recurrence_count ?? 12,
+      event_host_id: defaultValues?.event_host_id || '',
+      event_location: defaultValues?.event_location || '',
     },
   });
 
@@ -110,15 +122,53 @@ export const EventForm: React.FC<EventFormProps> = ({
         {...register('wines_theme')}
       />
 
-      {/* Location */}
-      <Input
-        label="Location"
-        type="text"
-        placeholder="Club address"
-        error={errors.location?.message}
-        helperText="Defaults to your club address"
-        {...register('location')}
-      />
+      {/* Multi-Host Club: Host Selection */}
+      {clubType === 'multi_host' && (
+        <>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Event Host <span className="text-red-500">*</span>
+            </label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-wine focus:border-wine"
+              {...register('event_host_id')}
+            >
+              <option value="">Select a host...</option>
+              {clubMembers.map((member) => (
+                <option key={member.user_id} value={member.user_id}>
+                  {member.full_name}
+                </option>
+              ))}
+            </select>
+            {errors.event_host_id && (
+              <p className="text-xs text-red-500 mt-1">{errors.event_host_id.message}</p>
+            )}
+            <p className="text-xs text-gray-500 mt-1">Who will host this event?</p>
+          </div>
+
+          <Input
+            label="Event Location"
+            type="text"
+            placeholder="Enter the address for this event"
+            error={errors.event_location?.message}
+            required
+            helperText="Where will this event take place?"
+            {...register('event_location')}
+          />
+        </>
+      )}
+
+      {/* Fixed Club: Location (optional, defaults to club address) */}
+      {clubType === 'fixed' && (
+        <Input
+          label="Location"
+          type="text"
+          placeholder="Club address"
+          error={errors.location?.message}
+          helperText="Defaults to your club address"
+          {...register('location')}
+        />
+      )}
 
       {/* Price and Max Attendees */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
