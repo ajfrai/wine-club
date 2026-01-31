@@ -35,6 +35,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       email: '',
       password: '',
       confirmPassword: '',
+      clubType: 'fixed',
       clubAddress: '',
       aboutClub: '',
       winePreferences: '',
@@ -44,6 +45,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   });
 
   const clubAddress = watch('clubAddress');
+  const clubType = watch('clubType');
 
   const handleClubAddressSelect = (addressComponents: AddressComponents) => {
     setValue('clubAddress', addressComponents.formattedAddress, { shouldValidate: true });
@@ -118,15 +120,61 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">Club Information</h3>
 
-        <AddressAutocomplete
-          label="Club Address"
-          placeholder="Start typing your club address..."
-          error={errors.clubAddress?.message}
-          required
-          value={clubAddress}
-          onChange={(value) => setValue('clubAddress', value, { shouldValidate: true })}
-          onSelect={handleClubAddressSelect}
-        />
+        {/* Club Type Selection */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-gray-700">
+            Club Type <span className="text-red-500">*</span>
+          </label>
+
+          <div className="space-y-2">
+            <label className="flex items-start p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <input
+                type="radio"
+                value="fixed"
+                {...register('clubType')}
+                className="mt-1 h-4 w-4 text-wine-600 focus:ring-wine-500"
+              />
+              <div className="ml-3 flex-1">
+                <div className="text-sm font-medium text-gray-900">Fixed Location & Host</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Traditional club - events happen at your location with you as the host
+                </div>
+              </div>
+            </label>
+
+            <label className="flex items-start p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <input
+                type="radio"
+                value="multi_host"
+                {...register('clubType')}
+                className="mt-1 h-4 w-4 text-wine-600 focus:ring-wine-500"
+              />
+              <div className="ml-3 flex-1">
+                <div className="text-sm font-medium text-gray-900">Multi-Host (Friend Group)</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Rotating club - any member can host events at their location
+                </div>
+              </div>
+            </label>
+          </div>
+
+          {errors.clubType && (
+            <p className="text-xs text-red-500 mt-1">{errors.clubType.message}</p>
+          )}
+        </div>
+
+        {/* Conditional Address Field - only for fixed clubs */}
+        {clubType === 'fixed' && (
+          <AddressAutocomplete
+            label="Club Address"
+            placeholder="Start typing your club address..."
+            error={errors.clubAddress?.message}
+            required
+            value={clubAddress || ''}
+            onChange={(value) => setValue('clubAddress', value, { shouldValidate: true })}
+            onSelect={handleClubAddressSelect}
+          />
+        )}
 
         <Textarea
           label="About This Club"
@@ -151,7 +199,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
       </div>
 
       <Button type="submit" isLoading={isLoading} className="w-full">
-        Create Host Account
+        Create Club Account
       </Button>
     </form>
   );

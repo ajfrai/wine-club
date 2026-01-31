@@ -81,8 +81,10 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
 
     if (latitude && longitude) {
       console.log('[signupHost] Step 4 success: Using provided coordinates:', { latitude, longitude });
-    } else {
+    } else if (data.clubType === 'fixed') {
       console.log('[signupHost] Step 4 warning: No coordinates provided, club will not appear in discovery');
+    } else {
+      console.log('[signupHost] Step 4 info: Multi-host club - coordinates not required');
     }
 
     // Step 5: Create host profile
@@ -91,8 +93,9 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
       .from('hosts')
       .insert({
         user_id: authData.user.id,
-        club_address: data.clubAddress,
-        delivery_address: data.clubAddress,
+        club_type: data.clubType,
+        club_address: data.clubAddress || null,
+        delivery_address: data.clubAddress || null,
         about_club: data.aboutClub || null,
         wine_preferences: data.winePreferences || null,
         host_code: hostCodeData,
@@ -118,7 +121,7 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
       .from('members')
       .insert({
         user_id: authData.user.id,
-        address: data.clubAddress,
+        address: data.clubAddress || null,
       });
 
     if (memberError) {

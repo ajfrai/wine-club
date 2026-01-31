@@ -1,4 +1,5 @@
 export type UserRole = 'host' | 'member';
+export type ClubType = 'fixed' | 'multi_host';
 
 export interface User {
   id: string;
@@ -12,15 +13,19 @@ export interface User {
 export interface Host {
   id: string;
   user_id: string;
-  club_address: string;
-  delivery_address: string;
+  club_type: ClubType;
+  club_address: string | null;
+  delivery_address: string | null;
   about_club: string | null;
   wine_preferences: string | null;
   host_code: string;
+  latitude: number | null;
+  longitude: number | null;
   venmo_username: string | null;
   paypal_username: string | null;
   zelle_handle: string | null;
   accepts_cash: boolean;
+  join_mode: 'public' | 'request' | 'private';
   created_at: string;
   updated_at: string;
 }
@@ -30,7 +35,8 @@ export interface HostSignupData {
   password: string;
   confirmPassword: string;
   fullName: string;
-  clubAddress: string;
+  clubType: ClubType;
+  clubAddress?: string;
   aboutClub?: string;
   winePreferences?: string;
   latitude?: number | null;

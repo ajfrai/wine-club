@@ -44,6 +44,12 @@ export const eventFormSchema = z.object({
     .max(104, 'Cannot exceed 104 occurrences (2 years)')
     .nullable()
     .optional(),
+
+  // Multi-host club fields
+  event_host_id: z.string().optional(), // The member who will host this event
+  event_location: z.string()
+    .max(500, 'Event location must be less than 500 characters')
+    .optional(), // The location for this specific event
 }).refine((data) => {
   // If end_date is provided, it should be after event_date
   if (data.end_date && data.event_date) {
