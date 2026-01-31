@@ -117,7 +117,7 @@ export default function SignupPage() {
       console.log('[SignupPage] Supabase client created, calling login...');
       const response = await login(data, supabase);
 
-      console.log('[SignupPage] Login response received:', { success: response.success, hasUser: !!response.user });
+      console.log('[SignupPage] Login response received:', JSON.stringify({ success: response.success, hasUser: !!response.user }, null, 2));
 
       if (!response.success) {
         console.error('[SignupPage] Login failed:', response.error);
@@ -147,12 +147,13 @@ export default function SignupPage() {
     console.log('[SignupPage] ========== handleClubCreation START ==========');
     console.log('[SignupPage] handleClubCreation called');
     console.log('[SignupPage] Current state - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'userId:', userId);
-    console.log('[SignupPage] Club data received:', {
+    console.log('[SignupPage] Club data received:', JSON.stringify({
       clubName: data.clubName,
       clubType: data.clubType,
       hasAddress: !!data.clubAddress,
       hasCoordinates: !!(data.latitude && data.longitude),
-    });
+      fullData: data,
+    }, null, 2));
 
     if (!userId) {
       console.error('[SignupPage] ERROR: No userId - user must be logged in');
@@ -170,20 +171,20 @@ export default function SignupPage() {
       const supabase = createClient();
 
       console.log('[SignupPage] Calling createClub function...');
-      console.log('[SignupPage] Parameters:', {
+      console.log('[SignupPage] Parameters:', JSON.stringify({
         userId,
         clubName: data.clubName,
         clubType: data.clubType,
         clubAddress: data.clubAddress,
-      });
+      }, null, 2));
 
       const response = await createClub(userId, data, supabase);
 
-      console.log('[SignupPage] createClub response received:', {
+      console.log('[SignupPage] createClub response received:', JSON.stringify({
         success: response.success,
         error: response.error,
         hostId: response.hostId,
-      });
+      }, null, 2));
 
       if (!response.success) {
         console.error('[SignupPage] Club creation failed:', response.error);

@@ -105,24 +105,24 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
     console.log('[SignupContainer] Club creation initiated');
     console.log('[SignupContainer] Current step:', clubCreationStep);
     console.log('[SignupContainer] Selected club type:', selectedClubType);
-    console.log('[SignupContainer] Club data:', data);
+    console.log('[SignupContainer] Club data:', JSON.stringify(data, null, 2));
 
     try {
       await onClubCreation(data);
       console.log('[SignupContainer] onClubCreation completed successfully');
     } catch (error) {
-      console.error('[SignupContainer] Error in onClubCreation:', error);
+      console.error('[SignupContainer] Error in onClubCreation:', JSON.stringify(error, null, 2));
       throw error;
     }
   };
 
-  console.log('[SignupContainer] Rendering with state:', {
+  console.log('[SignupContainer] Rendering with state:', JSON.stringify({
     panelState,
     clubCreationStep,
     selectedClubType,
     isAuthenticated,
     isLoading,
-  });
+  }, null, 2));
 
   return (
     <div className="relative h-screen w-full flex overflow-hidden">

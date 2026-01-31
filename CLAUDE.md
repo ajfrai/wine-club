@@ -14,3 +14,5 @@
    - Use `supabase migration repair <version> --status applied` to mark migrations as applied without running them (useful when schema already matches).
    - Use `supabase inspect db table-stats` to check data, not `db dump --data-only`.
    - When seeding data: check actual schema first (`supabase db dump --schema public`), insert into `auth.users` before `public.users` (foreign key), use dummy passwords not `gen_salt()`, and delete seed migrations after applying (don't commit).
+
+5. **Always stringify objects in console.log statements.** Use `JSON.stringify(obj, null, 2)` when logging objects, errors, or complex data structures. Never log objects directly as they will show as `[object Object]` which is not useful for debugging.

@@ -135,7 +135,8 @@ export const ClubCreationForm: React.FC<ClubCreationFormProps> = ({
               onClick={() => {
                 console.log('[ClubCreationForm] Create Club button clicked');
                 console.log('[ClubCreationForm] isLoading:', isLoading);
-                console.log('[ClubCreationForm] Form errors:', errors);
+                console.log('[ClubCreationForm] Form errors:', JSON.stringify(errors, null, 2));
+                console.log('[ClubCreationForm] Has errors:', Object.keys(errors).length > 0);
               }}
             >
               Create Club
