@@ -25,10 +25,17 @@ interface Charge {
   payment_date: string | null;
   due_date: string | null;
   event_date: string | null;
+  transaction_type: 'charge' | 'expense';
 }
 
 interface LedgerSummary {
   total_charges: number;
+  total_charges_paid: number;
+  total_charges_unpaid: number;
+  total_expenses: number;
+  total_expenses_covered: number;
+  total_expenses_uncovered: number;
+  net_balance: number;
   total_paid: number;
   total_pending: number;
   paid_count: number;
@@ -82,6 +89,7 @@ const ChargeTypeForm: React.FC<{
   members: Array<{ id: string; name: string; email: string }>;
 }> = ({ onSubmit, onCancel, isLoading, members }) => {
   const [formData, setFormData] = useState({
+    transaction_type: 'charge' as 'charge' | 'expense',
     charge_type: 'membership_dues' as 'membership_dues' | 'one_off' | 'other',
     title: '',
     description: '',
@@ -104,44 +112,48 @@ const ChargeTypeForm: React.FC<{
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Charge Type
+          Transaction Type
         </label>
         <select
-          value={formData.charge_type}
-          onChange={(e) => setFormData({ ...formData, charge_type: e.target.value as any })}
+          value={formData.transaction_type}
+          onChange={(e) => setFormData({ ...formData, transaction_type: e.target.value as any })}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
           required
         >
-          <option value="membership_dues">Membership Dues</option>
-          <option value="one_off">One-Off Charge</option>
-          <option value="other">Other</option>
+          <option value="charge">Charge (money owed to club)</option>
+          <option value="expense">Expense (money club owes to member)</option>
         </select>
       </div>
 
+      {formData.transaction_type === 'charge' && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Charge Type
+          </label>
+          <select
+            value={formData.charge_type}
+            onChange={(e) => setFormData({ ...formData, charge_type: e.target.value as any })}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            required
+          >
+            <option value="membership_dues">Membership Dues</option>
+            <option value="one_off">One-Off Charge</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      )}
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Title
+          Description
         </label>
         <input
           type="text"
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-          placeholder="e.g., Monthly Membership Fee"
+          placeholder={formData.transaction_type === 'charge' ? 'e.g., Monthly Membership Fee' : 'e.g., Wine purchase for tasting event'}
           required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Description (optional)
-        </label>
-        <textarea
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-          rows={2}
-          placeholder="Additional details about this charge"
         />
       </div>
 
@@ -175,24 +187,47 @@ const ChargeTypeForm: React.FC<{
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Apply To
-        </label>
-        <select
-          value={formData.apply_to}
-          onChange={(e) => setFormData({ ...formData, apply_to: e.target.value as 'all' | 'specific' })}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-        >
-          <option value="all">All Members</option>
-          <option value="specific">Specific Member</option>
-        </select>
-      </div>
+      {formData.transaction_type === 'charge' ? (
+        <>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Apply To
+            </label>
+            <select
+              value={formData.apply_to}
+              onChange={(e) => setFormData({ ...formData, apply_to: e.target.value as 'all' | 'specific' })}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="all">All Members</option>
+              <option value="specific">Specific Member</option>
+            </select>
+          </div>
 
-      {formData.apply_to === 'specific' && (
+          {formData.apply_to === 'specific' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select Member
+              </label>
+              <select
+                value={formData.member_id}
+                onChange={(e) => setFormData({ ...formData, member_id: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                required
+              >
+                <option value="">Choose a member...</option>
+                {members.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name} ({member.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </>
+      ) : (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Select Member
+            Paid By
           </label>
           <select
             value={formData.member_id}
@@ -200,7 +235,7 @@ const ChargeTypeForm: React.FC<{
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             required
           >
-            <option value="">Choose a member...</option>
+            <option value="">Choose who paid...</option>
             {members.map((member) => (
               <option key={member.id} value={member.id}>
                 {member.name} ({member.email})
@@ -224,7 +259,7 @@ const ChargeTypeForm: React.FC<{
           disabled={isLoading}
           className="px-4 py-2 text-sm font-medium bg-wine text-white rounded-lg hover:bg-wine-dark transition-colors disabled:opacity-50"
         >
-          {isLoading ? 'Creating...' : 'Create Charge'}
+          {isLoading ? 'Creating...' : formData.transaction_type === 'charge' ? 'Create Charge' : 'Add Expense'}
         </button>
       </div>
     </form>
@@ -236,7 +271,7 @@ export const LedgerTab: React.FC = () => {
   const [summary, setSummary] = useState<LedgerSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('unpaid_uncovered'); // Default to showing only unpaid/uncovered
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -284,75 +319,59 @@ export const LedgerTab: React.FC = () => {
   const columnHelper = createColumnHelper<Charge>();
 
   const columns = [
-    columnHelper.accessor('charge_type', {
-      header: 'Type',
-      cell: (info) => (
-        <div className="text-sm capitalize">
-          {info.getValue().replace(/_/g, ' ')}
-        </div>
-      ),
+    columnHelper.accessor('member_name', {
+      header: 'User',
+      cell: (info) => {
+        const value = info.getValue();
+        return <div className="font-medium text-gray-900">{value || 'All Members'}</div>;
+      },
     }),
     columnHelper.accessor('title', {
       header: 'Description',
-      cell: (info) => <div className="font-medium text-gray-900">{info.getValue()}</div>,
-    }),
-    columnHelper.accessor('member_name', {
-      header: 'Member',
-      cell: (info) => {
-        const value = info.getValue();
-        return <div className="text-sm">{value || 'All Members'}</div>;
-      },
+      cell: (info) => <div className="text-sm text-gray-700">{info.getValue()}</div>,
     }),
     columnHelper.accessor('amount', {
       header: 'Amount',
-      cell: (info) => <div className="font-medium">${info.getValue().toFixed(2)}</div>,
+      cell: (info) => {
+        const isExpense = info.row.original.transaction_type === 'expense';
+        return (
+          <div className={`font-medium ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
+            {isExpense ? '-' : '+'}${info.getValue().toFixed(2)}
+          </div>
+        );
+      },
+    }),
+    columnHelper.accessor('transaction_type', {
+      header: 'Type',
+      cell: (info) => {
+        const isExpense = info.getValue() === 'expense';
+        return (
+          <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded ${
+            isExpense ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+          }`}>
+            {isExpense ? 'Expense' : 'Charge'}
+          </span>
+        );
+      },
     }),
     columnHelper.accessor('payment_status', {
       header: 'Status',
       cell: (info) => <PaymentStatusBadge status={info.getValue()} />,
     }),
-    columnHelper.accessor('payment_method', {
-      header: 'Method',
-      cell: (info) => {
-        const value = info.getValue();
-        return (
-          <div className="text-sm capitalize">
-            {value ? value : '-'}
-          </div>
-        );
-      },
-    }),
-    columnHelper.accessor('due_date', {
-      header: 'Due',
-      cell: (info) => {
-        const value = info.getValue() || info.row.original.event_date;
-        return value ? (
-          <div className="text-sm">
-            {new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-          </div>
-        ) : (
-          '-'
-        );
-      },
-    }),
-    columnHelper.accessor('payment_date', {
-      header: 'Paid',
-      cell: (info) => {
-        const value = info.getValue();
-        return value ? (
-          <div className="text-sm">
-            {new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-          </div>
-        ) : (
-          '-'
-        );
-      },
-    }),
   ];
 
   const filteredData = charges.filter((charge) => {
-    if (statusFilter !== 'all' && charge.payment_status !== statusFilter) return false;
-    if (typeFilter !== 'all' && charge.charge_type !== typeFilter) return false;
+    // Status filter with special handling for unpaid/uncovered
+    if (statusFilter === 'unpaid_uncovered') {
+      if (charge.payment_status !== 'pending') return false;
+    } else if (statusFilter !== 'all' && charge.payment_status !== statusFilter) {
+      return false;
+    }
+
+    // Transaction type filter
+    if (typeFilter === 'charge' && charge.transaction_type !== 'charge') return false;
+    if (typeFilter === 'expense' && charge.transaction_type !== 'expense') return false;
+
     return true;
   });
 
@@ -369,16 +388,13 @@ export const LedgerTab: React.FC = () => {
   });
 
   const handleExportCSV = () => {
-    const headers = ['Type', 'Description', 'Member', 'Amount', 'Status', 'Method', 'Due Date', 'Paid Date'];
+    const headers = ['User', 'Description', 'Amount', 'Type', 'Status'];
     const rows = filteredData.map((charge) => [
-      charge.charge_type.replace(/_/g, ' '),
-      charge.title,
       charge.member_name || 'All Members',
-      `$${charge.amount.toFixed(2)}`,
+      charge.title,
+      `${charge.transaction_type === 'expense' ? '-' : '+'}$${charge.amount.toFixed(2)}`,
+      charge.transaction_type === 'expense' ? 'Expense' : 'Charge',
       charge.payment_status,
-      charge.payment_method || '-',
-      charge.due_date || charge.event_date || '-',
-      charge.payment_date ? new Date(charge.payment_date).toLocaleDateString() : '-',
     ]);
 
     const csvContent = [
@@ -398,10 +414,18 @@ export const LedgerTab: React.FC = () => {
   const handleCreateCharge = async (data: any) => {
     try {
       setIsSubmitting(true);
+
+      // For expenses, ensure charge_type is set and member_id is required
+      const payload = {
+        ...data,
+        charge_type: data.transaction_type === 'expense' ? 'other' : data.charge_type,
+        member_id: data.transaction_type === 'expense' ? data.member_id : (data.apply_to === 'all' ? null : data.member_id),
+      };
+
       const response = await fetch('/api/host/charges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -409,11 +433,11 @@ export const LedgerTab: React.FC = () => {
         fetchLedgerData();
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to create charge');
+        alert(error.error || 'Failed to create entry');
       }
     } catch (error) {
-      console.error('Error creating charge:', error);
-      alert('Failed to create charge');
+      console.error('Error creating entry:', error);
+      alert('Failed to create entry');
     } finally {
       setIsSubmitting(false);
     }
@@ -442,18 +466,29 @@ export const LedgerTab: React.FC = () => {
 
         {/* Summary */}
         {summary && (
-          <div className="mt-6 pt-6 border-t border-wine-light/30 grid grid-cols-3 gap-4">
-            <div>
-              <p className="text-wine-light text-sm mb-1">Total Charged</p>
-              <p className="text-2xl font-bold">${summary.total_charges.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="text-wine-light text-sm mb-1">Collected</p>
-              <p className="text-2xl font-bold text-white">${summary.total_paid.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="text-wine-light text-sm mb-1">Outstanding</p>
-              <p className="text-2xl font-bold text-sunburst-200">${summary.total_pending.toFixed(2)}</p>
+          <div className="mt-6 pt-6 border-t border-wine-light/30">
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <div>
+                <p className="text-wine-light text-sm mb-1">Total Charges</p>
+                <p className="text-xl font-bold text-green-100">+${summary.total_charges.toFixed(2)}</p>
+                <p className="text-xs text-wine-light mt-1">${summary.total_charges_unpaid.toFixed(2)} unpaid</p>
+              </div>
+              <div>
+                <p className="text-wine-light text-sm mb-1">Total Expenses</p>
+                <p className="text-xl font-bold text-red-100">-${summary.total_expenses.toFixed(2)}</p>
+                <p className="text-xs text-wine-light mt-1">${summary.total_expenses_uncovered.toFixed(2)} uncovered</p>
+              </div>
+              <div>
+                <p className="text-wine-light text-sm mb-1">Net Balance</p>
+                <p className={`text-2xl font-bold ${summary.net_balance >= 0 ? 'text-white' : 'text-red-200'}`}>
+                  {summary.net_balance >= 0 ? '+' : ''}${summary.net_balance.toFixed(2)}
+                </p>
+              </div>
+              <div>
+                <p className="text-wine-light text-sm mb-1">Outstanding</p>
+                <p className="text-xl font-bold text-sunburst-200">${(summary.total_charges_unpaid + summary.total_expenses_uncovered).toFixed(2)}</p>
+                <p className="text-xs text-wine-light mt-1">{summary.pending_count} pending</p>
+              </div>
             </div>
           </div>
         )}
@@ -467,6 +502,7 @@ export const LedgerTab: React.FC = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="border border-wine-light rounded-lg px-3 py-2 text-sm bg-white"
           >
+            <option value="unpaid_uncovered">Unpaid/Uncovered Only</option>
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
             <option value="paid">Paid</option>
@@ -480,10 +516,8 @@ export const LedgerTab: React.FC = () => {
             className="border border-wine-light rounded-lg px-3 py-2 text-sm bg-white"
           >
             <option value="all">All Types</option>
-            <option value="event">Event</option>
-            <option value="membership_dues">Membership Dues</option>
-            <option value="one_off">One-Off</option>
-            <option value="other">Other</option>
+            <option value="charge">Charges Only</option>
+            <option value="expense">Expenses Only</option>
           </select>
         </div>
 
@@ -549,7 +583,7 @@ export const LedgerTab: React.FC = () => {
       <Dialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
-        title="Create New Charge"
+        title="Add Ledger Entry"
         maxWidth="md"
       >
         <ChargeTypeForm
