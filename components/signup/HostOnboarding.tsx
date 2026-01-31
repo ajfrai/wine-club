@@ -53,7 +53,7 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
         >
           <div className="text-center max-w-2xl">
             <h1 className="text-5xl md:text-7xl font-light text-white mb-8 tracking-tight">
-              Become a Host
+              Start a Club
             </h1>
             <p className="text-xl md:text-2xl text-white/70 leading-relaxed mb-6">
               Our mission is to strengthen the social fabric by giving people reasons to come together.
