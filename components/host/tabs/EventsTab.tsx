@@ -115,7 +115,7 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
     <div className="space-y-6">
       {/* Events Overview Card */}
       <div className="bg-gradient-to-r from-wine to-wine-dark rounded-lg p-8 text-white">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-8">
           <div className="flex items-center gap-4">
             <Calendar className="w-12 h-12" />
             <div>
@@ -125,7 +125,7 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
           </div>
           <button
             onClick={() => setIsDialogOpen(true)}
-            className="bg-white text-wine-dark hover:bg-wine-light hover:text-wine-dark px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+            className="bg-white text-wine-dark hover:bg-wine-light hover:text-wine-dark px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg flex-shrink-0"
           >
             <Plus size={20} />
             Create Event
