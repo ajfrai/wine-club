@@ -4,28 +4,46 @@ import React, { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { SplitPanel } from './SplitPanel';
 import { FormCloseButton } from './FormCloseButton';
-import { HostForm } from './HostForm';
 import { MemberForm } from './MemberForm';
-import type { HostSignupData, MemberSignupData } from '@/types/auth.types';
+import { ClubTypeSelection } from './ClubTypeSelection';
+import { AuthForm } from './AuthForm';
+import { ClubCreationForm } from './ClubCreationForm';
+import type { MemberSignupData, ClubType } from '@/types/auth.types';
+import type { ClubCreationFormData } from '@/lib/validations/club-creation.schema';
 
-type PanelState = 'collapsed' | 'host' | 'member';
+type PanelState = 'collapsed' | 'club-creation' | 'member';
+type ClubCreationStep = 'club-type' | 'auth' | 'club-details';
 
 interface SignupContainerProps {
-  onHostSignup: (data: HostSignupData) => Promise<void>;
+  onAuth: (data: { fullName: string; email: string; password: string }) => Promise<void>;
+  onLogin: (data: { email: string; password: string }) => Promise<void>;
+  onClubCreation: (data: ClubCreationFormData) => Promise<void>;
   onMemberSignup: (data: MemberSignupData) => Promise<void>;
   isLoading?: boolean;
+  isAuthenticated?: boolean;
 }
 
 export const SignupContainer: React.FC<SignupContainerProps> = ({
-  onHostSignup,
+  onAuth,
+  onLogin,
+  onClubCreation,
   onMemberSignup,
   isLoading = false,
+  isAuthenticated = false,
 }) => {
   const [panelState, setPanelState] = useState<PanelState>('collapsed');
+  const [clubCreationStep, setClubCreationStep] = useState<ClubCreationStep>('club-type');
+  const [selectedClubType, setSelectedClubType] = useState<ClubType | null>(null);
 
-  const handleHostClick = () => {
-    console.log('[SignupContainer] Create Club panel clicked - expanding host form');
-    setPanelState('host');
+  const handleClubCreationClick = () => {
+    console.log('[SignupContainer] Create Club panel clicked');
+    setPanelState('club-creation');
+    // If already authenticated, skip to club details
+    if (isAuthenticated) {
+      setClubCreationStep('club-type');
+    } else {
+      setClubCreationStep('club-type');
+    }
   };
 
   const handleMemberClick = () => {
@@ -35,6 +53,37 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
 
   const handleClose = () => {
     setPanelState('collapsed');
+    setClubCreationStep('club-type');
+    setSelectedClubType(null);
+  };
+
+  const handleClubTypeSelect = (clubType: ClubType) => {
+    console.log('[SignupContainer] Club type selected:', clubType);
+    setSelectedClubType(clubType);
+    if (isAuthenticated) {
+      setClubCreationStep('club-details');
+    } else {
+      setClubCreationStep('auth');
+    }
+  };
+
+  const handleAuthComplete = async (data: { fullName: string; email: string; password: string }) => {
+    console.log('[SignupContainer] Auth complete, moving to club details');
+    await onAuth(data);
+    // After successful auth, move to club details step
+    setClubCreationStep('club-details');
+  };
+
+  const handleLoginComplete = async (data: { email: string; password: string }) => {
+    console.log('[SignupContainer] Login complete, moving to club details');
+    await onLogin(data);
+    // After successful login, move to club details step
+    setClubCreationStep('club-details');
+  };
+
+  const handleClubCreationComplete = async (data: ClubCreationFormData) => {
+    console.log('[SignupContainer] Club creation complete');
+    await onClubCreation(data);
   };
 
   return (
@@ -45,11 +94,30 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
         subtitle="Start your own wine club"
         gradientFrom="rgb(92, 41, 49)"
         gradientTo="rgb(127, 29, 29)"
-        isExpanded={panelState === 'host'}
+        isExpanded={panelState === 'club-creation'}
         isHidden={panelState === 'member'}
-        onClick={handleHostClick}
+        onClick={handleClubCreationClick}
       >
-        <HostForm onSubmit={onHostSignup} isLoading={isLoading} />
+        <div className="h-full overflow-y-auto">
+          {clubCreationStep === 'club-type' && (
+            <ClubTypeSelection onSelect={handleClubTypeSelect} />
+          )}
+          {clubCreationStep === 'auth' && selectedClubType && (
+            <AuthForm
+              clubType={selectedClubType}
+              onSignup={handleAuthComplete}
+              onLogin={handleLoginComplete}
+              isLoading={isLoading}
+            />
+          )}
+          {clubCreationStep === 'club-details' && selectedClubType && (
+            <ClubCreationForm
+              clubType={selectedClubType}
+              onSubmit={handleClubCreationComplete}
+              isLoading={isLoading}
+            />
+          )}
+        </div>
       </SplitPanel>
 
       {/* Member Panel */}
@@ -59,7 +127,7 @@ export const SignupContainer: React.FC<SignupContainerProps> = ({
         gradientFrom="rgb(220, 180, 180)"
         gradientTo="rgb(245, 140, 140)"
         isExpanded={panelState === 'member'}
-        isHidden={panelState === 'host'}
+        isHidden={panelState === 'club-creation'}
         onClick={handleMemberClick}
       >
         <MemberForm onSubmit={onMemberSignup} isLoading={isLoading} />

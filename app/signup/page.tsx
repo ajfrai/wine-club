@@ -1,60 +1,152 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SignupContainer } from '@/components/signup/SignupContainer';
 import { GoogleMapsProvider } from '@/components/providers/GoogleMapsProvider';
-import { signupHost, signupMember } from '@/lib/auth';
+import { signupMember, login } from '@/lib/auth';
+import { createClub } from '@/lib/clubs';
 import { createClient } from '@/lib/supabase/client';
-import type { HostSignupData, MemberSignupData } from '@/types/auth.types';
+import type { MemberSignupData } from '@/types/auth.types';
+import type { ClubCreationFormData } from '@/lib/validations/club-creation.schema';
 
 export default function SignupPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const handleHostSignup = async (data: HostSignupData) => {
-    console.log('[SignupPage] handleHostSignup called');
-    console.log('[SignupPage] Form data:', {
-      email: data.email,
-      fullName: data.fullName,
-      clubAddress: data.clubAddress,
-      hasAboutClub: !!data.aboutClub,
-      hasWinePreferences: !!data.winePreferences,
-    });
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        setIsAuthenticated(true);
+        setUserId(user.id);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleAuth = async (data: { fullName: string; email: string; password: string }) => {
+    console.log('[SignupPage] handleAuth called');
+    console.log('[SignupPage] Email:', data.email);
 
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log('[SignupPage] Calling signupHost function');
       const supabase = createClient();
-      const response = await signupHost(data, supabase);
 
-      console.log('[SignupPage] signupHost response:', {
-        success: response.success,
-        hasUser: !!response.user,
-        hasHost: !!response.host,
-        error: response.error,
+      // Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            role: 'member',
+            full_name: data.fullName,
+          },
+        },
       });
 
+      if (authError) {
+        setError(authError.message);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        setError('Failed to create user account');
+        setIsLoading(false);
+        return;
+      }
+
+      // Create user profile
+      const { error: profileError } = await supabase
+        .rpc('create_user_profile', {
+          user_id: authData.user.id,
+          user_email: data.email,
+          user_role: 'member',
+          user_full_name: data.fullName,
+        });
+
+      if (profileError) {
+        setError('Failed to create user profile');
+        setIsLoading(false);
+        return;
+      }
+
+      setIsAuthenticated(true);
+      setUserId(authData.user.id);
+      setIsLoading(false);
+    } catch (err) {
+      console.error('[SignupPage] Exception during auth:', err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async (data: { email: string; password: string }) => {
+    console.log('[SignupPage] handleLogin called');
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const response = await login(data, supabase);
+
       if (!response.success) {
-        console.error('[SignupPage] Signup failed:', response.error);
-        setError(response.error || 'Failed to create host account');
+        setError(response.error || 'Login failed');
+        setIsLoading(false);
         return;
       }
 
       if (response.user) {
-        console.log('[SignupPage] Signup successful, redirecting to dashboard');
-        // Redirect directly to dashboard based on role
-        router.push(`/dashboard/${response.user.role}`);
+        setIsAuthenticated(true);
+        setUserId(response.user.id);
       }
-    } catch (err) {
-      console.error('[SignupPage] Exception during signup:', err);
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-    } finally {
+
       setIsLoading(false);
-      console.log('[SignupPage] handleHostSignup complete');
+    } catch (err) {
+      console.error('[SignupPage] Exception during login:', err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setIsLoading(false);
+    }
+  };
+
+  const handleClubCreation = async (data: ClubCreationFormData) => {
+    console.log('[SignupPage] handleClubCreation called');
+
+    if (!userId) {
+      setError('You must be logged in to create a club');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const response = await createClub(userId, data, supabase);
+
+      if (!response.success) {
+        setError(response.error || 'Failed to create club');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('[SignupPage] Club creation successful, redirecting to dashboard');
+      router.push('/dashboard/host');
+    } catch (err) {
+      console.error('[SignupPage] Exception during club creation:', err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setIsLoading(false);
     }
   };
 
@@ -126,9 +218,12 @@ export default function SignupPage() {
       {/* Account Creation */}
       <GoogleMapsProvider>
         <SignupContainer
-          onHostSignup={handleHostSignup}
+          onAuth={handleAuth}
+          onLogin={handleLogin}
+          onClubCreation={handleClubCreation}
           onMemberSignup={handleMemberSignup}
           isLoading={isLoading}
+          isAuthenticated={isAuthenticated}
         />
       </GoogleMapsProvider>
     </div>
