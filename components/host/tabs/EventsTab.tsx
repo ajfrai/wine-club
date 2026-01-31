@@ -220,7 +220,8 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
                     {event.price && (
                       <div className="text-lg font-bold text-wine-dark">${event.price}</div>
                     )}
-                    {event.price && (
+                    {/* Ledger feature temporarily hidden */}
+                    {/* {event.price && (
                       <button
                         onClick={(e) => handleViewLedger(event, e)}
                         className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-wine text-white rounded hover:bg-wine-dark transition-colors"
@@ -228,7 +229,7 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
                         <Receipt className="w-3.5 h-3.5" />
                         Ledger
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>

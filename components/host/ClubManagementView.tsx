@@ -62,12 +62,13 @@ export function ClubManagementView({
       icon: <Wine className="w-5 h-5" />,
       content: <WinesTab />,
     },
-    {
-      id: 'ledger',
-      label: 'Ledger',
-      icon: <Receipt className="w-5 h-5" />,
-      content: <LedgerTab />,
-    },
+    // Ledger feature temporarily hidden
+    // {
+    //   id: 'ledger',
+    //   label: 'Ledger',
+    //   icon: <Receipt className="w-5 h-5" />,
+    //   content: <LedgerTab />,
+    // },
     {
       id: 'members',
       label: 'Members',
