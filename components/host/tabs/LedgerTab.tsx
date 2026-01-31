@@ -88,6 +88,8 @@ const ChargeTypeForm: React.FC<{
   isLoading: boolean;
   members: Array<{ id: string; name: string; email: string }>;
 }> = ({ onSubmit, onCancel, isLoading, members }) => {
+  console.log('[ChargeTypeForm] Rendering with members count:', members?.length || 0);
+
   const [formData, setFormData] = useState({
     transaction_type: 'charge' as 'charge' | 'expense',
     charge_type: 'membership_dues' as 'membership_dues' | 'one_off' | 'other',
@@ -101,6 +103,7 @@ const ChargeTypeForm: React.FC<{
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[ChargeTypeForm] Form submitted with data:', formData);
     onSubmit({
       ...formData,
       amount: parseFloat(formData.amount),
@@ -215,7 +218,7 @@ const ChargeTypeForm: React.FC<{
                 required
               >
                 <option value="">Choose a member...</option>
-                {members.map((member) => (
+                {(members || []).map((member) => (
                   <option key={member.id} value={member.id}>
                     {member.name} ({member.email})
                   </option>
@@ -236,7 +239,7 @@ const ChargeTypeForm: React.FC<{
             required
           >
             <option value="">Choose who paid...</option>
-            {members.map((member) => (
+            {(members || []).map((member) => (
               <option key={member.id} value={member.id}>
                 {member.name} ({member.email})
               </option>
@@ -267,6 +270,8 @@ const ChargeTypeForm: React.FC<{
 };
 
 export const LedgerTab: React.FC = () => {
+  console.log('[LedgerTab] Component render');
+
   const [charges, setCharges] = useState<Charge[]>([]);
   const [summary, setSummary] = useState<LedgerSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -295,23 +300,38 @@ export const LedgerTab: React.FC = () => {
 
   const fetchMembers = async () => {
     try {
+      console.log('[LedgerTab] Fetching members...');
       const response = await fetch('/api/host/members');
+      console.log('[LedgerTab] Members response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
-        setMembers(
-          data.members.map((m: any) => ({
+        console.log('[LedgerTab] Members data:', data);
+
+        if (data.members && Array.isArray(data.members)) {
+          const formattedMembers = data.members.map((m: any) => ({
             id: m.user_id,
-            name: m.full_name,
-            email: m.email,
-          }))
-        );
+            name: m.full_name || 'Unknown',
+            email: m.email || 'No email',
+          }));
+          console.log('[LedgerTab] Formatted members:', formattedMembers.length, 'members');
+          setMembers(formattedMembers);
+        } else {
+          console.error('[LedgerTab] Invalid members data structure:', data);
+          setMembers([]);
+        }
+      } else {
+        console.error('[LedgerTab] Failed to fetch members, status:', response.status);
+        setMembers([]);
       }
     } catch (error) {
-      console.error('Error fetching members:', error);
+      console.error('[LedgerTab] Error fetching members:', error);
+      setMembers([]);
     }
   };
 
   useEffect(() => {
+    console.log('[LedgerTab] useEffect running - fetching data');
     fetchLedgerData();
     fetchMembers();
   }, []);
@@ -456,7 +476,11 @@ export const LedgerTab: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setIsCreateDialogOpen(true)}
+            onClick={() => {
+              console.log('[LedgerTab] Create button clicked');
+              console.log('[LedgerTab] Current members state:', members);
+              setIsCreateDialogOpen(true);
+            }}
             className="bg-white text-wine-dark hover:bg-wine-light hover:text-wine-dark px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg flex-shrink-0"
           >
             <Plus size={20} />
