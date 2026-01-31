@@ -128,7 +128,7 @@ export const EventsTab: React.FC<EventsTabProps> = ({ upcomingEventsCount, defau
             className="bg-white text-wine-dark hover:bg-wine-light hover:text-wine-dark px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg flex-shrink-0"
           >
             <Plus size={20} />
-            Create Event
+            Create
           </button>
         </div>
         {upcomingEventsCount > 0 && (
