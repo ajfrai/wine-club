@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Users, Wine, Loader2, LogIn, Settings, Calendar, Info } from 'lucide-react';
-import { PaymentOptions } from '@/components/member/PaymentOptions';
 import { Tabs } from '@/components/ui/Tabs';
 import { PublicAboutTab } from '@/components/club/tabs/PublicAboutTab';
 import { PublicEventsTab } from '@/components/club/tabs/PublicEventsTab';
@@ -152,6 +151,10 @@ export default function PublicClubPage() {
           aboutClub={club.about_club}
           clubAddress={club.club_address}
           winePreferences={club.wine_preferences}
+          venmoUsername={club.venmo_username}
+          paypalUsername={club.paypal_username}
+          zelleHandle={club.zelle_handle}
+          acceptsCash={club.accepts_cash}
         />
       ),
     },
@@ -289,14 +292,6 @@ export default function PublicClubPage() {
                 </div>
               )}
             </div>
-
-            {/* Payment Options */}
-            <PaymentOptions
-              venmoUsername={club.venmo_username}
-              paypalUsername={club.paypal_username}
-              zelleHandle={club.zelle_handle}
-              acceptsCash={club.accepts_cash}
-            />
           </div>
         </div>
       </main>

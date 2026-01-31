@@ -2,17 +2,26 @@
 
 import React from 'react';
 import { MapPin, Wine } from 'lucide-react';
+import { PaymentOptions } from '@/components/member/PaymentOptions';
 
 interface PublicAboutTabProps {
   aboutClub: string | null;
   clubAddress: string | null;
   winePreferences: string | null;
+  venmoUsername: string | null;
+  paypalUsername: string | null;
+  zelleHandle: string | null;
+  acceptsCash: boolean;
 }
 
 export const PublicAboutTab: React.FC<PublicAboutTabProps> = ({
   aboutClub,
   clubAddress,
   winePreferences,
+  venmoUsername,
+  paypalUsername,
+  zelleHandle,
+  acceptsCash,
 }) => {
   return (
     <div className="space-y-6">
@@ -49,6 +58,14 @@ export const PublicAboutTab: React.FC<PublicAboutTabProps> = ({
           </div>
         </div>
       )}
+
+      {/* Payment Options */}
+      <PaymentOptions
+        venmoUsername={venmoUsername}
+        paypalUsername={paypalUsername}
+        zelleHandle={zelleHandle}
+        acceptsCash={acceptsCash}
+      />
     </div>
   );
 };
