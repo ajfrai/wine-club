@@ -48,6 +48,13 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   const clubAddress = watch('clubAddress');
   const clubType = watch('clubType');
 
+  // Log validation errors for debugging
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log('[HostForm] Validation errors:', errors);
+    }
+  }, [errors]);
+
   const handleClubAddressSelect = (addressComponents: AddressComponents) => {
     setValue('clubAddress', addressComponents.formattedAddress, { shouldValidate: true });
     setValue('latitude', addressComponents.lat || null);
