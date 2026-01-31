@@ -180,9 +180,9 @@ export default function SignupPage() {
       }
 
       if (response.user) {
-        console.log('[SignupPage] Signup successful, redirecting to dashboard');
-        // Redirect directly to dashboard based on role
-        router.push(`/dashboard/${response.user.role}`);
+        console.log('[SignupPage] Signup successful, redirecting to member dashboard');
+        // Member signup creates member profile, so route to member dashboard
+        router.push('/dashboard/member');
       }
     } catch (err) {
       console.error('[SignupPage] Exception during signup:', err);

@@ -42,11 +42,11 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Check for dual-role status by querying both hosts and members tables
-    const [{ data: hostProfile }, { data: memberProfile }, { data: userData }] = await Promise.all([
+    // Check for capability-based access by querying hosts and members tables
+    // This replaces role-based checks - capabilities are determined by table presence
+    const [{ data: hostProfile }, { data: memberProfile }] = await Promise.all([
       supabase.from('hosts').select('id').eq('user_id', user.id).single(),
       supabase.from('members').select('id').eq('user_id', user.id).single(),
-      supabase.from('users').select('role').eq('id', user.id).single(),
     ]);
 
     const hasHostProfile = !!hostProfile;
@@ -58,16 +58,18 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // Single-role users: redirect if accessing wrong dashboard
-    if (userData) {
-      // If host (without member profile) trying to access member dashboard
-      if (userData.role === 'host' && request.nextUrl.pathname.startsWith('/dashboard/member')) {
-        return NextResponse.redirect(new URL('/dashboard/host', request.url));
-      }
-      // If member (without host profile) trying to access host dashboard
-      if (userData.role === 'member' && request.nextUrl.pathname.startsWith('/dashboard/host')) {
-        return NextResponse.redirect(new URL('/dashboard/member', request.url));
-      }
+    // Capability-based routing: redirect if accessing dashboard they don't have access to
+    // User with only host profile trying to access member dashboard
+    if (hasHostProfile && !hasMemberProfile && request.nextUrl.pathname.startsWith('/dashboard/member')) {
+      return NextResponse.redirect(new URL('/dashboard/host', request.url));
+    }
+    // User with only member profile trying to access host dashboard
+    if (hasMemberProfile && !hasHostProfile && request.nextUrl.pathname.startsWith('/dashboard/host')) {
+      return NextResponse.redirect(new URL('/dashboard/member', request.url));
+    }
+    // User with no profiles - redirect to signup (shouldn't happen, but handle gracefully)
+    if (!hasHostProfile && !hasMemberProfile) {
+      return NextResponse.redirect(new URL('/signup', request.url));
     }
   }
 

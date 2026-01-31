@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Wine } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { checkDualRoleStatus } from '@/lib/auth';
 
 export default function Home() {
   const router = useRouter();
@@ -16,17 +17,25 @@ export default function Home() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
-        // User is already logged in, fetch their role and redirect
-        const { data: userData } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', user.id)
-          .single();
+        // User is already logged in - use capability-based routing
+        const dualRoleStatus = await checkDualRoleStatus(user.id, supabase);
 
-        if (userData?.role === 'host') {
+        if (dualRoleStatus.isDualRole) {
+          // For dual-role users, check localStorage for last dashboard preference
+          const lastDashboard = localStorage.getItem('lastDashboard');
+          if (lastDashboard === 'host' || lastDashboard === 'member') {
+            router.replace(`/dashboard/${lastDashboard}`);
+          } else {
+            // Default to host dashboard for dual-role users if no preference
+            router.replace('/dashboard/host');
+          }
+        } else if (dualRoleStatus.hasHostProfile) {
           router.replace('/dashboard/host');
-        } else {
+        } else if (dualRoleStatus.hasMemberProfile) {
           router.replace('/dashboard/member');
+        } else {
+          // User exists but has no profiles - redirect to signup
+          router.replace('/signup');
         }
       } else {
         // User is not logged in, show the landing page

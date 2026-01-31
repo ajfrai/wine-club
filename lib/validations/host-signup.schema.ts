@@ -20,9 +20,9 @@ export const hostSignupSchema = z.object({
   clubType: z.enum(['fixed', 'multi_host']),
 
   clubAddress: z.string()
-    .min(10, 'Please provide a complete club address')
     .max(500, 'Club address must be less than 500 characters')
-    .optional(),
+    .optional()
+    .or(z.literal('')), // Allow empty string for multi-host clubs
 
   aboutClub: z.string()
     .max(500, 'About club must be less than 500 characters')
@@ -40,13 +40,15 @@ export const hostSignupSchema = z.object({
   path: ['confirmPassword'],
 })
 .refine((data) => {
-  // For fixed clubs, address is required
-  if (data.clubType === 'fixed' && !data.clubAddress) {
-    return false;
+  // For fixed clubs, address is required and must be at least 10 characters
+  if (data.clubType === 'fixed') {
+    if (!data.clubAddress || data.clubAddress.trim().length < 10) {
+      return false;
+    }
   }
   return true;
 }, {
-  message: 'Club address is required for fixed location clubs',
+  message: 'Please provide a complete club address (at least 10 characters)',
   path: ['clubAddress'],
 });
 

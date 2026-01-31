@@ -2,7 +2,6 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { checkDualRoleStatus } from '@/lib/auth';
-import { cookies } from 'next/headers';
 
 export default async function SettingsLayout({
   children,
@@ -16,23 +15,22 @@ export default async function SettingsLayout({
     redirect('/login');
   }
 
-  // Fetch user profile and dual-role status
+  // Fetch user profile and capability status
   const [{ data: userProfile }, dualRoleStatus] = await Promise.all([
-    supabase.from('users').select('full_name, role').eq('id', user.id).single(),
+    supabase.from('users').select('full_name').eq('id', user.id).single(),
     checkDualRoleStatus(user.id, supabase),
   ]);
 
   const userName = userProfile?.full_name || user.email || 'User';
-  const userRole = userProfile?.role || 'member';
 
-  // Determine which dashboard context to use (default to user's primary role)
-  const currentDashboard: 'host' | 'member' = userRole === 'host' ? 'host' : 'member';
+  // Determine which dashboard context to use based on capabilities
+  // Prefer host (club management) dashboard if user owns a club, otherwise member
+  const currentDashboard: 'host' | 'member' = dualRoleStatus.hasHostProfile ? 'host' : 'member';
 
   return (
     <div className="min-h-screen bg-sunburst-50">
       <DashboardHeader
         userName={userName}
-        userRole={userRole}
         isDualRole={dualRoleStatus.isDualRole}
         currentDashboard={currentDashboard}
       />
