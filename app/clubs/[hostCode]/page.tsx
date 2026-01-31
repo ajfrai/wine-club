@@ -290,15 +290,13 @@ export default function PublicClubPage() {
               )}
             </div>
 
-            {/* Payment Options - Only for members */}
-            {club.is_member && (
-              <PaymentOptions
-                venmoUsername={club.venmo_username}
-                paypalUsername={club.paypal_username}
-                zelleHandle={club.zelle_handle}
-                acceptsCash={club.accepts_cash}
-              />
-            )}
+            {/* Payment Options */}
+            <PaymentOptions
+              venmoUsername={club.venmo_username}
+              paypalUsername={club.paypal_username}
+              zelleHandle={club.zelle_handle}
+              acceptsCash={club.accepts_cash}
+            />
           </div>
         </div>
       </main>
