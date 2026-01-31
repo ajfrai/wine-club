@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.48.1",
+    "@tanstack/react-table": "^8.21.3",
     "framer-motion": "^12.29.0",
     "lucide-react": "^0.563.0",
     "next": "^15.1.0",
