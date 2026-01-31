@@ -90,8 +90,8 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
                   <Calendar className="w-7 h-7 text-white/80" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-medium text-white">Wine arrives monthly</h3>
-                  <p className="text-white/50 mt-1">Selections are made automatically based on your club's taste.</p>
+                  <h3 className="text-xl font-medium text-white">Select Wines for Your Events</h3>
+                  <p className="text-white/50 mt-1">Curated selections tailored to your club's preferences.</p>
                 </div>
               </div>
               <div className="flex items-center gap-6 text-left">
@@ -125,7 +125,7 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
                   <span className="text-white text-sm">✓</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-medium text-white">Host monthly tastings</h3>
+                  <h3 className="text-xl font-medium text-white">Host Wine Tastings</h3>
                   <p className="text-white/50 mt-1">Provide a space and set the vibe.</p>
                 </div>
               </div>
@@ -143,8 +143,8 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
                   <span className="text-white text-sm">✓</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-medium text-white">Receive deliveries</h3>
-                  <p className="text-white/50 mt-1">Wine ships to you before each tasting.</p>
+                  <h3 className="text-xl font-medium text-white">Pick and Pick Up Your Wine</h3>
+                  <p className="text-white/50 mt-1">Manage inventory for your events.</p>
                 </div>
               </div>
             </div>
@@ -172,7 +172,7 @@ export const HostOnboarding: React.FC<HostOnboardingProps> = ({ onComplete }) =>
               onClick={goToNext}
               className={`flex items-center gap-3 px-8 py-4 rounded-full font-medium transition-all duration-300 ${
                 isLastSlide
-                  ? 'bg-sunburst-500 text-white hover:bg-sunburst-600'
+                  ? 'bg-wine text-white hover:bg-wine-dark'
                   : 'bg-white/10 text-white hover:bg-white/20'
               }`}
             >

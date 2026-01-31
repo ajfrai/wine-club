@@ -7,7 +7,6 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
     console.log('[signupHost] Email:', data.email);
     console.log('[signupHost] Full name:', data.fullName);
     console.log('[signupHost] Club address:', data.clubAddress);
-    console.log('[signupHost] Same as club address:', data.sameAsClubAddress);
 
     // Step 1: Create auth user
     console.log('[signupHost] Step 1: Creating auth user in Supabase');
@@ -88,18 +87,12 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
 
     // Step 5: Create host profile
     console.log('[signupHost] Step 5: Creating host profile');
-    const deliveryAddress = data.sameAsClubAddress
-      ? data.clubAddress
-      : data.deliveryAddress;
-
-    console.log('[signupHost] Delivery address:', deliveryAddress);
-
     const { data: hostData, error: hostError } = await supabase
       .from('hosts')
       .insert({
         user_id: authData.user.id,
         club_address: data.clubAddress,
-        delivery_address: deliveryAddress,
+        delivery_address: data.clubAddress,
         about_club: data.aboutClub || null,
         wine_preferences: data.winePreferences || null,
         host_code: hostCodeData,
@@ -125,7 +118,7 @@ export async function signupHost(data: HostSignupData, supabase: SupabaseClient)
       .from('members')
       .insert({
         user_id: authData.user.id,
-        address: deliveryAddress,
+        address: data.clubAddress,
       });
 
     if (memberError) {

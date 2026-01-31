@@ -31,8 +31,6 @@ export interface HostSignupData {
   confirmPassword: string;
   fullName: string;
   clubAddress: string;
-  deliveryAddress: string;
-  sameAsClubAddress: boolean;
   aboutClub?: string;
   winePreferences?: string;
   latitude?: number | null;
