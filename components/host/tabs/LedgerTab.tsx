@@ -38,7 +38,7 @@ interface LedgerSummary {
 const PaymentStatusBadge: React.FC<{ status: string }> = ({ status }) => {
   if (status === 'pending') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
+      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-sunburst-100 text-sunburst-700 rounded">
         <Clock className="w-3 h-3" />
         Pending
       </span>
@@ -47,7 +47,7 @@ const PaymentStatusBadge: React.FC<{ status: string }> = ({ status }) => {
 
   if (status === 'paid') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
+      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-wine-light text-wine-dark rounded">
         <CheckCircle2 className="w-3 h-3" />
         Paid
       </span>
@@ -65,7 +65,7 @@ const PaymentStatusBadge: React.FC<{ status: string }> = ({ status }) => {
 
   if (status === 'refunded') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-sunburst-200 text-sunburst-800 rounded">
         <XCircle className="w-3 h-3" />
         Refunded
       </span>
@@ -436,7 +436,7 @@ export const LedgerTab: React.FC = () => {
             className="bg-white text-wine-dark hover:bg-wine-light hover:text-wine-dark px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg flex-shrink-0"
           >
             <Plus size={20} />
-            New Charge
+            Create
           </button>
         </div>
 
@@ -449,11 +449,11 @@ export const LedgerTab: React.FC = () => {
             </div>
             <div>
               <p className="text-wine-light text-sm mb-1">Collected</p>
-              <p className="text-2xl font-bold text-green-300">${summary.total_paid.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white">${summary.total_paid.toFixed(2)}</p>
             </div>
             <div>
               <p className="text-wine-light text-sm mb-1">Outstanding</p>
-              <p className="text-2xl font-bold text-yellow-300">${summary.total_pending.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-sunburst-200">${summary.total_pending.toFixed(2)}</p>
             </div>
           </div>
         )}
