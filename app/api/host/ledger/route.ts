@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get all charges created by this host (general charges)
+    // Get all charges created by this host (general charges and expenses)
     const { data: generalCharges, error: chargesError } = await supabase
       .from('charges')
       .select(`
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
         payment_date,
         due_date,
         member_id,
+        transaction_type,
         users:member_id (
           full_name,
           email
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
 
     // Combine all charges
     const allCharges = [
-      // General charges
+      // General charges and expenses
       ...(generalCharges?.map((charge) => {
         const userData = Array.isArray(charge.users) ? charge.users[0] : charge.users;
         return {
@@ -96,9 +97,10 @@ export async function GET(request: NextRequest) {
           payment_date: charge.payment_date,
           due_date: charge.due_date,
           event_date: null,
+          transaction_type: charge.transaction_type || 'charge',
         };
       }) || []),
-      // Event payments
+      // Event payments (always charges, never expenses)
       ...(eventPayments?.map((payment) => {
         const event = eventMap.get(payment.event_id);
         const userData = Array.isArray(payment.users) ? payment.users[0] : payment.users;
@@ -114,13 +116,38 @@ export async function GET(request: NextRequest) {
           payment_date: payment.payment_date,
           due_date: null,
           event_date: event?.event_date || null,
+          transaction_type: 'charge',
         };
       }) || []),
     ];
 
-    // Calculate summary
+    // Calculate summary with separate charges and expenses
+    const charges = allCharges.filter((c) => c.transaction_type === 'charge');
+    const expenses = allCharges.filter((c) => c.transaction_type === 'expense');
+
     const summary = {
-      total_charges: allCharges.reduce((sum, c) => sum + c.amount, 0),
+      // Total charges (money owed to club)
+      total_charges: charges.reduce((sum, c) => sum + c.amount, 0),
+      total_charges_paid: charges
+        .filter((c) => c.payment_status === 'paid')
+        .reduce((sum, c) => sum + c.amount, 0),
+      total_charges_unpaid: charges
+        .filter((c) => c.payment_status === 'pending')
+        .reduce((sum, c) => sum + c.amount, 0),
+
+      // Total expenses (money club owes to members)
+      total_expenses: expenses.reduce((sum, c) => sum + c.amount, 0),
+      total_expenses_covered: expenses
+        .filter((c) => c.payment_status === 'paid')
+        .reduce((sum, c) => sum + c.amount, 0),
+      total_expenses_uncovered: expenses
+        .filter((c) => c.payment_status === 'pending')
+        .reduce((sum, c) => sum + c.amount, 0),
+
+      // Net balance (positive means club has money, negative means club owes money)
+      net_balance: charges.reduce((sum, c) => sum + c.amount, 0) - expenses.reduce((sum, c) => sum + c.amount, 0),
+
+      // Legacy fields for backward compatibility
       total_paid: allCharges
         .filter((c) => c.payment_status === 'paid')
         .reduce((sum, c) => sum + c.amount, 0),

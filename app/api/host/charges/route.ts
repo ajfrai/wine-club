@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
       amount,
       due_date,
       member_id,
+      transaction_type = 'charge', // Default to 'charge' if not specified
     } = body;
 
     if (!charge_type || !title || !amount) {
@@ -58,6 +59,7 @@ export async function POST(request: NextRequest) {
           amount,
           due_date: due_date || null,
           payment_status: 'pending',
+          transaction_type,
         })
       );
 
@@ -80,6 +82,7 @@ export async function POST(request: NextRequest) {
           amount,
           due_date: due_date || null,
           payment_status: 'pending',
+          transaction_type,
         })
         .select()
         .single();
