@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all charges created by this host (general charges and expenses)
+    // Note: transaction_type column might not exist yet if migration hasn't been applied
     const { data: generalCharges, error: chargesError } = await supabase
       .from('charges')
       .select(`
@@ -26,7 +27,6 @@ export async function GET(request: NextRequest) {
         payment_date,
         due_date,
         member_id,
-        transaction_type,
         users:member_id (
           full_name,
           email
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
     // Combine all charges
     const allCharges = [
       // General charges and expenses
-      ...(generalCharges?.map((charge) => {
+      ...(generalCharges?.map((charge: any) => {
         const userData = Array.isArray(charge.users) ? charge.users[0] : charge.users;
         return {
           id: charge.id,
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
           payment_date: charge.payment_date,
           due_date: charge.due_date,
           event_date: null,
-          transaction_type: charge.transaction_type || 'charge',
+          transaction_type: (charge as any).transaction_type || 'charge', // Fallback if column doesn't exist
         };
       }) || []),
       // Event payments (always charges, never expenses)

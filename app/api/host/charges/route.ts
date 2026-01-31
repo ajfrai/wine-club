@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
       }
 
       // Create a charge for each member
-      const chargePromises = (memberships || []).map((membership) =>
-        supabase.from('charges').insert({
+      const chargePromises = (memberships || []).map((membership) => {
+        const chargeData: any = {
           host_id: user.id,
           member_id: membership.member_id,
           charge_type,
@@ -59,9 +59,15 @@ export async function POST(request: NextRequest) {
           amount,
           due_date: due_date || null,
           payment_status: 'pending',
-          transaction_type,
-        })
-      );
+        };
+
+        // Only add transaction_type if it's provided (for backward compatibility)
+        if (transaction_type) {
+          chargeData.transaction_type = transaction_type;
+        }
+
+        return supabase.from('charges').insert(chargeData);
+      });
 
       await Promise.all(chargePromises);
 
@@ -71,19 +77,25 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Create a charge for a specific member
+      const chargeData: any = {
+        host_id: user.id,
+        member_id,
+        charge_type,
+        title,
+        description,
+        amount,
+        due_date: due_date || null,
+        payment_status: 'pending',
+      };
+
+      // Only add transaction_type if it's provided (for backward compatibility)
+      if (transaction_type) {
+        chargeData.transaction_type = transaction_type;
+      }
+
       const { data: charge, error: chargeError } = await supabase
         .from('charges')
-        .insert({
-          host_id: user.id,
-          member_id,
-          charge_type,
-          title,
-          description,
-          amount,
-          due_date: due_date || null,
-          payment_status: 'pending',
-          transaction_type,
-        })
+        .insert(chargeData)
         .select()
         .single();
 
