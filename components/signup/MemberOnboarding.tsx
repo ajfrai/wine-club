@@ -28,7 +28,7 @@ export const MemberOnboarding: React.FC<MemberOnboardingProps> = ({ onComplete }
             Find your table
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 leading-relaxed mb-6">
-            Once a month, somewhere nearby, a group gathers to taste wine and talk about everything else.
+            Find wine tastings in your community where people gather to discover and enjoy wine together.
           </p>
           <p className="text-lg text-gray-500">
             You bring yourself. We handle the rest.
@@ -41,7 +41,7 @@ export const MemberOnboarding: React.FC<MemberOnboardingProps> = ({ onComplete }
         <div className="max-w-2xl mx-auto flex justify-center">
           <button
             onClick={handleContinue}
-            className="flex items-center gap-3 px-8 py-4 rounded-full font-medium bg-sunburst-600 text-white hover:bg-sunburst-700 transition-all duration-300"
+            className="flex items-center gap-3 px-8 py-4 rounded-full font-medium bg-wine text-white hover:bg-wine-dark transition-all duration-300"
           >
             Get started
             <ChevronRight className="w-5 h-5" />

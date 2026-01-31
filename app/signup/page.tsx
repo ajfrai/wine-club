@@ -19,8 +19,6 @@ export default function SignupPage() {
       email: data.email,
       fullName: data.fullName,
       clubAddress: data.clubAddress,
-      sameAsClubAddress: data.sameAsClubAddress,
-      hasDeliveryAddress: !!data.deliveryAddress,
       hasAboutClub: !!data.aboutClub,
       hasWinePreferences: !!data.winePreferences,
     });

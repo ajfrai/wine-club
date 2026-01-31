@@ -31,13 +31,11 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
   } = useForm<HostFormInputs>({
     resolver: zodResolver(hostSignupSchema),
     defaultValues: {
-      sameAsClubAddress: false,
       fullName: '',
       email: '',
       password: '',
       confirmPassword: '',
       clubAddress: '',
-      deliveryAddress: '',
       aboutClub: '',
       winePreferences: '',
       latitude: null,
@@ -45,14 +43,7 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
     },
   });
 
-  const sameAsClubAddress = watch('sameAsClubAddress');
   const clubAddress = watch('clubAddress');
-
-  useEffect(() => {
-    if (sameAsClubAddress && clubAddress) {
-      setValue('deliveryAddress', clubAddress);
-    }
-  }, [sameAsClubAddress, clubAddress, setValue]);
 
   const handleClubAddressSelect = (addressComponents: AddressComponents) => {
     setValue('clubAddress', addressComponents.formattedAddress, { shouldValidate: true });
@@ -136,22 +127,6 @@ export const HostForm: React.FC<HostFormProps> = ({ onSubmit, isLoading = false 
           onChange={(value) => setValue('clubAddress', value, { shouldValidate: true })}
           onSelect={handleClubAddressSelect}
         />
-
-        <Checkbox
-          label="Delivery address is the same as club address"
-          {...register('sameAsClubAddress')}
-        />
-
-        {!sameAsClubAddress && (
-          <AddressAutocomplete
-            label="Delivery Address"
-            placeholder="Start typing your delivery address..."
-            error={errors.deliveryAddress?.message}
-            required
-            value={watch('deliveryAddress')}
-            onChange={(value) => setValue('deliveryAddress', value, { shouldValidate: true })}
-          />
-        )}
 
         <Textarea
           label="About This Club"
